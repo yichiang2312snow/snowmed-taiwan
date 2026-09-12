@@ -39,8 +39,8 @@ function authorize(request, env) {
   if (!expected) return { ok: false, res: json({ error: 'admin token not configured' }, 503) };
 
   const header = request.headers.get('authorization') ?? '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
-  if (!safeEqual(token, expected)) return { ok: false, res: json({ error: 'unauthorized' }, 401) };
+  const token = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+  if (!safeEqual(token, expected.trim())) return { ok: false, res: json({ error: 'unauthorized' }, 401) };
 
   return { ok: true };
 }
