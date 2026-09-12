@@ -3,16 +3,15 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
-import { SITE } from '../consts';
+import ToolCard from '../components/ToolCard.astro';
+import { SITE, TOOLS } from '../consts';
 import { lastUpdated } from '../lib/lastUpdated';
 import { formatDate } from '../lib/format';
 import heroImage from '../assets/hero-ski-slope.jpg';
 
 // 文章列表在建置時就直接寫進 HTML（不是用 JavaScript 讀 JSON 生出來），
 // 這樣 Google 爬蟲一抓就看得到全部內容。
-const entries = await getCollection('articles', ({ data }) => !data.draft);
-
-const posts = entries
+const posts = (await getCollection('articles', ({ data }) => !data.draft))
   .map((entry) => {
     const updated = lastUpdated(entry.filePath);
     return {
@@ -26,7 +25,24 @@ const posts = entries
 
 const siteUpdated = posts.length > 0 ? new Date(posts[0].sortKey) : null;
 
-const categories = [...new Set(posts.map((p) => p.entry.data.category))];
+const trust = [
+  {
+    title: '每個工具都寫清楚依據',
+    body: '每一個工具下面都有「這是根據什麼做的」和「什麼情況不適用」。你可以自己看完再決定要不要採用，而不是因為信任某個人才使用。',
+  },
+  {
+    title: '不需要註冊，也不收集你的資料',
+    body: '沒有帳號、沒有登入、沒有表單。你在工具裡填的身高體重、勾選的項目，全部只留在你自己的瀏覽器裡，不會傳到任何伺服器。',
+  },
+  {
+    title: '建議一律偏保守',
+    body: '在「可能沒事」和「該去看醫師」之間，這裡的工具會一律導向後者。工具的目的是幫你判斷要不要找專業協助，不是取代專業判斷。',
+  },
+  {
+    title: '完全免費，沒有推銷',
+    body: '不賣課程、不賣裝備、不導購。這裡不會出現「所以你需要買 OO」這種結論。',
+  },
+];
 ---
 
 <BaseLayout>
@@ -42,50 +58,110 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
       fetchpriority="high"
     />
     <div
-      class="absolute inset-0 -z-10 bg-gradient-to-r from-deep/95 via-deep/88 to-deep/70"
+      class="absolute inset-0 -z-10 bg-gradient-to-r from-deep/96 via-deep/90 to-deep/72"
       aria-hidden="true"
     >
     </div>
 
-    <div class="mx-auto max-w-5xl px-5 py-20 sm:py-28 lg:py-32">
+    <div class="mx-auto max-w-5xl px-5 py-16 sm:py-24 lg:py-28">
       <p
-        class="mb-5 inline-block rounded-full border border-brandlight/60 bg-deep/40 px-4 py-1.5 text-[11px] font-bold tracking-[0.15em] text-brandlight sm:text-xs"
+        class="mb-5 inline-block rounded-full border border-brandlight/60 bg-deep/40 px-3.5 py-1.5 text-[11px] font-bold tracking-[0.12em] text-brandlight sm:px-4 sm:text-xs"
       >
-        SKI &amp; SNOWSPORTS MEDICINE · TAIWAN
+        免費 · 免註冊 · 不收集個資
       </p>
-      <h1 class="max-w-3xl text-[1.75rem] leading-tight font-black sm:text-5xl lg:text-6xl">
-        <span class="block">台灣第一位</span>
-        <span class="block">專攻滑雪運動醫學的醫師</span>
+
+      <h1 class="text-[1.75rem] leading-tight font-black sm:text-5xl lg:text-[3.4rem]">
+        <span class="block">台灣滑雪運動醫學</span>
+        <span class="block">科學平台</span>
       </h1>
-      <p class="mt-6 max-w-2xl text-base leading-relaxed break-words text-ice/90 sm:text-lg">
-        台灣沒有雪季，卻有幾十萬名滑雪愛好者。出發前該怎麼練、在雪場受傷了怎麼辦、傷後多久能再上山
-        —— 這些問題不該只能靠雪友之間口耳相傳。
+      <p class="mt-3 text-xs font-medium text-brandlight sm:text-sm">
+        {SITE.poweredBy}
+      </p>
+
+      <p class="mt-7 max-w-2xl text-base leading-relaxed break-words text-ice/90 sm:text-lg">
+        你不需要認識我，也不需要相信我。<br class="hidden sm:block" />
+        這裡放的是你去滑雪之前、受傷當下、復原期間，可以自己拿來用的工具
+        —— 每一個都附上依據和限制，你自己判斷。
       </p>
 
       <div class="mt-9 flex flex-wrap gap-3">
         <a
-          href="#articles"
+          href="#tools"
           class="rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-deep transition-colors hover:bg-ice"
-          >閱讀衛教文章</a
+          >直接開始用工具</a
         >
         <a
-          href="/contact"
+          href="#why-trust"
           class="rounded-xl border border-white/40 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
-          >預約門診與諮詢</a
+          >這些內容可信嗎？</a
         >
       </div>
-
-      <p class="mt-10 text-sm text-ice/70">{SITE.doctor} · {SITE.doctorEn}</p>
     </div>
   </section>
 
-  <!-- 文章索引 -->
+  <!-- 工具 -->
+  <section id="tools" class="scroll-mt-20 bg-snow">
+    <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+      <div class="max-w-2xl">
+        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Tools</p>
+        <h2 class="text-2xl font-black text-deep sm:text-3xl">{TOOLS.length} 個滑雪醫學小工具</h2>
+        <p class="mt-3 text-base leading-relaxed break-words text-slate-soft">
+          不用註冊、不用留 email、不用等回覆。點進去就能用，結果只有你自己看得到。
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {TOOLS.map((t) => <ToolCard {...t} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 為什麼可信 -->
+  <section id="why-trust" class="scroll-mt-20 bg-white">
+    <div class="mx-auto max-w-5xl px-5 py-14 sm:py-20">
+      <div class="max-w-2xl">
+        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Why trust this</p>
+        <h2 class="text-2xl font-black break-words text-deep sm:text-3xl">
+          你不認識我，為什麼要用這裡的東西？
+        </h2>
+        <p class="mt-3 text-base leading-relaxed break-words text-slate-soft">
+          這是一個合理的問題。所以這個平台的設計原則是：<strong class="text-deep"
+            >讓你不需要信任任何人，也能自己判斷內容能不能用。</strong
+          >
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2">
+        {
+          trust.map((t, i) => (
+            <div class="min-w-0 rounded-2xl border border-ice bg-snow p-6">
+              <span class="text-xs font-black tracking-widest text-brandlight">
+                0{i + 1}
+              </span>
+              <h3 class="mt-2 text-lg font-bold break-words text-deep">{t.title}</h3>
+              <p class="mt-2.5 text-sm leading-relaxed break-words text-slate-soft">{t.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-8 rounded-2xl border-l-4 border-brand bg-ice/40 p-6">
+        <p class="text-sm leading-relaxed break-words text-deep">
+          <strong>那我是誰？</strong>
+          我是{SITE.doctor}，全台第一位滑雪運動醫學專科醫師。這個平台是我把門診裡重複回答了無數次的問題，整理成任何人都能自己使用的形式。
+          <a href="/about" class="font-bold text-brand hover:underline">關於這個平台的更多說明 →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 知識庫（根目錄卡片索引） -->
   <section id="articles" class="scroll-mt-20 bg-snow">
     <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div class="min-w-0">
-          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Articles</p>
-          <h2 class="text-2xl font-black text-deep sm:text-3xl">衛教文章</h2>
+          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Knowledge</p>
+          <h2 class="text-2xl font-black text-deep sm:text-3xl">知識庫</h2>
         </div>
         {
           siteUpdated && (
@@ -95,18 +171,6 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
           )
         }
       </div>
-
-      {
-        categories.length > 1 && (
-          <div class="mt-6 flex flex-wrap gap-2">
-            {categories.map((c) => (
-              <span class="rounded-full border border-ice bg-white px-3 py-1.5 text-xs font-bold text-deep">
-                {c}
-              </span>
-            ))}
-          </div>
-        )
-      }
 
       {
         posts.length > 0 ? (
@@ -127,55 +191,10 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
           </div>
         ) : (
           <p class="mt-10 rounded-2xl border-2 border-dashed border-ice bg-white p-10 text-center text-sm text-slate-soft">
-            還沒有文章。在 <code>src/content/articles/</code> 放一個 .md 檔就會出現在這裡。
+            還沒有文章。
           </p>
         )
       }
-    </div>
-  </section>
-
-  <!-- 簡介 -->
-  <section class="bg-white">
-    <div class="mx-auto max-w-5xl px-5 py-14 sm:py-20">
-      <div class="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
-        <div class="min-w-0">
-          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">About</p>
-          <h2 class="text-2xl font-black text-deep sm:text-3xl">
-            <span class="block">為什麼需要</span>
-            <span class="block">滑雪運動醫學？</span>
-          </h2>
-        </div>
-        <div class="min-w-0 space-y-5 text-base leading-relaxed break-words text-slate-soft">
-          <p>
-            滑雪的受傷機轉非常特殊：腳被固定器綁在一塊長板上、以高速移動、在低溫與高海拔的環境、而且往往連續好幾天不休息。這些條件加起來，造成的傷害型態和籃球、跑步、健身房完全不同。
-          </p>
-          <p>
-            更麻煩的是，大多數台灣雪友是在<strong class="text-deep">國外受傷</strong>的。語言不通、當地醫療流程陌生、回國後接手的醫師又不熟悉雪場的受傷情境，中間的資訊落差常常讓復原走了冤枉路。
-          </p>
-          <p>
-            這個部落格要做的，就是把這一段補起來 ——
-            <strong class="text-deep">從出發前的準備、雪場上的判斷，到回國後的治療與回歸雪場</strong>。
-          </p>
-          <a href="/about" class="inline-block text-sm font-bold text-brand hover:underline"
-            >更多關於我 →</a
-          >
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="bg-brand text-white">
-    <div class="mx-auto max-w-5xl px-5 py-14 text-center sm:py-20">
-      <h2 class="text-2xl font-black break-words sm:text-3xl">準備好下一趟雪季了嗎？</h2>
-      <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed break-words text-white/85">
-        不管你是第一次上雪、想突破技術瓶頸，還是正在為了受傷苦惱 —— 歡迎跟我聊聊。
-      </p>
-      <a
-        href="/contact"
-        class="mt-8 inline-block rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-brand transition-colors hover:bg-ice"
-        >聯絡與預約</a
-      >
     </div>
   </section>
 </BaseLayout>

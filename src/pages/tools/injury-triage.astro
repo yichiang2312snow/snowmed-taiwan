@@ -1,0 +1,309 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+
+const groups = [
+  {
+    level: 'red',
+    id: 'red',
+    heading: '第一組：緊急狀況',
+    hint: '以下任何一項成立，就不要自己想辦法下山。',
+    items: [
+      '曾經失去意識，或現在意識不清、講話怪怪的',
+      '頸部或背部劇痛，或手腳有麻木、無力感',
+      '肢體明顯變形、角度不對，或有骨頭穿出皮膚',
+      '完全無法用受傷的腳承重，一踩就劇痛',
+      '呼吸困難、劇烈胸痛，或每次深呼吸都很痛',
+      '大量出血，壓迫後仍止不住',
+    ],
+  },
+  {
+    level: 'orange',
+    id: 'orange',
+    heading: '第二組：今天到此為止，並儘快就醫',
+    hint: '不算立即危險，但需要當地醫療評估。',
+    items: [
+      '頭部有撞擊，之後出現頭暈、想吐、反應變慢或記憶空白',
+      '受傷當下聽到或感覺到「啪」的一聲',
+      '關節在一小時內就腫起來',
+      '關節有鬆掉、不穩、會突然軟腳的感覺',
+      '關節無法完全伸直或彎曲，或有卡住感',
+      '肩膀無法抬起，或看起來位置不對',
+    ],
+  },
+  {
+    level: 'yellow',
+    id: 'yellow',
+    heading: '第三組：停止今天的滑行，持續觀察',
+    hint: '可以自己下山，但不要再滑了。',
+    items: [
+      '可以承重，但走路時持續疼痛',
+      '有腫脹，但是慢慢才腫起來的',
+      '拇指根部（虎口內側）壓下去會痛，而且捏東西沒力',
+      '手腕壓痛，轉動或用力時會痛',
+      '休息 48 小時後仍然沒有改善',
+    ],
+  },
+];
+
+---
+
+<ToolLayout
+  title="雪場受傷分流判斷"
+  emoji="🚨"
+  time="約 2 分鐘"
+  summary="在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？勾選符合的狀況，這個工具會依照紅旗症狀給你建議行動。"
+  description="滑雪受傷當下該怎麼辦？依照紅旗症狀逐步判斷是否需要呼叫雪場巡邏隊、當地就醫，或停止滑行後觀察。"
+>
+  <div class="rounded-2xl border-l-4 border-red-500 bg-red-50 p-5">
+    <p class="text-sm leading-relaxed break-words text-red-800">
+      <strong>如果情況危急，先打電話，不要先填這個表。</strong>
+      意識不清、大量出血、呼吸困難、懷疑頸椎或脊椎受傷 —— 立刻聯絡雪場巡邏隊或當地緊急醫療系統。
+    </p>
+  </div>
+
+  <form id="triage-form" class="mt-8 space-y-7">
+    {
+      groups.map((g) => (
+        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+          <legend class="px-2">
+            <span
+              class:list={[
+                'inline-block h-2.5 w-2.5 rounded-full align-middle',
+                g.level === 'red'
+                  ? 'bg-red-500'
+                  : g.level === 'orange'
+                    ? 'bg-orange-400'
+                    : 'bg-amber-400',
+              ]}
+              aria-hidden="true"
+            />
+            <span class="ml-2 align-middle text-sm font-black text-deep">{g.heading}</span>
+          </legend>
+
+          <p class="mt-1 text-xs break-words text-slate-soft">{g.hint}</p>
+
+          <div class="mt-4 grid gap-2">
+            {g.items.map((item) => (
+              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+                <input
+                  type="checkbox"
+                  name={g.id}
+                  value={item}
+                  class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                />
+                <span class="min-w-0 leading-relaxed break-words text-deep">{item}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+
+    <div class="flex flex-wrap gap-3">
+      <button
+        type="submit"
+        class="flex-1 rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+      >
+        看建議
+      </button>
+      <button
+        type="reset"
+        id="tr-reset"
+        class="rounded-xl border border-ice bg-white px-6 py-4 text-sm font-bold text-deep hover:bg-ice/50"
+      >
+        清除
+      </button>
+    </div>
+  </form>
+
+  <div id="triage-result" class="mt-10 scroll-mt-20" hidden>
+    <div id="tr-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-slate-soft uppercase">建議行動</p>
+      <p class="mt-3 flex flex-wrap items-center gap-3">
+        <span id="tr-emoji" class="text-4xl leading-none" aria-hidden="true"></span>
+        <span id="tr-title" class="text-xl font-black break-words sm:text-2xl"></span>
+      </p>
+
+      <ul id="tr-actions" class="mt-6 space-y-3 text-sm leading-relaxed break-words text-deep"></ul>
+
+      <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-white/70 p-5" hidden>
+        <p class="text-sm font-bold text-deep">你勾選的項目中，觸發判斷的是：</p>
+        <ul id="tr-flags" class="mt-2 space-y-1.5 text-sm break-words text-slate-soft"></ul>
+      </div>
+    </div>
+
+    <p class="mt-5 text-xs leading-relaxed break-words text-slate-soft">
+      這個工具在「可能沒事」和「該找人看」之間，一律選擇後者。如果你的感覺比結果更嚴重，請以你的感覺為準。
+    </p>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具用的是急診與運動傷害處置常見的<strong>「紅旗症狀」分流邏輯</strong>：先排除會危及生命或肢體的狀況，再往下判斷需不需要當場就醫。
+    </p>
+    <p>判斷方式刻意做得很單純 —— <strong>只要符合越嚴重那一組的任何一項，就以那一組的建議為準</strong>，不做加權、不做評分。理由是：在雪場上、在痛的時候、在慌張的時候，複雜的計分沒有意義，而且容易把嚴重的狀況算輕。</p>
+    <p>
+      三組紅旗的內容，對應的是雪地運動最常見也最不能漏掉的幾類傷害：頭部外傷與腦震盪、脊椎損傷、關節脫位與骨折、韌帶完全斷裂（受傷當下的「啪」聲與快速腫脹是典型線索），以及容易被當成「扭到」的滑雪者拇指。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這不是診斷工具。</strong>
+        它只回答「要不要找人看」，不回答「我到底怎麼了」。後者需要理學檢查和影像。
+      </li>
+      <li>
+        <strong>沒有勾到任何項目，不代表你沒事。</strong>
+        有些傷害一開始症狀很輕，隔天才明顯。任何新出現的腫脹、不穩定或麻木，都要重新評估。
+      </li>
+      <li>
+        <strong>頭部撞擊特別要小心。</strong>
+        腦震盪不一定會昏迷，症狀也可能延遲數小時才出現。只要有撞到頭，當天就不要再上山，而且接下來 24
+        小時最好有人陪。
+      </li>
+      <li>
+        <strong>小孩、長者，以及有骨質疏鬆、凝血功能異常、或正在服用抗凝血藥物的人</strong>
+        ，受傷後的風險評估標準不同，門檻應該更低，請直接就醫。
+      </li>
+      <li>
+        <strong>這個工具不了解你的雪場環境。</strong>
+        偏遠地形、天候惡化、日落將近、通訊不良，都會讓「先觀察」變成錯誤決定。有疑慮就呼叫巡邏隊
+        —— 他們不會因為你叫錯而責怪你。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('triage-form') as HTMLFormElement | null;
+  const result = document.getElementById('triage-result');
+
+  if (form && result) {
+    type Level = 'red' | 'orange' | 'yellow' | 'green';
+
+    const RESULTS: Record<Level, { emoji: string; title: string; cls: string; actions: string[] }> =
+      {
+        red: {
+          emoji: '🔴',
+          title: '立即呼叫雪場巡邏隊',
+          cls: 'border-red-500 bg-red-50',
+          actions: [
+            '不要嘗試自己移動或滑下山。',
+            '請同行者立刻聯絡雪場巡邏隊（Ski Patrol），或撥打當地緊急電話。',
+            '把雪板或雪杖交叉插在自己上方的雪地上，提醒後方來者。',
+            '懷疑頸部或脊椎受傷時，不要移動傷者的頭頸。',
+            '保持保暖，等待專業人員到場。',
+          ],
+        },
+        orange: {
+          emoji: '🟠',
+          title: '今天停止滑行，儘快在當地就醫',
+          cls: 'border-orange-400 bg-orange-50',
+          actions: [
+            '今天不要再上山，即使覺得「好像還可以」。',
+            '請雪場巡邏隊或當地診所做初步評估。頭部撞擊後的症狀尤其不能拖。',
+            '冰敷、加壓、抬高；避免熱敷、按摩和飲酒。',
+            '務必保留所有資料：診斷書、X 光與 MRI 光碟、用藥紀錄 —— 回台灣看診時這些非常關鍵。',
+            '回國後仍建議找熟悉運動傷害的醫師再評估一次。',
+          ],
+        },
+        yellow: {
+          emoji: '🟡',
+          title: '停止今天的滑行，回國後就醫',
+          cls: 'border-amber-400 bg-amber-50',
+          actions: [
+            '今天收工。繼續滑會讓原本單純的傷勢變複雜。',
+            '冰敷 15–20 分鐘、每隔幾小時一次，並適度加壓、抬高。',
+            '接下來幾天觀察：腫脹有沒有變嚴重、有沒有出現不穩定感。',
+            '兩週內沒有明顯改善，或出現「捏東西沒力」「走路會軟腳」，請就醫做理學檢查與影像。',
+            '拇指根部壓痛合併捏握無力，是少數「早點看醫師真的會改變結果」的滑雪傷害，不要等。',
+          ],
+        },
+        green: {
+          emoji: '🟢',
+          title: '沒有符合需要立即處理的警訊',
+          cls: 'border-emerald-400 bg-emerald-50',
+          actions: [
+            '目前沒有勾到任何一組的紅旗症狀。',
+            '還是建議降低今天剩下的強度，選擇熟悉的緩坡。',
+            '如果只是肌肉酸痛，補充水分、伸展、好好睡一覺。',
+            '任何新出現的症狀 —— 腫脹、不穩定、麻木 —— 都請重新評估一次。',
+            '身體的感覺永遠優先於這個工具的結果。覺得不對勁就停。',
+          ],
+        },
+      };
+
+    const box = document.getElementById('tr-box');
+    const flagsWrap = document.getElementById('tr-flags-wrap');
+    const flagsList = document.getElementById('tr-flags');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      const red = data.getAll('red') as string[];
+      const orange = data.getAll('orange') as string[];
+      const yellow = data.getAll('yellow') as string[];
+
+      let level: Level = 'green';
+      let triggered: string[] = [];
+      if (red.length) {
+        level = 'red';
+        triggered = red;
+      } else if (orange.length) {
+        level = 'orange';
+        triggered = orange;
+      } else if (yellow.length) {
+        level = 'yellow';
+        triggered = yellow;
+      }
+
+      const r = RESULTS[level];
+
+      if (box) box.className = `rounded-2xl border-l-4 p-6 sm:p-8 ${r.cls}`;
+
+      const emoji = document.getElementById('tr-emoji');
+      if (emoji) emoji.textContent = r.emoji;
+      const title = document.getElementById('tr-title');
+      if (title) title.textContent = r.title;
+
+      const actions = document.getElementById('tr-actions');
+      if (actions) {
+        actions.textContent = '';
+        for (const a of r.actions) {
+          const li = document.createElement('li');
+          li.className = 'flex gap-2.5';
+          const dot = document.createElement('span');
+          dot.textContent = '·';
+          dot.className = 'shrink-0 font-bold';
+          const span = document.createElement('span');
+          span.textContent = a;
+          li.append(dot, span);
+          actions.append(li);
+        }
+      }
+
+      if (flagsWrap && flagsList) {
+        flagsList.textContent = '';
+        if (triggered.length) {
+          for (const t of triggered) {
+            const li = document.createElement('li');
+            li.textContent = '· ' + t;
+            flagsList.append(li);
+          }
+          flagsWrap.hidden = false;
+        } else {
+          flagsWrap.hidden = true;
+        }
+      }
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('tr-reset')?.addEventListener('click', () => {
+      result.hidden = true;
+    });
+  }
+</script>

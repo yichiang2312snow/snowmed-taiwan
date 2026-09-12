@@ -1,0 +1,331 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { CHECKLIST } from '../../data/checklist';
+
+const filters = [
+  {
+    name: 'board',
+    label: '你玩的是？',
+    options: [
+      { v: 'ski', label: '雙板 Ski' },
+      { v: 'snowboard', label: '單板 Snowboard' },
+    ],
+  },
+  {
+    name: 'level',
+    label: '目前程度？',
+    options: [
+      { v: 'beginner', label: '新手（綠線為主）' },
+      { v: 'intermediate', label: '中階（能滑紅線）' },
+      { v: 'advanced', label: '進階（黑線、公園、樹林）' },
+    ],
+  },
+  {
+    name: 'injury',
+    label: '有沒有舊傷？',
+    options: [
+      { v: 'none', label: '沒有' },
+      { v: 'knee', label: '膝蓋' },
+      { v: 'shoulder', label: '肩膀' },
+      { v: 'back', label: '腰背' },
+      { v: 'other', label: '其他部位' },
+    ],
+  },
+];
+---
+
+<ToolLayout
+  title="出發前注意事項互動檢核表"
+  emoji="✅"
+  time="約 3 分鐘 · 勾選狀態會自動保存"
+  summary="選擇你的板種、程度和舊傷狀況，產生一份專屬於你的行前檢核清單。每一項都寫了「為什麼」，你可以自己決定要不要採納。勾選狀態存在你的瀏覽器裡，關掉再回來還在。"
+  description="滑雪出發前檢核表：依單板／雙板、新手／老手、有無舊傷動態產生個人化清單，涵蓋防護裝備、雪具設定、身體準備、保險文件與雪場原則，可列印或存成 PDF。"
+>
+  <!-- 篩選 -->
+  <form id="cl-filters" class="space-y-5 print:hidden">
+    {
+      filters.map((f) => (
+        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
+          <legend class="px-2 text-sm font-bold text-deep">{f.label}</legend>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {f.options.map((o, i) => (
+              <label class="min-w-0 cursor-pointer rounded-xl border border-ice bg-white px-4 py-2.5 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
+                <input
+                  type="radio"
+                  name={f.name}
+                  value={o.v}
+                  checked={i === 0}
+                  class="sr-only"
+                />
+                <span class="break-words">{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+  </form>
+
+  <!-- 進度 -->
+  <div class="mt-8 rounded-2xl border border-ice bg-deep p-5 text-white sm:p-6">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <p class="text-sm font-bold">你的清單完成度</p>
+      <p class="text-sm tabular-nums">
+        <span id="cl-done" class="text-2xl font-black">0</span>
+        <span class="text-ice/70"> / <span id="cl-total">0</span> 項</span>
+      </p>
+    </div>
+    <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-white/20">
+      <div
+        id="cl-bar"
+        class="h-full rounded-full bg-brandlight transition-all duration-500"
+        style="width:0%"
+      >
+      </div>
+    </div>
+    <p id="cl-critical" class="mt-3 text-xs text-ice/80"></p>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-3 print:hidden">
+    <button
+      type="button"
+      id="cl-print"
+      class="rounded-xl bg-brand px-5 py-3 text-sm font-bold text-white hover:bg-deep">列印 / 存成 PDF</button
+    >
+    <button
+      type="button"
+      id="cl-clear"
+      class="rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"
+      >清除所有勾選</button
+    >
+  </div>
+
+  <!-- 清單 -->
+  <div class="mt-8 space-y-6">
+    {
+      CHECKLIST.map((section) => (
+        <section data-section={section.id} class="min-w-0">
+          <div class="flex items-baseline gap-2.5">
+            <span class="text-xl leading-none" aria-hidden="true">
+              {section.emoji}
+            </span>
+            <h2 class="text-lg font-black break-words text-deep sm:text-xl">{section.title}</h2>
+          </div>
+          <p class="mt-1.5 text-sm break-words text-slate-soft">{section.intro}</p>
+
+          <ul class="mt-4 space-y-2.5">
+            {section.items.map((item) => (
+              <li
+                data-item
+                data-boards={(item.boards ?? []).join(',')}
+                data-levels={(item.levels ?? []).join(',')}
+                data-injuries={(item.injuries ?? []).join(',')}
+                class="min-w-0 overflow-hidden rounded-xl border border-ice bg-white"
+              >
+                <label class="flex min-w-0 cursor-pointer items-start gap-3 p-4">
+                  <input
+                    type="checkbox"
+                    data-check
+                    value={item.id}
+                    class="mt-1 h-4.5 w-4.5 shrink-0 accent-[var(--color-brand)]"
+                  />
+                  <span class="min-w-0">
+                    <span class="block text-sm leading-relaxed font-medium break-words text-deep">
+                      {item.label}
+                      {item.critical && (
+                        <span class="ml-2 rounded-full bg-ice px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-deep">
+                          重點
+                        </span>
+                      )}
+                    </span>
+                    {item.why && (
+                      <span class="mt-1.5 block text-xs leading-relaxed break-words text-slate-soft">
+                        {item.why}
+                      </span>
+                    )}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      清單的五個分區，對應的是滑雪傷害真正能被介入的五個環節：<strong>防護裝備</strong>、<strong
+        >雪具設定</strong
+      >、<strong>身體準備</strong>、<strong>保險與文件</strong>、<strong>雪場上的行為</strong>。
+    </p>
+    <p>
+      個人化的邏輯來自雪地運動流行病學上一個很穩定的觀察：<strong
+        >單板與雙板的受傷部位分布明顯不同</strong
+      >。雙板的典型是膝關節（前十字韌帶、內側副韌帶）與滑雪者拇指；單板則集中在上肢，尤其是向後跌倒撐地造成的手腕骨折。所以護腕對單板初學者是重點項目，對雙板則不是；固定器 DIN 值對雙板是關鍵，對單板則換成高背角度。
+    </p>
+    <p>
+      程度與舊傷的篩選，處理的是風險暴露的差異：初學者跌倒頻率高但速度低，進階者相反；有舊傷的人則需要額外的回歸判斷與護具考量。
+    </p>
+    <p>每一項都附上「為什麼」，是刻意的設計 —— 你應該要能自己判斷這一條對你合不合理，而不是因為清單上有就照做。</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這是通用清單，不是個別化的醫療建議。</strong>
+        它不知道你的具體傷勢、手術方式或目前的復健進度。有舊傷的人，最終仍應以你的主治醫師或治療師的判斷為準。
+      </li>
+      <li>
+        <strong>保險條款每家不同、每年也會改。</strong>
+        清單只能提醒你「要去確認哪些項目」，不能代替你閱讀自己的保單。實際的涵蓋範圍請直接向保險公司確認。
+      </li>
+      <li>
+        <strong>固定器 DIN 值請一定要由技師設定。</strong>
+        這個數值牽涉到體重、身高、鞋底長度、年齡與滑行型態，網路上的計算表無法取代現場的檢查與釋放測試。
+      </li>
+      <li>
+        <strong>清單勾完不代表安全。</strong>
+        它處理的是「可以事先準備的部分」。當天的雪況、天氣、同行者的判斷，以及你自己的決定，影響同樣大。
+      </li>
+      <li>
+        <strong>勾選狀態只存在你這台裝置的瀏覽器裡。</strong>
+        換手機、換瀏覽器或清除瀏覽資料就會消失，請以列印或 PDF 的版本為準。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<style>
+  @media print {
+    :global(header),
+    :global(footer) {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = 'snowmed:pretrip-checklist';
+  const FILTER_KEY = 'snowmed:pretrip-filters';
+
+  const filtersForm = document.getElementById('cl-filters') as HTMLFormElement | null;
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-item]'));
+  const boxes = Array.from(document.querySelectorAll<HTMLInputElement>('[data-check]'));
+
+  if (filtersForm && items.length) {
+    const read = <T,>(key: string, fallback: T): T => {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? (JSON.parse(raw) as T) : fallback;
+      } catch {
+        return fallback;
+      }
+    };
+    const write = (key: string, value: unknown) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        /* 無痕模式或停用儲存空間時忽略 */
+      }
+    };
+
+    /** 空字串代表「不限制」，否則要包含目前選到的值 */
+    const matches = (attr: string, value: string) => {
+      if (!attr) return true;
+      return attr.split(',').filter(Boolean).includes(value);
+    };
+
+    const applyFilters = () => {
+      const data = new FormData(filtersForm);
+      const board = String(data.get('board') ?? 'ski');
+      const level = String(data.get('level') ?? 'beginner');
+      const injury = String(data.get('injury') ?? 'none');
+
+      write(FILTER_KEY, { board, level, injury });
+
+      for (const el of items) {
+        const ok =
+          matches(el.dataset.boards ?? '', board) &&
+          matches(el.dataset.levels ?? '', level) &&
+          matches(el.dataset.injuries ?? '', injury);
+        el.hidden = !ok;
+      }
+
+      // 整個區塊都被篩掉的話，把標題也收起來
+      for (const section of document.querySelectorAll<HTMLElement>('[data-section]')) {
+        const visible = section.querySelectorAll<HTMLElement>('[data-item]:not([hidden])');
+        section.hidden = visible.length === 0;
+      }
+
+      updateProgress();
+    };
+
+    const updateProgress = () => {
+      const visibleBoxes = boxes.filter((b) => !b.closest('[data-item]')?.hidden);
+      const done = visibleBoxes.filter((b) => b.checked).length;
+      const total = visibleBoxes.length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+
+      const set = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      set('cl-done', String(done));
+      set('cl-total', String(total));
+
+      const bar = document.getElementById('cl-bar');
+      if (bar) bar.style.width = pct + '%';
+
+      const criticalBoxes = visibleBoxes.filter((b) =>
+        b.closest('[data-item]')?.textContent?.includes('重點')
+      );
+      const criticalLeft = criticalBoxes.filter((b) => !b.checked).length;
+      const note = document.getElementById('cl-critical');
+      if (note) {
+        note.textContent = criticalLeft
+          ? `還有 ${criticalLeft} 個「重點」項目沒完成 —— 這些是出發前最不該漏掉的。`
+          : total === done && total > 0
+            ? '全部完成了，祝你有個安全又盡興的雪季。'
+            : '重點項目都完成了，剩下的是加分項。';
+      }
+    };
+
+    // 還原上次的選擇與勾選狀態
+    const savedFilters = read<{ board?: string; level?: string; injury?: string }>(FILTER_KEY, {});
+    for (const [name, value] of Object.entries(savedFilters)) {
+      if (!value) continue;
+      const input = filtersForm.querySelector<HTMLInputElement>(
+        `input[name="${name}"][value="${value}"]`
+      );
+      if (input) input.checked = true;
+    }
+
+    const savedChecks = read<string[]>(STORAGE_KEY, []);
+    for (const b of boxes) {
+      if (savedChecks.includes(b.value)) b.checked = true;
+    }
+
+    filtersForm.addEventListener('change', applyFilters);
+
+    for (const b of boxes) {
+      b.addEventListener('change', () => {
+        write(
+          STORAGE_KEY,
+          boxes.filter((x) => x.checked).map((x) => x.value)
+        );
+        updateProgress();
+      });
+    }
+
+    document.getElementById('cl-print')?.addEventListener('click', () => window.print());
+
+    document.getElementById('cl-clear')?.addEventListener('click', () => {
+      for (const b of boxes) b.checked = false;
+      write(STORAGE_KEY, []);
+      updateProgress();
+    });
+
+    applyFilters();
+  }
+</script>

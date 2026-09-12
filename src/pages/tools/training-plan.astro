@@ -1,0 +1,362 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+---
+
+<ToolLayout
+  title="行前訓練計畫產生器"
+  emoji="📅"
+  time="約 1 分鐘"
+  summary="輸入出發日期和目前的運動習慣，自動排出從今天到出發前的分期訓練行程。可以直接列印或截圖存起來。"
+  description="輸入滑雪出發日期，自動產生分期的行前訓練計畫：肌力打底、離心轉化、平衡專項到賽前減量。"
+>
+  <form id="plan-form" class="space-y-6">
+    <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+      <label for="departure" class="block text-sm font-bold text-deep">出發日期</label>
+      <p class="mt-1 text-xs text-slate-soft">你這趟滑雪行程的第一天。</p>
+      <input
+        type="date"
+        id="departure"
+        name="departure"
+        required
+        class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep focus:border-brand focus:outline-none"
+      />
+    </div>
+
+    <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+      <legend class="px-2 text-sm font-bold text-deep">目前的運動習慣</legend>
+      <p class="mt-1 text-xs text-slate-soft">誠實一點，計畫才會有用。</p>
+      <div class="mt-4 grid gap-2">
+        {
+          [
+            { v: 'none', label: '幾乎沒有規律運動' },
+            { v: 'light', label: '偶爾運動，每週不到 2 次' },
+            { v: 'regular', label: '規律運動，每週 2–3 次' },
+            { v: 'active', label: '運動習慣很好，每週 4 次以上' },
+          ].map((o) => (
+            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+              <input
+                type="radio"
+                name="level"
+                value={o.v}
+                required
+                class="h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+              />
+              <span class="min-w-0 break-words text-deep">{o.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <button
+      type="submit"
+      class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+    >
+      產生我的訓練計畫
+    </button>
+  </form>
+
+  <p id="plan-error" class="mt-4 rounded-xl bg-ice/60 px-4 py-3 text-sm font-bold text-deep" hidden>
+  </p>
+
+  <div id="plan-result" class="mt-10 scroll-mt-20" hidden>
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div class="min-w-0">
+        <p class="text-xs font-black tracking-widest text-brandlight uppercase">你的計畫</p>
+        <h2 id="plan-title" class="mt-1 text-xl font-black break-words text-deep sm:text-2xl"></h2>
+      </div>
+      <button
+        type="button"
+        id="plan-print"
+        class="shrink-0 rounded-xl border border-ice bg-white px-4 py-2.5 text-sm font-bold text-deep hover:bg-ice/50 print:hidden"
+        >列印 / 存成 PDF</button
+      >
+    </div>
+
+    <p id="plan-note" class="mt-3 text-sm leading-relaxed break-words text-slate-soft"></p>
+
+    <div id="plan-weeks" class="mt-7 space-y-4"></div>
+
+    <div class="mt-8 rounded-2xl border border-ice bg-snow p-6 print:hidden">
+      <p class="text-sm font-bold text-deep">不確定自己現在的程度？</p>
+      <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">
+        先做一次<a href="/tools/fitness-check" class="font-bold text-brand hover:underline"
+          >行前體能自我檢測</a
+        >，它會告訴你五項能力裡最弱的是哪一項，訓練時就知道該把重點放在哪。
+      </p>
+    </div>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      計畫的骨架是運動訓練常用的<strong>分期概念（periodization）</strong>：先建立基礎肌力，再把肌力轉化成該項運動實際需要的形式，最後做專項與減量。
+    </p>
+    <p>
+      對應到滑雪，四個階段分別處理的是：<strong>基礎肌力</strong>（撐得住負荷）→
+      <strong>離心與單側能力</strong>（滑雪整天都在煞車，而且是單腳輪流承重）→
+      <strong>平衡與落地控制</strong>（面對突發雪況的反應）→
+      <strong>減量恢復</strong>（讓身體在出發時是新鮮的）。
+    </p>
+    <p>
+      時間長度設定為 8 週，是因為肌力訓練通常需要 6–8
+      週才會產生可測量的改變。如果你剩下的時間比較短，計畫會自動壓縮，並把重點移到進步最快的項目（平衡與落地控制）。
+    </p>
+    <p>
+      「目前運動習慣」只影響<strong>起始強度與每週次數</strong>，不改變階段順序 ——
+      順序本身對每個人都一樣。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這是通用範本，不是個別化處方。</strong>
+        它不知道你的舊傷、手術病史、關節活動度或工作型態，而這些都會改變合理的訓練內容。
+      </li>
+      <li>
+        <strong>有疼痛就不要照著做。</strong>
+        訓練時出現關節疼痛（不是肌肉酸痛）、腫脹或不穩定感，請停下來並就醫。
+      </li>
+      <li>
+        <strong>動作品質永遠優先於次數。</strong>
+        單腳蹲做 10 下但膝蓋一直往內塌，比做 3 下但控制得好還糟糕 —— 後者在練保護，前者在練受傷。
+      </li>
+      <li>
+        <strong>有心血管疾病、控制不良的慢性病，或懷孕中，開始任何新的訓練前請先諮詢醫師。</strong>
+      </li>
+      <li>
+        <strong>練完不等於不會受傷。</strong>
+        體能只降低風險，不消除風險。雪場上的速度控制、地形選擇和疲勞管理，影響同樣大。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('plan-form') as HTMLFormElement | null;
+  const result = document.getElementById('plan-result');
+  const errorBox = document.getElementById('plan-error');
+
+  if (form && result) {
+    type Phase = {
+      key: string;
+      name: string;
+      goal: string;
+      items: string[];
+    };
+
+    const PHASES: Phase[] = [
+      {
+        key: 'base',
+        name: '打底期',
+        goal: '建立基礎肌力，讓關節習慣負荷',
+        items: [
+          '深蹲（徒手或負重）3 組 × 8–12 下',
+          '分腿蹲 / 弓箭步 3 組 × 每邊 8–10 下',
+          '羅馬尼亞硬舉 3 組 × 8–12 下',
+          '臀橋 3 組 × 12–15 下',
+          '側臥髖外展（蚌式）3 組 × 每邊 15 下',
+          '有氧：每次 30 分鐘以上，會喘但還能講話的強度',
+        ],
+      },
+      {
+        key: 'convert',
+        name: '轉化期',
+        goal: '把肌力轉成滑雪真正會用到的形式：離心與單側',
+        items: [
+          '慢速離心深蹲（下蹲數 4 秒、站起 1 秒）3 組 × 8 下',
+          '單腳蹲（從高箱子開始）3 組 × 每邊 5–10 下',
+          '單腳羅馬尼亞硬舉 3 組 × 每邊 8 下',
+          '側平板 3 組 × 每邊 30–45 秒',
+          '靠牆靜蹲 3 組，撐到有點發抖',
+          '下坡走或負坡度跑步機，每週 1–2 次、每次 20 分鐘',
+        ],
+      },
+      {
+        key: 'specific',
+        name: '專項期',
+        goal: '平衡、反應與落地控制',
+        items: [
+          '平衡板或軟墊上的深蹲與轉體 3 組 × 45 秒',
+          '雙腳跳 → 落地靜止 3 秒，3 組 × 8 下（重點是安靜、膝蓋不內塌）',
+          '側向跳（skater jump）3 組 × 每邊 10 下',
+          '單腳落地控制 3 組 × 每邊 8 下',
+          '閉眼單腳站，每天累積 5 分鐘',
+          '有氧維持，不再增加量',
+        ],
+      },
+      {
+        key: 'taper',
+        name: '減量期',
+        goal: '讓身體在出發時是新鮮的',
+        items: [
+          '停止大重量訓練',
+          '保留輕量的平衡與活動度練習，每次 15–20 分鐘',
+          '伸展與放鬆：髖屈肌、股四頭肌、小腿',
+          '睡飽。睡眠不足會直接影響反應速度與判斷力',
+          '把裝備檢查完（護具、固定器、安全帽）',
+        ],
+      },
+    ];
+
+    const FREQ: Record<string, { label: string; note: string; perWeek: string }> = {
+      none: {
+        label: '幾乎沒有規律運動',
+        note: '你從零開始，所以第一階段會拉長一點，前兩週請用徒手、低強度進行，讓身體適應。寧可慢，不要一開始就練到受傷。',
+        perWeek: '每週 2 次',
+      },
+      light: {
+        label: '偶爾運動',
+        note: '你有一點基礎，但需要建立規律。重點是「有做到」而不是「做很重」，把頻率穩定下來最重要。',
+        perWeek: '每週 2–3 次',
+      },
+      regular: {
+        label: '規律運動',
+        note: '你的基礎足夠，可以照標準進度走。重點放在單側動作和離心訓練 —— 這兩項是一般健身最容易忽略、但滑雪最需要的。',
+        perWeek: '每週 3 次',
+      },
+      active: {
+        label: '運動習慣很好',
+        note: '你的體能基礎不錯，可以把重量和難度往上加。特別注意平衡與落地控制，這是很多體能好的人反而疏忽的部分。',
+        perWeek: '每週 3–4 次',
+      },
+    };
+
+    const fmt = (d: Date) =>
+      d.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' }).replace(/\//g, '/');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const dep = String(data.get('departure') ?? '');
+      const level = String(data.get('level') ?? '');
+      if (!dep || !level) return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const departure = new Date(dep + 'T00:00:00');
+
+      const days = Math.round((departure.valueOf() - today.valueOf()) / 86400000);
+
+      const showError = (msg: string) => {
+        if (errorBox) {
+          errorBox.textContent = msg;
+          errorBox.hidden = false;
+        }
+        result.hidden = true;
+      };
+
+      if (days < 0) {
+        showError('出發日期看起來已經過了。請改成未來的日期。');
+        return;
+      }
+      if (days < 7) {
+        showError(
+          '距離出發不到一週了。這個時候開始練肌力來不及，反而可能帶著酸痛上雪場。建議：這幾天只做伸展和輕度平衡練習、睡飽，然後在雪場上主動降低強度、每天提早收工。'
+        );
+        return;
+      }
+      if (errorBox) errorBox.hidden = true;
+
+      const totalWeeks = Math.min(Math.floor(days / 7), 12);
+
+      // 依剩餘週數分配四個階段的長度（減量期固定 1 週）
+      let alloc: number[];
+      if (totalWeeks >= 8) {
+        const taper = 1;
+        const rest = totalWeeks - taper;
+        const base = Math.round(rest * 0.375);
+        const convert = Math.round(rest * 0.375);
+        alloc = [base, convert, rest - base - convert, taper];
+      } else if (totalWeeks >= 5) {
+        const taper = 1;
+        const rest = totalWeeks - taper;
+        const base = Math.floor(rest / 3);
+        const convert = Math.floor(rest / 3);
+        alloc = [base, convert, rest - base - convert, taper];
+      } else if (totalWeeks >= 3) {
+        // 時間很短：跳過打底，直接轉化 + 專項
+        alloc = [0, totalWeeks - 2, 1, 1];
+      } else {
+        alloc = [0, 0, totalWeeks - 1, 1];
+      }
+
+      const freq = FREQ[level];
+
+      const title = document.getElementById('plan-title');
+      if (title) {
+        title.textContent = `距離出發還有 ${days} 天 · 共 ${totalWeeks} 週的計畫`;
+      }
+
+      const note = document.getElementById('plan-note');
+      if (note) {
+        let text = `以「${freq.label}」為起點，建議頻率 ${freq.perWeek}。${freq.note}`;
+        if (totalWeeks < 6) {
+          text +=
+            ' 因為時間較短，這份計畫已經跳過或壓縮了肌力打底階段，把重點放在進步最快的平衡與落地控制。';
+        }
+        note.textContent = text;
+      }
+
+      const wrap = document.getElementById('plan-weeks');
+      if (!wrap) return;
+      wrap.textContent = '';
+
+      let weekCursor = 0;
+      PHASES.forEach((phase, pi) => {
+        const len = alloc[pi];
+        if (len <= 0) return;
+
+        const start = new Date(today);
+        start.setDate(start.getDate() + weekCursor * 7);
+        const end = new Date(today);
+        end.setDate(end.getDate() + (weekCursor + len) * 7 - 1);
+        weekCursor += len;
+
+        const card = document.createElement('div');
+        card.className = 'min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6';
+
+        const head = document.createElement('div');
+        head.className = 'flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1';
+
+        const h3 = document.createElement('h3');
+        h3.className = 'text-lg font-black text-deep';
+        h3.textContent = `${phase.name}（${len} 週）`;
+
+        const range = document.createElement('p');
+        range.className = 'text-xs text-slate-soft';
+        range.textContent = `${fmt(start)} – ${fmt(end)} · ${freq.perWeek}`;
+
+        head.append(h3, range);
+
+        const goal = document.createElement('p');
+        goal.className = 'mt-2 text-sm break-words text-brand';
+        goal.textContent = `目標：${phase.goal}`;
+
+        const ul = document.createElement('ul');
+        ul.className = 'mt-4 space-y-2';
+        for (const item of phase.items) {
+          const li = document.createElement('li');
+          li.className =
+            'flex min-w-0 gap-2.5 rounded-xl border border-ice bg-white px-4 py-2.5 text-sm leading-relaxed break-words text-slate-soft';
+          const dot = document.createElement('span');
+          dot.className = 'shrink-0 text-brandlight';
+          dot.textContent = '·';
+          const span = document.createElement('span');
+          span.className = 'min-w-0';
+          span.textContent = item;
+          li.append(dot, span);
+          ul.append(li);
+        }
+
+        card.append(head, goal, ul);
+        wrap.append(card);
+      });
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('plan-print')?.addEventListener('click', () => window.print());
+  }
+</script>

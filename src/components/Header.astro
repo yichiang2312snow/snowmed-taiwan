@@ -1,17 +1,18 @@
 ---
 import { SITE, NAV } from '../consts';
 const path = Astro.url.pathname;
-const isActive = (href: string) => path === href || path.startsWith(href + '/');
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
 ---
 
-<header class="sticky top-0 z-40 border-b border-ice/80 bg-snow/90 backdrop-blur">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-    <a href="/" class="group flex items-center gap-3">
+<header class="sticky top-0 z-40 border-b border-ice/80 bg-snow/95 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
+    <a href="/" class="flex min-w-0 items-center gap-2.5 sm:gap-3">
       <span
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-deep text-brandlight"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-deep text-brandlight sm:h-10 sm:w-10"
         aria-hidden="true"
       >
-        <svg viewBox="0 0 100 100" class="h-6 w-6" fill="none">
+        <svg viewBox="0 0 100 100" class="h-5 w-5 sm:h-6 sm:w-6" fill="none">
           <path
             d="M50 18v64M22 34l56 32M78 34L22 66"
             stroke="currentColor"
@@ -19,11 +20,13 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
             stroke-linecap="round"></path>
         </svg>
       </span>
-      <span class="leading-tight">
-        <span class="block text-base font-black text-deep">{SITE.doctor}</span>
-        <span class="block text-[11px] font-medium tracking-[0.18em] text-slate-soft uppercase"
-          >{SITE.name}</span
-        >
+      <span class="min-w-0 leading-tight">
+        <span class="block truncate text-[13px] font-black text-deep sm:text-base">
+          {SITE.name}
+        </span>
+        <span class="block truncate text-[10px] font-medium text-slate-soft sm:text-[11px]">
+          {SITE.poweredByShort}
+        </span>
       </span>
     </a>
 
@@ -44,29 +47,24 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
           </a>
         ))
       }
-      <a
-        href="/contact"
-        class="ml-2 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-deep"
-        >預約諮詢</a
-      >
     </nav>
 
     <button
       type="button"
       id="nav-toggle"
-      class="rounded-lg border border-ice p-2 text-deep lg:hidden"
+      class="shrink-0 rounded-lg border border-ice p-2 text-deep lg:hidden"
       aria-expanded="false"
       aria-controls="mobile-nav"
     >
       <span class="sr-only">開啟選單</span>
-      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
       </svg>
     </button>
   </div>
 
   <nav id="mobile-nav" class="hidden border-t border-ice bg-snow lg:hidden" aria-label="行動版選單">
-    <div class="mx-auto max-w-6xl px-5 py-3">
+    <div class="mx-auto max-w-6xl px-4 py-3 sm:px-5">
       {
         NAV.map((item) => (
           <a
@@ -77,11 +75,6 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
           </a>
         ))
       }
-      <a
-        href="/contact"
-        class="mt-2 block rounded-lg bg-brand px-3 py-3 text-center text-sm font-bold text-white"
-        >預約諮詢</a
-      >
     </div>
   </nav>
 </header>

@@ -1,0 +1,67 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  emoji: string;
+  summary: string;
+  time: string;
+  description?: string;
+}
+const { title, emoji, summary, time, description } = Astro.props;
+---
+
+<BaseLayout title={title} banner={false} description={description ?? summary}>
+  <!-- 工具標頭 -->
+  <section class="border-b border-ice bg-deep text-white">
+    <div class="mx-auto max-w-3xl px-5 py-10 sm:py-14">
+      <a href="/tools" class="text-sm font-bold text-brandlight hover:underline">← 所有工具</a>
+
+      <div class="mt-6 flex items-start gap-4">
+        <span class="text-4xl leading-none sm:text-5xl" aria-hidden="true">{emoji}</span>
+        <div class="min-w-0">
+          <h1 class="text-2xl leading-snug font-black break-words sm:text-3xl">{title}</h1>
+          <p class="mt-1 text-xs text-ice/70">{time}</p>
+        </div>
+      </div>
+
+      <p class="mt-5 text-base leading-relaxed break-words text-ice/90">{summary}</p>
+
+      <p class="mt-6 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-ice/60">
+        <span>✓ 免費</span>
+        <span>✓ 不需註冊</span>
+        <span>✓ 資料只留在你的瀏覽器</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- 工具本體 -->
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-10 sm:py-14">
+      <slot />
+    </div>
+  </section>
+
+  <!-- 依據與限制 -->
+  <section class="bg-snow">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <h2 class="text-xl font-black text-deep">這個工具是根據什麼做的？</h2>
+      <div class="prose-tc mt-4 text-[15px] break-words text-slate-soft">
+        <slot name="basis" />
+      </div>
+
+      <h2 class="mt-10 text-xl font-black text-deep">什麼情況下不適用？</h2>
+      <div class="prose-tc mt-4 text-[15px] break-words text-slate-soft">
+        <slot name="limits" />
+      </div>
+
+      <div class="mt-10 rounded-2xl border-l-4 border-brand bg-white p-6">
+        <p class="text-sm leading-relaxed break-words text-slate-soft">
+          <strong class="text-deep">重要提醒：</strong
+          >這個工具提供的是一般性的健康資訊，不是醫療診斷，也不能取代醫師面對面的診察。它的設計原則是「有疑慮就建議你去看醫師」——
+          如果結果和你的實際感受不一致，請以你的身體感受和專業醫療意見為準。
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

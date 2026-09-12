@@ -1,0 +1,33 @@
+---
+interface Props {
+  href: string;
+  name: string;
+  emoji: string;
+  time: string;
+  summary: string;
+  who: string;
+}
+const { href, name, emoji, time, summary, who } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group flex h-full min-w-0 flex-col rounded-2xl border border-ice bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-brandlight hover:shadow-xl hover:shadow-deep/5"
+>
+  <div class="flex items-start justify-between gap-3">
+    <span class="text-3xl leading-none" aria-hidden="true">{emoji}</span>
+    <span class="shrink-0 rounded-full bg-snow px-2.5 py-1 text-[11px] font-bold text-slate-soft">
+      {time}
+    </span>
+  </div>
+
+  <h3 class="mt-4 text-lg leading-snug font-bold break-words text-deep group-hover:text-brand">
+    {name}
+  </h3>
+  <p class="mt-2.5 flex-1 text-sm leading-relaxed break-words text-slate-soft">{summary}</p>
+
+  <p class="mt-4 border-t border-ice pt-3.5 text-xs break-words text-slate-soft">
+    <span class="font-bold text-deep">適合：</span>{who}
+  </p>
+  <span class="mt-3 text-sm font-bold text-brand">開始使用 →</span>
+</a>

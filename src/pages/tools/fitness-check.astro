@@ -1,0 +1,299 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+
+const tests = [
+  {
+    id: 'wallsit',
+    name: '靠牆靜蹲',
+    how: '背靠牆，大腿與地面平行（膝蓋約 90 度），撐到再也撐不住為止，記下秒數。',
+    measures: '股四頭肌的等長肌耐力 —— 滑雪整天都在用的那塊肌肉',
+    options: [
+      { label: '撐不到 30 秒', score: 0 },
+      { label: '30–59 秒', score: 1 },
+      { label: '60–89 秒', score: 2 },
+      { label: '90 秒以上', score: 3 },
+    ],
+  },
+  {
+    id: 'sls',
+    name: '單腳蹲（坐椅子）',
+    how: '單腳站在椅子前，慢慢蹲下輕觸椅面再站起來，不用手撐。做較弱的那一腳，記下連續完成幾下。',
+    measures: '單側肌力與膝蓋控制 —— 換刃時的單腳承重能力',
+    options: [
+      { label: '一下都做不到', score: 0 },
+      { label: '1–4 下', score: 1 },
+      { label: '5–9 下', score: 2 },
+      { label: '10 下以上', score: 3 },
+    ],
+  },
+  {
+    id: 'balance',
+    name: '閉眼單腳站',
+    how: '雙手插腰，單腳站立後閉上眼睛，記錄到腳移動或手離開腰為止的秒數。做較弱的那一腳。',
+    measures: '本體感覺與平衡控制 —— 遇到突發雪況時的反應基礎',
+    options: [
+      { label: '撐不到 5 秒', score: 0 },
+      { label: '5–9 秒', score: 1 },
+      { label: '10–19 秒', score: 2 },
+      { label: '20 秒以上', score: 3 },
+    ],
+  },
+  {
+    id: 'hinge',
+    name: '單腳硬舉平衡',
+    how: '單腳站，另一腳向後伸直、上半身前傾至接近水平，再回正。控制住不晃，記錄連續完成幾下。',
+    measures: '臀肌與後側鏈肌力 —— 最常被忽略、卻最能保護膝蓋的部分',
+    options: [
+      { label: '無法維持平衡', score: 0 },
+      { label: '1–4 下', score: 1 },
+      { label: '5–9 下', score: 2 },
+      { label: '10 下以上', score: 3 },
+    ],
+  },
+  {
+    id: 'aerobic',
+    name: '有氧耐力',
+    how: '想想你最近一個月的運動狀況：能不能用「會喘但還能講話」的強度，連續運動 30 分鐘？',
+    measures: '有氧基礎 —— 決定你第三天下午還剩多少判斷力',
+    options: [
+      { label: '完全沒有規律運動', score: 0 },
+      { label: '偶爾，撐得有點勉強', score: 1 },
+      { label: '可以，每週 1–2 次', score: 2 },
+      { label: '輕鬆，每週 3 次以上', score: 3 },
+    ],
+  },
+];
+---
+
+<ToolLayout
+  title="行前體能自我檢測"
+  emoji="🦵"
+  time="約 5 分鐘 · 需要一面牆和一張椅子"
+  summary="五個在家就能做的動作測試，算出你目前的滑雪體能分數，並指出最需要補強的那一項。測完會告訴你該優先練什麼。"
+>
+  <form id="fitness-form" class="space-y-8">
+    {
+      tests.map((t, i) => (
+        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+          <legend class="px-2 text-xs font-black tracking-widest text-brandlight">
+            測驗 {i + 1} / {tests.length}
+          </legend>
+
+          <h2 class="text-lg font-bold break-words text-deep">{t.name}</h2>
+          <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">{t.how}</p>
+          <p class="mt-2 text-xs leading-relaxed break-words text-slate-soft">
+            <span class="font-bold text-brand">測什麼：</span>
+            {t.measures}
+          </p>
+
+          <div class="mt-4 grid gap-2">
+            {t.options.map((o) => (
+              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+                <input
+                  type="radio"
+                  name={t.id}
+                  value={o.score}
+                  class="h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                />
+                <span class="min-w-0 break-words text-deep">{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+
+    <p id="fc-error" class="rounded-xl bg-ice/60 px-4 py-3 text-sm font-bold text-deep" hidden>
+      還有題目沒有作答，請全部選完再送出。
+    </p>
+
+    <button
+      type="submit"
+      class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+    >
+      看我的結果
+    </button>
+  </form>
+
+  <div id="fitness-result" class="mt-10 scroll-mt-20" hidden>
+    <div class="rounded-2xl border border-ice bg-snow p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-brandlight uppercase">你的結果</p>
+
+      <div class="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="text-5xl font-black text-deep" id="fc-score">–</span>
+        <span class="text-lg text-slate-soft">/ 100 分</span>
+      </div>
+
+      <div class="mt-4 h-3 w-full overflow-hidden rounded-full bg-ice">
+        <div
+          id="fc-bar"
+          class="h-full rounded-full bg-brand transition-all duration-700"
+          style="width:0%"
+        >
+        </div>
+      </div>
+
+      <p id="fc-level" class="mt-5 text-xl font-black break-words text-deep"></p>
+      <p id="fc-advice" class="mt-3 text-sm leading-relaxed break-words text-slate-soft"></p>
+
+      <div class="mt-6 rounded-xl border border-ice bg-white p-5">
+        <p class="text-sm font-bold text-deep">最該優先補強的是：</p>
+        <p id="fc-weak" class="mt-1.5 text-base font-black break-words text-brand"></p>
+        <p id="fc-weak-advice" class="mt-2 text-sm leading-relaxed break-words text-slate-soft"></p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/tools/training-plan"
+          class="rounded-xl bg-brand px-5 py-3 text-sm font-bold text-white hover:bg-deep"
+          >產生我的訓練計畫 →</a
+        >
+        <button
+          type="button"
+          id="fc-reset"
+          class="rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"
+          >重新測一次</button
+        >
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具把滑雪對身體的四項主要需求 ——
+      <strong>股四頭肌的離心與等長耐力</strong>、<strong>單側肌力與膝蓋控制</strong>、<strong
+        >平衡與本體感覺</strong
+      >、<strong>臀肌與後側鏈</strong> ——
+      各自對應到一個在家就能做、不需要器材的動作測試，再加上一項有氧基礎的自評。
+    </p>
+    <p>
+      這些動作是運動場域常見的功能性篩檢動作（靠牆靜蹲、單腳蹲、閉眼單腳站、單腳硬舉）。選它們的原因很實際：<strong
+        >不需要器材、不需要有人協助，而且和滑雪的動作需求直接相關</strong
+      >。
+    </p>
+    <p>
+      分級門檻採用一般成年人的常見表現區間，目的是把你分到「明顯不足 / 堪用 / 不錯 /
+      很好」四個層級，再從五項裡找出最弱的那一環 —— <strong>找弱點才是這個工具的重點，分數只是附帶</strong>。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這不是經過臨床驗證的量表。</strong>
+        它是自我篩檢工具，用來幫你抓方向，分數本身沒有診斷意義，也不能拿來跟別人比較。
+      </li>
+      <li>
+        <strong>如果你現在會痛，不要做這些測試。</strong>
+        關節在痛的時候做肌力測試，只會更痛而且測不準。請先處理疼痛的原因。
+      </li>
+      <li>
+        <strong>有手術病史或既有傷勢的人，分數會失真。</strong>
+        例如前十字韌帶重建後的膝蓋，該看的是「左右對稱性」而不是絕對表現，請改用
+        <a href="/tools/return-to-snow">回歸雪場準備度自評</a>。
+      </li>
+      <li>
+        <strong>有心血管疾病、血壓控制不良，或懷孕中，請先問過醫師再做。</strong>
+        靠牆靜蹲這類等長收縮會讓血壓在短時間內上升。
+      </li>
+      <li>
+        <strong>分數高不代表不會受傷。</strong>
+        體能只是滑雪安全的其中一個因素，速度控制、地形選擇、疲勞管理同樣重要，而且這些工具測不到。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('fitness-form') as HTMLFormElement | null;
+  const result = document.getElementById('fitness-result');
+  const errorBox = document.getElementById('fc-error');
+
+  if (form && result) {
+    const NAMES: Record<string, string> = {
+      wallsit: '股四頭肌耐力',
+      sls: '單側肌力與膝蓋控制',
+      balance: '平衡與本體感覺',
+      hinge: '臀肌與後側鏈',
+      aerobic: '有氧耐力',
+    };
+
+    const FIX: Record<string, string> = {
+      wallsit:
+        '從靠牆靜蹲開始，每天 3 組、每組撐到有點發抖為止。再加上慢速下蹲（下蹲數 4 秒、站起 1 秒）的離心訓練，這是最接近滑雪實際受力的練法。',
+      sls: '從高的箱子或椅子開始做單腳蹲，能穩定完成 10 下再降低高度。過程中盯著膝蓋，不要讓它往內塌。',
+      balance:
+        '每天刷牙的時候單腳站，先睜眼再閉眼。進階可以站在枕頭或平衡墊上，或加上接球之類的干擾動作。',
+      hinge:
+        '單腳羅馬尼亞硬舉、臀橋、側臥髖外展（蚌式）。臀中肌無力會讓膝蓋在承重時往內塌，而膝外翻正是前十字韌帶受傷的典型姿勢 —— 這一項比練大腿更值得投資。',
+      aerobic:
+        '每週 2–3 次、每次 30 分鐘以上，維持「會喘但還能講話」的強度。滑雪的第三天下午，體力決定的是你的判斷力。',
+    };
+
+    const keys = Object.keys(NAMES);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const data = new FormData(form);
+      const scores: Record<string, number> = {};
+      for (const k of keys) {
+        const v = data.get(k);
+        if (v === null) {
+          if (errorBox) errorBox.hidden = false;
+          return;
+        }
+        scores[k] = Number(v);
+      }
+      if (errorBox) errorBox.hidden = true;
+
+      const total = keys.reduce((sum, k) => sum + scores[k], 0);
+      const pct = Math.round((total / (keys.length * 3)) * 100);
+
+      let level: string;
+      let advice: string;
+      if (pct >= 85) {
+        level = '準備得很充分';
+        advice =
+          '你的體能基礎足以應付連續多天的滑行。接下來把重點放在維持，以及出發前兩週的平衡與落地控制專項訓練。記得出發前最後 4–5 天不要再做大重量訓練，讓身體恢復。';
+      } else if (pct >= 65) {
+        level = '基礎不錯，還有補強空間';
+        advice =
+          '你可以應付一般的滑行，但在連續多天、或疲勞的下午，控制能力可能會明顯下降。針對下面那項最弱的環節加強 4–6 週，會有感覺得到的差別。';
+      } else if (pct >= 40) {
+        level = '建議出發前認真練一下';
+        advice =
+          '目前的體能在第一、二天可能還好，但第三天之後受傷風險會上升。建議至少留 6–8 週做準備，並在雪場上主動降低強度、提早收工。';
+      } else {
+        level = '現在出發，受傷風險偏高';
+        advice =
+          '這個分數表示你的下肢肌力和控制能力還不足以支撐滑雪的負荷。如果行程已經確定，請務必：每天只滑半天、只待在緩坡、全程配戴安全帽（單板再加護腕），而且不要嘗試超出能力的地形。';
+      }
+
+      const weakKey = keys.reduce((a, b) => (scores[a] <= scores[b] ? a : b));
+
+      const set = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      set('fc-score', String(pct));
+      set('fc-level', level);
+      set('fc-advice', advice);
+      set('fc-weak', NAMES[weakKey]);
+      set('fc-weak-advice', FIX[weakKey]);
+
+      const bar = document.getElementById('fc-bar');
+      if (bar) bar.style.width = pct + '%';
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('fc-reset')?.addEventListener('click', () => {
+      form.reset();
+      result.hidden = true;
+      if (errorBox) errorBox.hidden = true;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>

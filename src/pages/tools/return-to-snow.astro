@@ -1,0 +1,363 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+
+const questions = [
+  {
+    id: 'time',
+    domain: '時間',
+    q: '距離受傷或手術已經多久？',
+    hint: '組織修復需要時間，這是無法靠訓練加速的部分。',
+    options: [
+      { label: '不到 3 個月', score: 0 },
+      { label: '3–6 個月', score: 1 },
+      { label: '6–9 個月', score: 2 },
+      { label: '9 個月以上', score: 3 },
+    ],
+  },
+  {
+    id: 'pain',
+    domain: '症狀',
+    q: '目前日常活動中的疼痛與腫脹狀況？',
+    hint: '上下樓梯、久站、走遠路之後的反應。',
+    options: [
+      { label: '還會痛，活動後會腫', score: 0 },
+      { label: '偶爾酸，劇烈活動後會腫', score: 1 },
+      { label: '日常沒感覺，運動後偶爾緊繃', score: 2 },
+      { label: '完全沒有症狀', score: 3 },
+    ],
+  },
+  {
+    id: 'strength',
+    domain: '肌力對稱性',
+    q: '受傷側和健康側比起來，肌力大概恢復到幾成？',
+    hint: '可以用單腳蹲的次數、單腳站起的能力，或健身房同一動作的重量粗略比較。',
+    options: [
+      { label: '明顯比較弱（不到 7 成）', score: 0 },
+      { label: '有差距（約 7–8 成）', score: 1 },
+      { label: '接近（約 8–9 成）', score: 2 },
+      { label: '幾乎一樣（9 成以上）', score: 3 },
+    ],
+  },
+  {
+    id: 'hop',
+    domain: '功能測試',
+    q: '單腳跳遠：受傷側的距離大約是健康側的幾成？',
+    hint: '雙手插腰，單腳起跳、單腳落地並站穩 2 秒才算數。各做 3 次取最好的。',
+    options: [
+      { label: '不敢做，或無法單腳落地站穩', score: 0 },
+      { label: '不到 8 成', score: 1 },
+      { label: '約 8–9 成', score: 2 },
+      { label: '9 成以上', score: 3 },
+    ],
+  },
+  {
+    id: 'control',
+    domain: '落地控制',
+    q: '從約 30 公分高處跳下、雙腳落地時，膝蓋會不會往內塌？',
+    hint: '請人從正面錄影比較準。看的是落地瞬間膝蓋有沒有往內偏。',
+    options: [
+      { label: '會明顯往內，或落地無法穩住', score: 0 },
+      { label: '受傷側有一點往內', score: 1 },
+      { label: '大致對齊，偶爾晃一下', score: 2 },
+      { label: '兩側都穩定對齊', score: 3 },
+    ],
+  },
+  {
+    id: 'confidence',
+    domain: '心理準備度',
+    q: '想到要再滑雪，你的信心程度？',
+    hint: '這一項不是軟性指標。對再次受傷的恐懼，本身就是再次受傷的風險因子。',
+    options: [
+      { label: '很怕，會想避開', score: 0 },
+      { label: '有點緊張，不太敢做動作', score: 1 },
+      { label: '大致有信心，偶爾會遲疑', score: 2 },
+      { label: '完全有信心', score: 3 },
+    ],
+  },
+];
+---
+
+<ToolLayout
+  title="回歸雪場準備度自評"
+  emoji="↩️"
+  time="約 5 分鐘 · 部分項目需要有人協助"
+  summary="受傷或手術後想再滑雪？用時間、症狀、肌力對稱性、功能測試、落地控制與心理準備度六個面向，看看你到哪一個階段了，以及下一步該做什麼。"
+  description="傷後回歸滑雪的準備度自評：以肌力對稱性、單腳跳測試、落地控制與心理準備度取代單純的時間表。"
+>
+  <div class="rounded-2xl border-l-4 border-brand bg-ice/40 p-5">
+    <p class="text-sm leading-relaxed break-words text-deep">
+      <strong>「休息半年就可以了」不是好答案。</strong>
+      它用時間取代了能力。同樣術後六個月的兩個人，肌力恢復程度可能差很多，讓後者上雪場的風險完全不同。這個工具問的是：<strong
+        >你現在的身體，達到了哪些可以被測量的條件？</strong
+      >
+    </p>
+  </div>
+
+  <form id="rts-form" class="mt-8 space-y-6">
+    {
+      questions.map((q, i) => (
+        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+          <legend class="px-2 text-xs font-black tracking-widest text-brandlight">
+            {i + 1} / {questions.length} · {q.domain}
+          </legend>
+
+          <h2 class="text-base leading-snug font-bold break-words text-deep sm:text-lg">{q.q}</h2>
+          <p class="mt-1.5 text-xs leading-relaxed break-words text-slate-soft">{q.hint}</p>
+
+          <div class="mt-4 grid gap-2">
+            {q.options.map((o) => (
+              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+                <input
+                  type="radio"
+                  name={q.id}
+                  value={o.score}
+                  class="h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                />
+                <span class="min-w-0 break-words text-deep">{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+
+    <p id="rts-error" class="rounded-xl bg-ice/60 px-4 py-3 text-sm font-bold text-deep" hidden>
+      還有題目沒有作答，請全部選完再送出。
+    </p>
+
+    <button
+      type="submit"
+      class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+    >
+      看我到哪個階段了
+    </button>
+  </form>
+
+  <div id="rts-result" class="mt-10 scroll-mt-20" hidden>
+    <div id="rts-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-slate-soft uppercase">你的階段</p>
+      <p id="rts-stage" class="mt-3 text-xl font-black break-words sm:text-2xl"></p>
+      <p id="rts-summary" class="mt-3 text-sm leading-relaxed break-words text-deep"></p>
+
+      <div class="mt-6 rounded-xl bg-white/70 p-5">
+        <p class="text-sm font-bold text-deep">下一步建議</p>
+        <ul id="rts-next" class="mt-2.5 space-y-2 text-sm leading-relaxed break-words text-slate-soft"></ul>
+      </div>
+
+      <div id="rts-gap-wrap" class="mt-5 rounded-xl bg-white/70 p-5" hidden>
+        <p class="text-sm font-bold text-deep">目前最弱的環節</p>
+        <p id="rts-gap" class="mt-1.5 text-sm leading-relaxed break-words text-slate-soft"></p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      id="rts-reset"
+      class="mt-5 rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"
+      >重新評估</button
+    >
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具的架構來自運動醫學裡<strong>「回歸運動（return to sport）」</strong>的判斷邏輯：不是用時間，而是用<strong
+        >一組可以測量的條件</strong
+      >來決定準備度。
+    </p>
+    <p>六個面向各自對應一個實際的門檻：</p>
+    <ul>
+      <li><strong>時間</strong>：組織修復有其生物學下限，這部分無法靠訓練加速。</li>
+      <li><strong>症狀</strong>：活動後仍會腫脹，代表關節還處在發炎或負荷超過承受度。</li>
+      <li>
+        <strong>肌力對稱性</strong>：臨床上回歸高風險運動前，常以患側／健側達到<strong>九成以上</strong
+        >為期待值。滑雪是持續的離心負荷，差一成會在整天滑行中被放大很多倍。
+      </li>
+      <li><strong>單腳跳測試</strong>：機器上的肌力數字不等於實際控制能力，跳躍測試補的就是這一塊。</li>
+      <li>
+        <strong>落地控制</strong>：膝蓋在落地時往內塌（膝外翻）是前十字韌帶受傷的典型姿勢，這是可觀察、可訓練的指標。
+      </li>
+      <li>
+        <strong>心理準備度</strong>：對再次受傷的恐懼會讓動作變僵硬、遲疑、重心偏後 ——
+        而後傾正是滑雪時前十字韌帶受力最大的姿勢之一。臨床上有專門的量表可以評估，這裡用一個簡化的自評版本。
+      </li>
+    </ul>
+    <p>
+      計分刻意設計成<strong>「最弱的那一項會拉低整體判斷」</strong>，而不是單純加總平均 ——
+      因為回歸運動的風險，通常由最弱的環節決定，不是由平均值決定。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這個工具不能取代你的主治醫師或治療師。</strong>
+        它不知道你的手術方式、有沒有合併半月板或其他韌帶損傷、移植物用的是什麼 ——
+        而這些都會改變合理的回歸時間。
+      </li>
+      <li>
+        <strong>自評的肌力和跳躍比值，準確度有限。</strong>
+        正式的評估會用等速肌力儀與標準化的跳躍測驗組合。這裡的估計只能幫你分出大概的階段。
+      </li>
+      <li>
+        <strong>分數很高也不代表可以直接照原本的行程滑。</strong>
+        第一趟回雪場應該降級：只滑半天、緩坡為主、避開深雪與樹林區，並且觀察隔天的反應。
+      </li>
+      <li>
+        <strong>不要在還會痛的時候做跳躍測試。</strong>
+        如果第 2 題你選的是「還會痛，活動後會腫」，請跳過跳躍相關的測試，直接回去找你的治療師。
+      </li>
+      <li>
+        <strong>心理準備度低，不是靠再多練三個月肌力就能解決的。</strong>
+        那需要的是循序漸進的信心重建，必要時搭配專業協助。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('rts-form') as HTMLFormElement | null;
+  const result = document.getElementById('rts-result');
+  const errorBox = document.getElementById('rts-error');
+
+  if (form && result) {
+    const KEYS = ['time', 'pain', 'strength', 'hop', 'control', 'confidence'] as const;
+
+    const GAP: Record<string, string> = {
+      time: '時間還不夠。組織修復有生物學上的下限，這一項沒辦法靠努力加速 —— 把這段時間拿去把其他五項練好。',
+      pain: '症狀還沒穩定。活動後會腫代表關節的負荷超過目前的承受度，這是回歸前必須先解決的問題，請回去找你的治療師調整。',
+      strength:
+        '肌力對稱性不足。這是最常見、也最需要時間的缺口。重點放在患側的單側訓練與離心訓練，並定期比較左右差距。',
+      hop: '功能測試落後。你的肌力可能夠了，但還無法在動態中發揮出來。加入漸進式的跳躍訓練，從雙腳到單腳、從直線到側向。',
+      control:
+        '落地控制不佳。膝蓋落地時往內塌是前十字韌帶受傷的典型姿勢。加強臀中肌（側臥髖外展、單腳橋式），並反覆練習「安靜、對齊」的落地。',
+      confidence:
+        '心理準備度是目前的瓶頸。這需要的不是更多肌力訓練，而是循序漸進地重建信心：從完全有把握的動作開始，逐步加難度，必要時尋求專業協助。',
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const scores: Record<string, number> = {};
+      for (const k of KEYS) {
+        const v = data.get(k);
+        if (v === null) {
+          if (errorBox) errorBox.hidden = false;
+          return;
+        }
+        scores[k] = Number(v);
+      }
+      if (errorBox) errorBox.hidden = true;
+
+      const total = KEYS.reduce((s, k) => s + scores[k], 0);
+      const min = Math.min(...KEYS.map((k) => scores[k]));
+
+      // 最弱的環節會拉低整體判斷 —— 風險由最弱的一項決定，不是由平均決定
+      let stage: 0 | 1 | 2 | 3;
+      if (min === 0) stage = 0;
+      else if (min === 1 || total < 12) stage = 1;
+      else if (total < 16) stage = 2;
+      else stage = 3;
+
+      const STAGES = [
+        {
+          title: '階段一：還在復健期，先不要規劃行程',
+          cls: 'border-red-500 bg-red-50',
+          summary:
+            '目前至少有一項指標明顯落後。這個階段上雪場，再次受傷的風險很高，而且可能造成比第一次更難處理的傷勢。',
+          next: [
+            '先處理最弱的那一項（見下方）。',
+            '如果還有疼痛或腫脹，請先回診確認原因，不要自己加強訓練。',
+            '這個階段的重點是把基礎補起來，而不是趕進度。',
+            '等到六項都至少到「有差距」以上，再重新評估一次。',
+          ],
+        },
+        {
+          title: '階段二：進行中，距離回歸還有一段',
+          cls: 'border-orange-400 bg-orange-50',
+          summary:
+            '你已經脫離急性期，但肌力或功能上仍有明顯缺口。再給自己 2–3 個月的時間，把差距補到九成左右。',
+          next: [
+            '肌力訓練以患側的單側動作為主，並定期記錄左右差距。',
+            '加入漸進式跳躍訓練：雙腳 → 單腳 → 側向。',
+            '每 4–6 週重測一次單腳跳，看數字有沒有在進步。',
+            '同時開始規劃回歸行程，但先不要訂機票。',
+          ],
+        },
+        {
+          title: '階段三：接近準備好了，可以開始規劃',
+          cls: 'border-amber-400 bg-amber-50',
+          summary:
+            '大部分指標已經接近標準。可以開始規劃一趟「降級版」的回歸行程，但請務必和你的醫師或治療師確認過。',
+          next: [
+            '把最後的缺口補到九成以上，特別是落地控制與心理準備度。',
+            '選壓雪品質穩定、纜車方便、有緩坡可以慢慢來的雪場。',
+            '第一天只滑半天、綠線為主；每天滑行時間比以前少三到四成。',
+            '目標不是滑得多難，是確認身體的回饋是正常的 —— 沒有腫、沒有軟腳、隔天恢復正常。',
+          ],
+        },
+        {
+          title: '階段四：各項指標都達標',
+          cls: 'border-emerald-400 bg-emerald-50',
+          summary:
+            '六個面向都到位了。這代表你的身體具備回到雪上的條件 —— 但第一趟仍然建議降級，讓身體在真實的雪況下再驗證一次。',
+          next: [
+            '第一趟仍然：半天、緩坡、避開深雪與樹林區。',
+            '觀察隔天的反應。有腫脹或不適就退回去，不要硬撐。',
+            '維持訓練。回歸之後最常見的錯誤是停止練，然後肌力慢慢掉回去。',
+            '如果要恢復到受傷前的難度，建議分兩到三趟逐步加上去。',
+          ],
+        },
+      ] as const;
+
+      const s = STAGES[stage];
+
+      const box = document.getElementById('rts-box');
+      if (box) box.className = `rounded-2xl border-l-4 p-6 sm:p-8 ${s.cls}`;
+
+      const setText = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      setText('rts-stage', s.title);
+      setText('rts-summary', s.summary);
+
+      const next = document.getElementById('rts-next');
+      if (next) {
+        next.textContent = '';
+        for (const n of s.next) {
+          const li = document.createElement('li');
+          li.className = 'flex gap-2.5';
+          const dot = document.createElement('span');
+          dot.className = 'shrink-0 text-brand';
+          dot.textContent = '·';
+          const span = document.createElement('span');
+          span.className = 'min-w-0';
+          span.textContent = n;
+          li.append(dot, span);
+          next.append(li);
+        }
+      }
+
+      const weakKey = KEYS.reduce((a, b) => (scores[a] <= scores[b] ? a : b));
+      const gapWrap = document.getElementById('rts-gap-wrap');
+      if (gapWrap) {
+        if (stage < 3) {
+          setText('rts-gap', GAP[weakKey]);
+          gapWrap.hidden = false;
+        } else {
+          gapWrap.hidden = true;
+        }
+      }
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('rts-reset')?.addEventListener('click', () => {
+      form.reset();
+      result.hidden = true;
+      if (errorBox) errorBox.hidden = true;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>
