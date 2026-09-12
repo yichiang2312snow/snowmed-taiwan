@@ -145,19 +145,55 @@ export const IMAGE_CREDITS = [
   },
 ] as const;
 
-/** 平台上的工具。新增工具只要在這裡加一筆，首頁和 /tools 都會自動出現 */
+/** 工具分類。沒受傷的人不用進到第二類。 */
+export const TOOL_CATEGORIES = [
+  {
+    id: 'prep',
+    label: '行前準備與訓練',
+    short: '行前準備',
+    emoji: '🎿',
+    intro: '還沒出發、或還沒受傷的人看這一區。選雪場、練體能、打包。',
+  },
+  {
+    id: 'injury',
+    label: '受傷了才需要看',
+    short: '受傷處理',
+    emoji: '🚑',
+    intro: '已經受傷、或同行者受傷時才用得到。沒事的話可以先跳過。',
+  },
+] as const;
+
+export type ToolCategory = (typeof TOOL_CATEGORIES)[number]['id'];
+
+/**
+ * 平台上的工具。
+ * 新增工具只要在這裡加一筆（記得填 category），首頁、工具箱和選單都會自動出現。
+ * 陣列順序就是顯示順序，依「使用時機」排。
+ */
 export const TOOLS = [
+  // ── 第一類：行前準備與訓練 ──────────────────────────
+  {
+    href: '/tools/japan-resorts',
+    category: 'prep',
+    name: '日本雪場選擇指引',
+    emoji: '🗾',
+    time: '約 2 分鐘',
+    summary:
+      '第一次去日本滑雪，該選哪個雪場？依照你的程度、天數與重視的條件，篩出適合的區域，並附上當地醫療資訊。',
+    who: '還在決定要去哪個雪場的人',
+  },
   {
     href: '/tools/fitness-check',
+    category: 'prep',
     name: '行前體能自我檢測',
     emoji: '🦵',
     time: '約 5 分鐘',
-    summary:
-      '五個在家就能做的動作測試，算出你目前的滑雪體能分數，並指出最需要補強的那一項。',
+    summary: '五個在家就能做的動作測試，算出你目前的滑雪體能分數，並指出最需要補強的那一項。',
     who: '準備出發、想知道自己練夠了沒有的人',
   },
   {
     href: '/tools/training-plan',
+    category: 'prep',
     name: '行前訓練計畫產生器',
     emoji: '📅',
     time: '約 1 分鐘',
@@ -165,34 +201,29 @@ export const TOOLS = [
     who: '已經決定行程、想知道每週該練什麼的人',
   },
   {
-    href: '/tools/injury-triage',
-    name: '雪場受傷分流判斷',
-    emoji: '🚨',
-    time: '約 2 分鐘',
-    summary:
-      '在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？依照紅旗症狀逐步判斷。',
-    who: '人還在雪場、或剛受傷不知道該不該就醫的人',
-  },
-  {
-    href: '/tools/return-to-snow',
-    name: '回歸雪場準備度自評',
-    emoji: '↩️',
-    time: '約 5 分鐘',
-    summary:
-      '受傷或手術後想再滑雪？用肌力對稱性、功能測試與心理準備度三個面向檢查你到哪一階段了。',
-    who: '傷後復健中、想知道「什麼時候能再滑」的人',
-  },
-  {
     href: '/tools/pre-trip-checklist',
+    category: 'prep',
     name: '出發前注意事項互動檢核表',
     emoji: '✅',
     time: '約 3 分鐘',
     summary:
-      '選擇板種、程度和舊傷，產生專屬於你的行前清單。涵蓋防護裝備、雪具設定、身體準備、保險文件與雪場原則，可列印或存成 PDF。',
+      '分成「在台灣出發前」「抵達雪場、滑行前」「滑行期間」三階段，依你的板種、程度與舊傷產生專屬清單，可列印或存成 PDF。',
     who: '所有要出發的人，尤其第一次去的',
+  },
+
+  // ── 第二類：受傷了才需要看 ──────────────────────────
+  {
+    href: '/tools/injury-triage',
+    category: 'injury',
+    name: '雪場受傷分流判斷',
+    emoji: '🚨',
+    time: '約 2 分鐘',
+    summary: '在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？依照紅旗症狀逐步判斷。',
+    who: '人還在雪場、或剛受傷不知道該不該就醫的人',
   },
   {
     href: '/tools/xray-check',
+    category: 'injury',
     name: '何時該照 X 光',
     emoji: '🩻',
     time: '約 3 分鐘',
@@ -202,6 +233,7 @@ export const TOOLS = [
   },
   {
     href: '/tools/concussion',
+    category: 'injury',
     name: '腦震盪：看不見的傷',
     emoji: '🧠',
     time: '約 5 分鐘',
@@ -210,12 +242,13 @@ export const TOOLS = [
     who: '撞到頭、或同行者撞到頭的人',
   },
   {
-    href: '/tools/japan-resorts',
-    name: '日本雪場選擇指引',
-    emoji: '🗾',
-    time: '約 2 分鐘',
+    href: '/tools/return-to-snow',
+    category: 'injury',
+    name: '回歸雪場準備度自評',
+    emoji: '↩️',
+    time: '約 5 分鐘',
     summary:
-      '第一次去日本滑雪，該選哪個雪場？依照你的程度、天數與重視的條件，篩出適合的區域，並附上當地醫療資訊。',
-    who: '還在決定要去哪個雪場的人',
+      '受傷或手術後想再滑雪？用肌力對稱性、功能測試與心理準備度三個面向檢查你到哪一階段了。',
+    who: '傷後復健中、想知道「什麼時候能再滑」的人',
   },
 ] as const;

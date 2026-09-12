@@ -1,13 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolCard from '../../components/ToolCard.astro';
-import { TOOLS } from '../../consts';
+import { TOOLS, TOOL_CATEGORIES } from '../../consts';
 ---
 
 <BaseLayout
   title="滑雪醫學工具箱"
   eyebrow="Tools"
-  description="免費、免註冊的滑雪運動醫學工具：行前體能檢測、訓練計畫產生器、受傷分流判斷、回歸雪場評估、出發前檢查清單。"
+  description="免費、免註冊的滑雪運動醫學工具，分成「行前準備與訓練」和「受傷了才需要看」兩類：雪場選擇、體能檢測、訓練計畫、行前檢核表、受傷分流、何時該照 X 光、腦震盪、回歸雪場評估。"
 >
   <section class="bg-panel">
     <div class="mx-auto max-w-6xl px-5 py-12 sm:py-16">
@@ -15,8 +15,38 @@ import { TOOLS } from '../../consts';
         每個工具都可以直接使用，不需要註冊、不需要留下任何聯絡方式。你填的資料只留在自己的瀏覽器裡，不會傳送到任何伺服器。
       </p>
 
-      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {TOOLS.map((t) => <ToolCard {...t} />)}
+      <div class="mt-10 flex flex-wrap gap-2">
+        {
+          TOOL_CATEGORIES.map((cat) => (
+            <a
+              href={`#${cat.id}`}
+              class="rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold text-head transition-colors hover:border-linestrong"
+            >
+              <span aria-hidden="true">{cat.emoji}</span> {cat.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="mt-10 space-y-14">
+        {
+          TOOL_CATEGORIES.map((cat) => (
+            <div id={cat.id} class="min-w-0 scroll-mt-24">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line pb-4">
+                <h2 class="text-xl font-black break-words text-head sm:text-2xl">
+                  <span aria-hidden="true">{cat.emoji}</span> {cat.label}
+                </h2>
+                <p class="text-sm break-words text-muted">{cat.intro}</p>
+              </div>
+
+              <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {TOOLS.filter((t) => t.category === cat.id).map((t) => (
+                  <ToolCard {...t} />
+                ))}
+              </div>
+            </div>
+          ))
+        }
       </div>
 
       <div class="mt-12 rounded-2xl border border-line bg-surface p-6">

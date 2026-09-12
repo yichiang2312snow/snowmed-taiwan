@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
-import { SITE, SITE_A, TOOLS } from '../consts';
+import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
 import heroImage from '../assets/hero-ski-slope.jpg';
 import VisitCounter from '../components/VisitCounter.astro';
 
@@ -77,8 +77,25 @@ import VisitCounter from '../components/VisitCounter.astro';
         </p>
       </div>
 
-      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {TOOLS.map((t) => <ToolCard {...t} />)}
+      <div class="mt-12 space-y-14">
+        {
+          TOOL_CATEGORIES.map((cat) => (
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line pb-4">
+                <h3 class="text-xl font-black break-words text-head sm:text-2xl">
+                  <span aria-hidden="true">{cat.emoji}</span> {cat.label}
+                </h3>
+                <p class="text-sm break-words text-muted">{cat.intro}</p>
+              </div>
+
+              <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {TOOLS.filter((t) => t.category === cat.id).map((t) => (
+                  <ToolCard {...t} />
+                ))}
+              </div>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>

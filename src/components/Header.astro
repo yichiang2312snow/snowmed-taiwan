@@ -1,5 +1,5 @@
 ---
-import { SITE, NAV, TOOLS } from '../consts';
+import { SITE, NAV, TOOLS, TOOL_CATEGORIES } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
 
 const path = Astro.url.pathname;
@@ -72,31 +72,40 @@ const isActive = (href: string) =>
                 id="tools-dropdown"
                 class="absolute top-full right-0 z-50 mt-2 hidden w-80 overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/40"
               >
-                <ul class="max-h-[70vh] overflow-y-auto p-2">
-                  {TOOLS.map((t) => (
-                    <li>
-                      <a
-                        href={t.href}
-                        class:list={[
-                          'flex min-w-0 items-start gap-3 rounded-xl px-3 py-2.5 transition-colors',
-                          path === t.href || path === t.href + '/'
-                            ? 'bg-tint2'
-                            : 'hover:bg-tint1',
-                        ]}
-                      >
-                        <span class="text-lg leading-none" aria-hidden="true">
-                          {t.emoji}
-                        </span>
-                        <span class="min-w-0">
-                          <span class="block text-sm font-bold break-words text-head">
-                            {t.name}
-                          </span>
-                          <span class="block text-[11px] text-muted">{t.time}</span>
-                        </span>
-                      </a>
-                    </li>
+                <div class="max-h-[70vh] overflow-y-auto p-2">
+                  {TOOL_CATEGORIES.map((cat, ci) => (
+                    <div class:list={[ci > 0 && 'mt-2 border-t border-line pt-2']}>
+                      <p class="px-3 pt-1.5 pb-1 text-[11px] font-black tracking-widest text-accent">
+                        <span aria-hidden="true">{cat.emoji}</span> {cat.label}
+                      </p>
+                      <ul>
+                        {TOOLS.filter((t) => t.category === cat.id).map((t) => (
+                          <li>
+                            <a
+                              href={t.href}
+                              class:list={[
+                                'flex min-w-0 items-start gap-3 rounded-xl px-3 py-2.5 transition-colors',
+                                path === t.href || path === t.href + '/'
+                                  ? 'bg-tint2'
+                                  : 'hover:bg-tint1',
+                              ]}
+                            >
+                              <span class="text-lg leading-none" aria-hidden="true">
+                                {t.emoji}
+                              </span>
+                              <span class="min-w-0">
+                                <span class="block text-sm font-bold break-words text-head">
+                                  {t.name}
+                                </span>
+                                <span class="block text-[11px] text-muted">{t.time}</span>
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
                 <a
                   href="/tools"
                   class="block border-t border-line px-4 py-3 text-sm font-bold text-accent hover:bg-tint1"
@@ -156,19 +165,28 @@ const isActive = (href: string) =>
               >
                 {item.label}
               </a>
-              <ul class="mt-1 mb-2 space-y-0.5 border-l border-line pl-3">
-                {TOOLS.map((t) => (
-                  <li>
-                    <a
-                      href={t.href}
-                      class="flex min-w-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-body hover:bg-tint1"
-                    >
-                      <span aria-hidden="true">{t.emoji}</span>
-                      <span class="min-w-0 break-words">{t.name}</span>
-                    </a>
-                  </li>
+              <div class="mt-1 mb-2 border-l border-line pl-3">
+                {TOOL_CATEGORIES.map((cat, ci) => (
+                  <div class:list={[ci > 0 && 'mt-3']}>
+                    <p class="px-3 pb-1 text-[11px] font-black tracking-widest text-accent">
+                      <span aria-hidden="true">{cat.emoji}</span> {cat.label}
+                    </p>
+                    <ul class="space-y-0.5">
+                      {TOOLS.filter((t) => t.category === cat.id).map((t) => (
+                        <li>
+                          <a
+                            href={t.href}
+                            class="flex min-w-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-body hover:bg-tint1"
+                          >
+                            <span aria-hidden="true">{t.emoji}</span>
+                            <span class="min-w-0 break-words">{t.name}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ) : (
             <a
