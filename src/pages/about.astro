@@ -1,35 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE, SITE_A, IMAGE_CREDITS } from '../consts';
-
-const principles = [
-  {
-    title: '每個工具都要說出自己的依據',
-    body: '這個平台上的每一個工具，下面都有「這個工具是根據什麼做的」和「什麼情況下不適用」兩個區塊。你應該要能看完這兩段之後，自己決定要不要採用它的結論 —— 而不是因為作者是醫師就照做。',
-  },
-  {
-    title: '不確定的事就不要寫',
-    body: '雪場醫療機構的地址與電話，每一筆都附上官方來源連結和查證日期。查不到的就不放。有人可能在受傷、著急、語言不通的狀況下依賴這些資訊，寫個大概是不負責任的。',
-  },
-  {
-    title: '建議一律偏保守',
-    body: '在「可能沒事」和「該去看醫師」之間，這裡的工具一律導向後者。分流工具寧可讓你多叫一次巡邏隊，也不要少叫一次。',
-  },
-  {
-    title: '不收集你的資料',
-    body: '沒有帳號、沒有登入、沒有追蹤碼。你在工具裡填的身高體重、勾選的清單，全部只存在你自己的瀏覽器裡。許願留言區也不需要 email，送出者的 IP 只留雜湊值做防灌水用，不存原文。',
-  },
-  {
-    title: '不賣東西',
-    body: '不賣課程、不賣裝備、不導購。這裡不會出現「所以你需要買 OO」這種結論。提到裝備時，講的是為什麼需要那個功能，不是推薦哪個牌子。',
-  },
-];
 ---
 
 <BaseLayout
   title="關於這個平台"
   eyebrow="About"
-  description="台灣滑雪運動醫學科學平台為什麼存在、內容怎麼產生、以及為什麼你不需要信任任何人也能使用它。"
+  description="台灣滑雪運動醫學科學平台為什麼存在、由誰維護，以及內容的界線在哪裡。"
 >
   <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
@@ -51,33 +28,7 @@ const principles = [
           這個平台，是把門診裡重複回答過無數次的問題，整理成<strong>任何人都能自己拿來用的形式</strong>。
         </p>
 
-        <h2>為什麼刻意不做成「名醫個人網站」</h2>
-
-        <p>
-          因為那樣會讓一件事變得很奇怪：一個從來沒聽過我的人，憑什麼相信我給的建議？
-        </p>
-
-        <p>
-          如果一個網站的可信度建立在「這個醫師很有名」上面，那它對陌生訪客就是無效的 ——
-          他要嘛盲目相信，要嘛直接離開。兩種都不是好結果。
-        </p>
-
-        <p>
-          所以這個平台的設計原則是：<strong>讓你不需要信任任何人，也能自己判斷內容能不能用。</strong>
-        </p>
       </div>
-
-      <ul class="mt-12 space-y-4">
-        {
-          principles.map((p, i) => (
-            <li class="min-w-0 rounded-2xl border border-line bg-surface p-6">
-              <span class="text-xs font-black tracking-widest text-accent">0{i + 1}</span>
-              <h3 class="mt-2 text-lg font-bold break-words text-head">{p.title}</h3>
-              <p class="mt-2.5 text-sm leading-relaxed break-words text-muted">{p.body}</p>
-            </li>
-          ))
-        }
-      </ul>
     </div>
   </section>
 
@@ -89,7 +40,7 @@ const principles = [
         <p class="text-lg font-black text-head">{SITE.doctor}</p>
         <p class="mt-1 text-sm text-muted">{SITE.doctorEn}</p>
         <p class="mt-4 text-sm leading-relaxed break-words text-muted">
-          全台第一位滑雪運動醫學專科醫師。這個平台上的工具與文章由我撰寫與維護。
+          全台第一位滑雪運動醫學專科醫師。這個平台上的工具由我規劃與維護。
         </p>
         <p class="mt-4 text-sm leading-relaxed break-words text-muted">
           如果你想看更多深入的衛教內容，或是需要個別化的門診諮詢，那些放在我的個人網站：
@@ -131,7 +82,7 @@ const principles = [
 
       <h2 class="mt-12 text-2xl font-black text-head">圖片授權</h2>
       <p class="mt-3 text-sm leading-relaxed break-words text-muted">
-        本站使用的照片全部採用 CC BY（姓名標示）授權，共 {IMAGE_CREDITS.length} 張，完整的作者、授權與來源標示列在每一頁的頁尾。
+        本站使用的照片共 {IMAGE_CREDITS.length} 張，全部採用 CC BY 或 CC BY-SA（姓名標示類）授權，完整的作者、授權與來源標示列在每一頁的頁尾。
       </p>
     </div>
   </section>

@@ -1,0 +1,34 @@
+import type { ImageMetadata } from 'astro';
+
+import fitnessCheck from '../assets/tools/tool-fitness-check.jpg';
+import trainingPlan from '../assets/tools/tool-training-plan.jpg';
+import injuryTriage from '../assets/tools/tool-injury-triage.jpg';
+import returnToSnow from '../assets/tools/tool-return-to-snow.jpg';
+import preTripChecklist from '../assets/tools/tool-pre-trip-checklist.jpg';
+
+/**
+ * 工具卡片的背景圖，key 是工具的網址。
+ * 每張圖的授權與出處列在 consts.ts 的 IMAGE_CREDITS，頁尾會自動顯示。
+ */
+export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> = {
+  '/tools/fitness-check': {
+    image: fitnessCheck,
+    alt: '一個人做單腳深蹲，下肢肌肉出力的特寫',
+  },
+  '/tools/training-plan': {
+    image: trainingPlan,
+    alt: '健身房中一個人正在做槓鈴深蹲',
+  },
+  '/tools/injury-triage': {
+    image: injuryTriage,
+    alt: '山區搜救人員以擔架後送傷者',
+  },
+  '/tools/return-to-snow': {
+    image: returnToSnow,
+    alt: '一個人站在雪道頂端，前方是連綿的雪山',
+  },
+  '/tools/pre-trip-checklist': {
+    image: preTripChecklist,
+    alt: '雪板、雪鞋與雪杖整齊排列在雪地上',
+  },
+};

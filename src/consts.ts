@@ -11,7 +11,7 @@ export const SITE = {
   doctorEn: 'Dr. Yi-Chiang Yang',
   author: '楊怡強 醫師',
   description:
-    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、回歸雪場準備度評估、裝備檢查清單。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
+    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、回歸雪場準備度評估、出發前檢核表。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
   // TODO 待楊醫師確認：以下聯絡資訊目前是預留欄位
   email: '',
   clinicName: '',
@@ -21,22 +21,31 @@ export const SITE = {
   facebook: '',
 } as const;
 
+/** 網站 A：楊醫師個人官網 */
+export const SITE_A = {
+  url: 'https://dr-yang-yi-chiang-website.vercel.app/',
+  articlesUrl: 'https://dr-yang-yi-chiang-website.vercel.app/articles',
+  label: '楊怡強醫師衛教專文',
+  labelLong: '楊怡強醫師個人網站的衛教專文',
+} as const;
+
 export const NAV = [
   { href: '/tools', label: '工具' },
   { href: '/emergency', label: '海外受傷' },
-  { href: '/articles', label: '知識庫' },
+  // 衛教文章都在楊醫師的個人網站上，這裡直接外連過去
+  { href: SITE_A.articlesUrl, label: '知識庫', external: true },
   { href: '/wishlist', label: '許願區' },
   { href: '/about', label: '關於' },
 ] as const;
 
 /**
- * 圖片出處標示（CC BY 授權要求）
+ * 圖片出處標示（CC 授權要求標明作者與來源）
  * footer 會自動把全部列出來。
  */
 export const IMAGE_CREDITS = [
   {
     file: 'hero-ski-slope.jpg',
-    where: '首頁 HERO 區、文章 HERO 區',
+    where: '首頁 HERO 區',
     title: 'Kyrgyzstan Alpinism and Downhill Skiing',
     author: 'Thomas Depenbusch (Depi)',
     authorUrl: 'https://www.flickr.com/photos/8324633@N03/',
@@ -47,40 +56,59 @@ export const IMAGE_CREDITS = [
     modified: '已縮放尺寸以符合網頁需求',
   },
   {
-    file: 'article-downhill.jpg',
-    where: '文章 HERO 區',
-    title: 'Kyrgyzstan Downhill Skiing',
-    author: 'Thomas Depenbusch (Depi)',
-    authorUrl: 'https://www.flickr.com/photos/8324633@N03/',
-    sourceUrl:
-      'https://commons.wikimedia.org/wiki/File:Kyrgyzstan_Downhill_Skiing_(7208585660).jpg',
+    file: 'tools/tool-fitness-check.jpg',
+    where: '工具卡片：行前體能自我檢測',
+    title: 'Fitness enthusiast performs a single-leg squat exercise in an indoor gym setting',
+    author: 'Shixart1985',
+    authorUrl: 'https://commons.wikimedia.org/w/index.php?curid=186911197',
+    sourceUrl: 'https://commons.wikimedia.org/w/index.php?curid=186911197',
     license: 'CC BY 2.0',
     licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
     modified: '已裁切與縮放尺寸以符合網頁需求',
   },
   {
-    file: 'article-bluemountains.jpg',
-    where: '文章 HERO 區',
-    title: 'Blue Mountains',
-    author: 'Michael from Calgary',
-    authorUrl: 'https://commons.wikimedia.org/wiki/File:Blue_Mountains_(7672976922).jpg',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Blue_Mountains_(7672976922).jpg',
+    file: 'tools/tool-training-plan.jpg',
+    where: '工具卡片：行前訓練計畫產生器',
+    title: 'Fitness Model Leg Exercise Strength Weight Training',
+    author: 'ThoroughlyReviewed',
+    authorUrl: 'https://www.flickr.com/photos/143842337@N03/',
+    sourceUrl: 'https://www.flickr.com/photos/143842337@N03/32004788223',
     license: 'CC BY 2.0',
     licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
     modified: '已裁切與縮放尺寸以符合網頁需求',
   },
   {
-    file: 'article-rugova.jpg',
-    where: '文章 HERO 區',
-    title: 'Rugova Mountains in Boge during winter season in Kosovo',
-    author: 'SUHEJLO',
-    authorUrl:
-      'https://commons.wikimedia.org/wiki/File:Rugova_Mountains_in_Boge_during_winter_season_in_Kosovo.jpg',
-    sourceUrl:
-      'https://commons.wikimedia.org/wiki/File:Rugova_Mountains_in_Boge_during_winter_season_in_Kosovo.jpg',
-    license: 'CC BY 4.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    file: 'tools/tool-injury-triage.jpg',
+    where: '工具卡片：雪場受傷分流判斷',
+    title: 'Gebirgstrage02 Patient Seilsicherung',
+    author: 'René Kieselmann (rmk)',
+    authorUrl: 'https://commons.wikimedia.org/w/index.php?curid=778254',
+    sourceUrl: 'https://commons.wikimedia.org/w/index.php?curid=778254',
+    license: 'CC BY-SA 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
+    modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 2.0 授權',
+  },
+  {
+    file: 'tools/tool-return-to-snow.jpg',
+    where: '工具卡片：回歸雪場準備度自評',
+    title: 'THE WONDERFUL HILLS OF BANSKO',
+    author: 'summonedbyfells',
+    authorUrl: 'https://www.flickr.com/photos/8521690@N02/',
+    sourceUrl: 'https://www.flickr.com/photos/8521690@N02/12908807375',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
     modified: '已裁切與縮放尺寸以符合網頁需求',
+  },
+  {
+    file: 'tools/tool-pre-trip-checklist.jpg',
+    where: '工具卡片：出發前注意事項互動檢核表',
+    title: 'Cross-country equipment — Skate and Classic',
+    author: 'HopsonRoad',
+    authorUrl: 'https://commons.wikimedia.org/w/index.php?curid=36823002',
+    sourceUrl: 'https://commons.wikimedia.org/w/index.php?curid=36823002',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
   },
 ] as const;
 
@@ -131,10 +159,3 @@ export const TOOLS = [
     who: '所有要出發的人，尤其第一次去的',
   },
 ] as const;
-
-/** 網站 A：楊醫師個人官網（工具結果頁的深度衛教連結導向這裡） */
-export const SITE_A = {
-  url: 'https://dr-yang-yi-chiang-website.vercel.app/',
-  label: '楊怡強醫師衛教專文',
-  labelLong: '楊怡強醫師個人網站的衛教專文',
-} as const;

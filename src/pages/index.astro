@@ -1,48 +1,10 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ArticleCard from '../components/ArticleCard.astro';
 import ToolCard from '../components/ToolCard.astro';
-import { SITE, TOOLS } from '../consts';
-import { lastUpdated } from '../lib/lastUpdated';
-import { formatDate } from '../lib/format';
+import { SITE, SITE_A, TOOLS } from '../consts';
 import heroImage from '../assets/hero-ski-slope.jpg';
 
-// 文章列表在建置時就直接寫進 HTML（不是用 JavaScript 讀 JSON 生出來），
-// 這樣 Google 爬蟲一抓就看得到全部內容。
-const posts = (await getCollection('articles', ({ data }) => !data.draft))
-  .map((entry) => {
-    const updated = lastUpdated(entry.filePath);
-    return {
-      entry,
-      updated,
-      // 排序基準：發佈日期和最後更新時間取較晚者 —— 新文章和剛改過的文章都會排到前面
-      sortKey: Math.max(entry.data.date.valueOf(), updated?.valueOf() ?? 0),
-    };
-  })
-  .sort((a, b) => b.sortKey - a.sortKey);
-
-const siteUpdated = posts.length > 0 ? new Date(posts[0].sortKey) : null;
-
-const trust = [
-  {
-    title: '每個工具都寫清楚依據',
-    body: '每一個工具下面都有「這是根據什麼做的」和「什麼情況不適用」。你可以自己看完再決定要不要採用，而不是因為信任某個人才使用。',
-  },
-  {
-    title: '不需要註冊，也不收集你的資料',
-    body: '沒有帳號、沒有登入、沒有表單。你在工具裡填的身高體重、勾選的項目，全部只留在你自己的瀏覽器裡，不會傳到任何伺服器。',
-  },
-  {
-    title: '建議一律偏保守',
-    body: '在「可能沒事」和「該去看醫師」之間，這裡的工具會一律導向後者。工具的目的是幫你判斷要不要找專業協助，不是取代專業判斷。',
-  },
-  {
-    title: '完全免費，沒有推銷',
-    body: '不賣課程、不賣裝備、不導購。這裡不會出現「所以你需要買 OO」這種結論。',
-  },
-];
 ---
 
 <BaseLayout>
@@ -89,13 +51,13 @@ const trust = [
       <div class="mt-9 flex flex-wrap gap-3">
         <a
           href="#tools"
-          class="rounded-xl bg-panel px-6 py-3.5 text-sm font-bold text-head transition-colors hover:bg-white/12"
+          class="rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
           >直接開始用工具</a
         >
         <a
-          href="#why-trust"
+          href="/emergency"
           class="rounded-xl border border-white/40 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
-          >這些內容可信嗎？</a
+          >人在國外受傷了？</a
         >
       </div>
     </div>
@@ -128,7 +90,7 @@ const trust = [
             人在國外雪場，受傷了？
           </h2>
           <p class="mt-2 max-w-xl text-sm leading-relaxed break-words text-muted">
-            急救電話、PRICE 處置原則、日本主要雪場附近的醫院與診所（附官方來源），以及回國申請理賠必備的文件清單。
+            急救電話、PEACE &amp; LOVE 急性處置原則、日本主要雪場附近的醫院與診所（附官方來源），以及回國申請理賠必備的文件清單。
           </p>
         </div>
         <a
@@ -136,45 +98,6 @@ const trust = [
           class="shrink-0 rounded-xl bg-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-red-700"
           >立刻查看 →</a
         >
-      </div>
-    </div>
-  </section>
-
-  <!-- 為什麼可信 -->
-  <section id="why-trust" class="scroll-mt-20 bg-panel">
-    <div class="mx-auto max-w-5xl px-5 py-14 sm:py-20">
-      <div class="max-w-2xl">
-        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Why trust this</p>
-        <h2 class="text-2xl font-black break-words text-head sm:text-3xl">
-          你不認識我，為什麼要用這裡的東西？
-        </h2>
-        <p class="mt-3 text-base leading-relaxed break-words text-muted">
-          這是一個合理的問題。所以這個平台的設計原則是：<strong class="text-head"
-            >讓你不需要信任任何人，也能自己判斷內容能不能用。</strong
-          >
-        </p>
-      </div>
-
-      <div class="mt-10 grid gap-5 sm:grid-cols-2">
-        {
-          trust.map((t, i) => (
-            <div class="min-w-0 rounded-2xl border border-line bg-surface p-6">
-              <span class="text-xs font-black tracking-widest text-accent">
-                0{i + 1}
-              </span>
-              <h3 class="mt-2 text-lg font-bold break-words text-head">{t.title}</h3>
-              <p class="mt-2.5 text-sm leading-relaxed break-words text-muted">{t.body}</p>
-            </div>
-          ))
-        }
-      </div>
-
-      <div class="mt-8 rounded-2xl border-l-4 border-accent bg-white/8 p-6">
-        <p class="text-sm leading-relaxed break-words text-head">
-          <strong>那我是誰？</strong>
-          我是{SITE.doctor}，全台第一位滑雪運動醫學專科醫師。這個平台是我把門診裡重複回答了無數次的問題，整理成任何人都能自己使用的形式。
-          <a href="/about" class="font-bold text-accent hover:underline">關於這個平台的更多說明 →</a>
-        </p>
       </div>
     </div>
   </section>
@@ -188,8 +111,9 @@ const trust = [
           想要什麼工具？寫下來
         </h2>
         <p class="mt-3 max-w-2xl text-base leading-relaxed break-words text-muted">
-          滑雪族群裡新手很多，每個人卡住的地方都不一樣。如果你想到某個「要是有個東西能幫我 OO 就好了」的時刻，寫在許願區
-          —— 我會把最多人需要的做成工具。免註冊、可匿名。
+          滑雪族群裡新手很多，每個人卡住的地方都不一樣。如果你想到某個「要是有個東西能幫我 OO
+          就好了」的時刻，或是覺得現有的工具哪裡不順手，都歡迎寫在許願區 ——
+          我會把最多人需要的做成工具。免註冊、可匿名。
         </p>
         <a
           href="/wishlist"
@@ -200,46 +124,24 @@ const trust = [
     </div>
   </section>
 
-  <!-- 知識庫（根目錄卡片索引） -->
+  <!-- 知識庫（外連到楊醫師個人網站） -->
   <section id="articles" class="scroll-mt-20 bg-surface">
     <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div class="min-w-0">
-          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Knowledge</p>
-          <h2 class="text-2xl font-black text-head sm:text-3xl">知識庫</h2>
-        </div>
-        {
-          siteUpdated && (
-            <p class="text-xs text-muted">
-              共 {posts.length} 篇 · 最後更新 {formatDate(siteUpdated)}
-            </p>
-          )
-        }
+      <div class="rounded-2xl border border-line bg-panel p-7 sm:p-10">
+        <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">Knowledge</p>
+        <h2 class="mt-2 text-2xl font-black break-words text-head sm:text-3xl">想知道背後的原理？</h2>
+        <p class="mt-3 max-w-2xl text-base leading-relaxed break-words text-muted">
+          這裡放的是「直接能用的工具」。至於這些判斷背後的傷害機轉、治療選擇與復健邏輯，
+          楊醫師寫在他自己的網站上，內容更完整。
+        </p>
+        <a
+          href={SITE_A.articlesUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-7 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
+          >前往衛教文章專區 →</a
+        >
       </div>
-
-      {
-        posts.length > 0 ? (
-          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map(({ entry, updated }) => (
-              <ArticleCard
-                slug={entry.id}
-                title={entry.data.title}
-                description={entry.data.description}
-                date={entry.data.date}
-                updated={updated}
-                author={entry.data.author}
-                category={entry.data.category}
-                image={entry.data.heroImage}
-                imageAlt={entry.data.heroAlt}
-              />
-            ))}
-          </div>
-        ) : (
-          <p class="mt-10 rounded-2xl border-2 border-dashed border-line bg-panel p-10 text-center text-sm text-muted">
-            還沒有文章。
-          </p>
-        )
-      }
     </div>
   </section>
 </BaseLayout>

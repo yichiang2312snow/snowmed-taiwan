@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { TOOLS } from '../consts';
+import { TOOLS, SITE_A } from '../consts';
 ---
 
 <BaseLayout
@@ -36,7 +36,7 @@ import { TOOLS } from '../consts';
         {
           [
             { href: '/', label: '回首頁' },
-            { href: '/articles', label: '知識庫（衛教文章）' },
+            { href: SITE_A.articlesUrl, label: '衛教文章（在楊醫師個人網站）' },
             { href: '/ski-medicine', label: '滑雪傷害圖鑑' },
             { href: '/injury-prevention', label: '傷害預防指南' },
             { href: '/about', label: '關於這個平台' },

@@ -19,8 +19,14 @@ const year = new Date().getFullYear();
         {
           NAV.map((item) => (
             <li>
-              <a href={item.href} class="hover:text-white hover:underline">
+              <a
+                href={item.href}
+                class="hover:text-white hover:underline"
+                target={item.href.startsWith('http') ? '_blank' : undefined}
+                rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              >
                 {item.label}
+                {item.href.startsWith('http') && <span aria-hidden="true"> ↗</span>}
               </a>
             </li>
           ))
