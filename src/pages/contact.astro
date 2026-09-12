@@ -15,19 +15,19 @@ const channels = [
   eyebrow="Contact"
   description="與楊怡強醫師聯絡，預約滑雪行前評估、運動傷害門診或回歸雪場諮詢。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
-      <p class="text-lg leading-relaxed font-medium text-deep">
+      <p class="text-lg leading-relaxed font-medium text-head">
         歡迎來信討論行前準備、傷後復原，或任何和雪地運動有關的醫療問題。
       </p>
 
       {
         channels.length > 0 ? (
-          <dl class="mt-10 divide-y divide-ice overflow-hidden rounded-2xl border border-ice">
+          <dl class="mt-10 divide-y divide-line overflow-hidden rounded-2xl border border-line">
             {channels.map((c) => (
-              <div class="flex flex-wrap items-center justify-between gap-3 bg-snow px-6 py-5">
-                <dt class="text-sm font-bold tracking-widest text-brand uppercase">{c.label}</dt>
-                <dd class="text-sm text-deep">
+              <div class="flex flex-wrap items-center justify-between gap-3 bg-surface px-6 py-5">
+                <dt class="text-sm font-bold tracking-widest text-accent uppercase">{c.label}</dt>
+                <dd class="text-sm text-head">
                   {c.href ? (
                     <a href={c.href} class="font-bold hover:underline">
                       {c.value}
@@ -40,19 +40,19 @@ const channels = [
             ))}
           </dl>
         ) : (
-          <div class="mt-10 rounded-2xl border-2 border-dashed border-ice bg-snow p-8 text-center">
-            <p class="font-bold text-deep">聯絡方式尚未設定</p>
-            <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-soft">
-              請在 <code class="rounded bg-ice px-1.5 py-0.5 text-xs">src/consts.ts</code>{' '}
+          <div class="mt-10 rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center">
+            <p class="font-bold text-head">聯絡方式尚未設定</p>
+            <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+              請在 <code class="rounded bg-white/12 px-1.5 py-0.5 text-xs">src/consts.ts</code>{' '}
               填入 email、LINE 官方帳號或社群連結，這一區就會自動顯示。
             </p>
           </div>
         )
       }
 
-      <div class="mt-12 rounded-2xl border-l-4 border-brand bg-ice/40 p-6">
-        <h2 class="font-black text-deep">來信前，這些資訊會很有幫助</h2>
-        <ul class="mt-3 space-y-2 text-sm leading-relaxed text-slate-soft">
+      <div class="mt-12 rounded-2xl border-l-4 border-accent bg-white/8 p-6">
+        <h2 class="font-black text-head">來信前，這些資訊會很有幫助</h2>
+        <ul class="mt-3 space-y-2 text-sm leading-relaxed text-muted">
           <li>· 你玩的是單板還是雙板、滑齡多久、大概什麼程度</li>
           <li>· 如果是受傷：怎麼摔的、哪一天、當下有沒有聽到聲音或腫起來</li>
           <li>· 在國外有沒有就醫？有沒有診斷書或影像光碟？</li>
@@ -60,7 +60,7 @@ const channels = [
         </ul>
       </div>
 
-      <p class="mt-10 text-xs leading-relaxed text-slate-soft">
+      <p class="mt-10 text-xs leading-relaxed text-muted">
         提醒：網路訊息無法取代正式的醫療診察。若有急性外傷、劇烈疼痛、肢體無力或麻木等狀況，請直接就醫或撥打 119。
       </p>
     </div>

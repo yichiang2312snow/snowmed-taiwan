@@ -26,15 +26,15 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
   eyebrow="Knowledge"
   description="滑雪運動醫學知識庫：傷害預防、運動傷害、體能訓練與回歸雪場的衛教文章。每一篇都標明作者與最後更新日期。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-6xl px-5 py-12 sm:py-16">
       <div class="flex flex-wrap items-end justify-between gap-4">
-        <p class="max-w-2xl text-base leading-relaxed break-words text-slate-soft">
+        <p class="max-w-2xl text-base leading-relaxed break-words text-muted">
           工具告訴你「該怎麼做」，這裡解釋「為什麼」。每一篇都標明發佈與最後更新日期，你可以自己判斷內容新不新。
         </p>
         {
           siteUpdated && (
-            <p class="shrink-0 text-xs text-slate-soft">
+            <p class="shrink-0 text-xs text-muted">
               共 {posts.length} 篇 · 最後更新 {formatDate(siteUpdated)}
             </p>
           )
@@ -45,7 +45,7 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
         categories.length > 1 && (
           <div class="mt-6 flex flex-wrap gap-2">
             {categories.map((c) => (
-              <span class="rounded-full border border-ice bg-snow px-3 py-1.5 text-xs font-bold text-deep">
+              <span class="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-bold text-head">
                 {c}
               </span>
             ))}
@@ -71,7 +71,7 @@ const categories = [...new Set(posts.map((p) => p.entry.data.category))];
             ))}
           </div>
         ) : (
-          <p class="mt-10 rounded-2xl border-2 border-dashed border-ice bg-snow p-10 text-center text-sm text-slate-soft">
+          <p class="mt-10 rounded-2xl border-2 border-dashed border-line bg-surface p-10 text-center text-sm text-muted">
             還沒有文章。
           </p>
         )

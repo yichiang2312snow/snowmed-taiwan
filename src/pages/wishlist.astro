@@ -9,18 +9,18 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
   eyebrow="Wishlist"
   description="你想要什麼滑雪相關的工具或資訊？這裡收集雪友的許願，作為這個平台未來開發的方向。免註冊、可匿名。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <p class="text-base leading-relaxed break-words text-slate-soft">
-        滑雪族群裡新手很多，每個人卡住的地方都不一樣。<strong class="text-deep"
+      <p class="text-base leading-relaxed break-words text-muted">
+        滑雪族群裡新手很多，每個人卡住的地方都不一樣。<strong class="text-head"
           >如果你想到某個「要是有個東西能幫我 OO 就好了」的時刻，寫在這裡。</strong
         >
       </p>
-      <p class="mt-4 text-base leading-relaxed break-words text-slate-soft">
+      <p class="mt-4 text-base leading-relaxed break-words text-muted">
         我會定期看這些許願，並把最多人需要的做成工具。不用註冊、可以匿名，也不需要留任何聯絡方式。
       </p>
 
-      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-soft">
+      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
         <span>✓ 免註冊</span>
         <span>✓ 可匿名</span>
         <span>✓ 不需要 email</span>
@@ -29,12 +29,12 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
 
       <!-- 表單 -->
       <form id="wish-form" class="mt-10 space-y-5">
-        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
-          <legend class="px-2 text-sm font-bold text-deep">這是關於什麼的？</legend>
+        <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <legend class="px-2 text-sm font-bold text-head">這是關於什麼的？</legend>
           <div class="mt-3 flex flex-wrap gap-2">
             {
               categories.map((c, i) => (
-                <label class="min-w-0 cursor-pointer rounded-xl border border-ice bg-white px-4 py-2.5 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
+                <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-4 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
                   <input
                     type="radio"
                     name="category"
@@ -49,9 +49,9 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
           </div>
         </fieldset>
 
-        <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
-          <label for="wish-text" class="block text-sm font-bold text-deep">你的許願</label>
-          <p class="mt-1 text-xs leading-relaxed break-words text-slate-soft">
+        <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <label for="wish-text" class="block text-sm font-bold text-head">你的許願</label>
+          <p class="mt-1 text-xs leading-relaxed break-words text-muted">
             越具體越好。例如「希望有個工具能算出我該買多長的板子」比「希望有裝備建議」有用得多。
           </p>
           <textarea
@@ -61,17 +61,17 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
             maxlength="500"
             required
             placeholder="例如：希望有一個工具，可以輸入我的行程天數和體能狀況，告訴我每天該滑幾小時比較不會受傷。"
-            class="mt-3 w-full resize-y rounded-xl border border-ice bg-white px-4 py-3 text-base leading-relaxed text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+            class="mt-3 w-full resize-y rounded-xl border border-line bg-panel px-4 py-3 text-base leading-relaxed text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
           ></textarea>
-          <p class="mt-1.5 text-right text-xs text-slate-soft">
+          <p class="mt-1.5 text-right text-xs text-muted">
             <span id="wish-count">0</span> / 500
           </p>
         </div>
 
         <div class="grid gap-5 sm:grid-cols-2">
-          <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
-            <label for="wish-resort" class="block text-sm font-bold text-deep">
-              相關雪場 <span class="font-normal text-slate-soft">（選填）</span>
+          <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <label for="wish-resort" class="block text-sm font-bold text-head">
+              相關雪場 <span class="font-normal text-muted">（選填）</span>
             </label>
             <input
               type="text"
@@ -79,13 +79,13 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
               name="resort"
               maxlength="40"
               placeholder="例如：白馬八方尾根"
-              class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+              class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
             />
           </div>
 
-          <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
-            <label for="wish-nickname" class="block text-sm font-bold text-deep">
-              暱稱 <span class="font-normal text-slate-soft">（選填）</span>
+          <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <label for="wish-nickname" class="block text-sm font-bold text-head">
+              暱稱 <span class="font-normal text-muted">（選填）</span>
             </label>
             <input
               type="text"
@@ -93,7 +93,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
               name="nickname"
               maxlength="20"
               placeholder="不填就顯示「匿名雪友」"
-              class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+              class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
             />
           </div>
         </div>
@@ -104,10 +104,10 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
           <input type="text" id="wish-website" name="website" tabindex="-1" autocomplete="off" />
         </div>
 
-        <div class="rounded-2xl border-l-4 border-brand bg-ice/40 p-5">
-          <p class="text-xs leading-relaxed break-words text-slate-soft">
-            <strong class="text-deep">送出前請注意：</strong>
-            這是公開的留言區，請<strong class="text-deep"
+        <div class="rounded-2xl border-l-4 border-accent bg-white/8 p-5">
+          <p class="text-xs leading-relaxed break-words text-muted">
+            <strong class="text-head">送出前請注意：</strong>
+            這是公開的留言區，請<strong class="text-head"
               >不要填入姓名、電話、email、病歷號或任何可以認出你是誰的資訊</strong
             >。如果你想描述自己的傷勢，請只講一般性的狀況（例如「膝蓋受傷後」），不要寫具體的就醫細節。需要個別化的醫療建議，請直接就醫。
           </p>
@@ -116,7 +116,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
         <button
           type="submit"
           id="wish-submit"
-          class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep disabled:cursor-not-allowed disabled:opacity-60"
+          class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
         >
           送出許願
         </button>
@@ -132,15 +132,15 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
   </section>
 
   <!-- 已公開的許願 -->
-  <section class="bg-snow">
+  <section class="bg-surface">
     <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <div class="flex flex-wrap items-end justify-between gap-3">
-        <h2 class="text-2xl font-black text-deep">大家許了什麼願</h2>
-        <p id="wish-total" class="text-xs text-slate-soft"></p>
+        <h2 class="text-2xl font-black text-head">大家許了什麼願</h2>
+        <p id="wish-total" class="text-xs text-muted"></p>
       </div>
 
       <div id="wish-list" class="mt-8 space-y-4">
-        <p class="rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft">
+        <p class="rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm text-muted">
           載入中…
         </p>
       </div>
@@ -166,7 +166,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
     msg.textContent = text;
     msg.className =
       'rounded-xl px-4 py-3 text-sm leading-relaxed font-bold break-words ' +
-      (kind === 'ok' ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800');
+      (kind === 'ok' ? 'bg-emerald-500/15 text-emerald-200' : 'bg-red-500/15 text-red-200');
     msg.hidden = false;
   };
 
@@ -201,7 +201,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
       if (wishes.length === 0) {
         const empty = document.createElement('p');
         empty.className =
-          'rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft';
+          'rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm text-muted';
         empty.textContent = '還沒有公開的許願。你可以是第一個。';
         list.append(empty);
         return;
@@ -209,46 +209,46 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
 
       for (const w of wishes) {
         const card = document.createElement('article');
-        card.className = 'min-w-0 rounded-2xl border border-ice bg-white p-5 sm:p-6';
+        card.className = 'min-w-0 rounded-2xl border border-line bg-panel p-5 sm:p-6';
 
         const meta = document.createElement('div');
         meta.className = 'flex flex-wrap items-center gap-x-3 gap-y-2 text-xs';
 
         const cat = document.createElement('span');
-        cat.className = 'rounded-full bg-ice px-3 py-1 font-bold text-deep';
+        cat.className = 'rounded-full bg-white/12 px-3 py-1 font-bold text-head';
         cat.textContent = String(w.category ?? '其他');
         meta.append(cat);
 
         if (w.resort) {
           const r = document.createElement('span');
-          r.className = 'text-slate-soft';
+          r.className = 'text-muted';
           r.textContent = `📍 ${w.resort}`;
           meta.append(r);
         }
 
         const date = document.createElement('span');
-        date.className = 'text-slate-soft';
+        date.className = 'text-muted';
         date.textContent = fmtDate(String(w.createdAt ?? ''));
         meta.append(date);
 
         const body = document.createElement('p');
-        body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-deep';
+        body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-head';
         body.textContent = String(w.text ?? '');
 
         const who = document.createElement('p');
-        who.className = 'mt-4 border-t border-ice pt-3 text-xs text-slate-soft';
+        who.className = 'mt-4 border-t border-line pt-3 text-xs text-muted';
         who.textContent = `— ${w.nickname ?? '匿名雪友'}`;
 
         card.append(meta, body, who);
 
         if (w.reply) {
           const reply = document.createElement('div');
-          reply.className = 'mt-4 rounded-xl border-l-4 border-brand bg-ice/40 p-4';
+          reply.className = 'mt-4 rounded-xl border-l-4 border-accent bg-white/8 p-4';
           const label = document.createElement('p');
-          label.className = 'text-xs font-bold text-brand';
+          label.className = 'text-xs font-bold text-accent';
           label.textContent = '平台回覆';
           const rbody = document.createElement('p');
-          rbody.className = 'mt-1.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-deep';
+          rbody.className = 'mt-1.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-head';
           rbody.textContent = String(w.reply);
           reply.append(label, rbody);
           card.append(reply);
@@ -260,7 +260,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
       list.textContent = '';
       const err = document.createElement('p');
       err.className =
-        'rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft';
+        'rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm text-muted';
       err.textContent = '目前讀不到許願清單，請稍後再試。';
       list.append(err);
     }

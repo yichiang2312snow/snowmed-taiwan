@@ -5,11 +5,11 @@ const isActive = (href: string) =>
   href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
 ---
 
-<header class="sticky top-0 z-40 border-b border-ice/80 bg-snow/95 backdrop-blur">
+<header class="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
     <a href="/" class="flex min-w-0 items-center gap-2.5 sm:gap-3">
       <span
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-deep text-brandlight sm:h-10 sm:w-10"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bg text-accent sm:h-10 sm:w-10"
         aria-hidden="true"
       >
         <svg viewBox="0 0 100 100" class="h-5 w-5 sm:h-6 sm:w-6" fill="none">
@@ -21,10 +21,10 @@ const isActive = (href: string) =>
         </svg>
       </span>
       <span class="min-w-0 leading-tight">
-        <span class="block truncate text-[13px] font-black text-deep sm:text-base">
+        <span class="block truncate text-[13px] font-black text-head sm:text-base">
           {SITE.name}
         </span>
-        <span class="block truncate text-[10px] font-medium text-slate-soft sm:text-[11px]">
+        <span class="block truncate text-[10px] font-medium text-muted sm:text-[11px]">
           {SITE.poweredByShort}
         </span>
       </span>
@@ -38,8 +38,8 @@ const isActive = (href: string) =>
             class:list={[
               'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
               isActive(item.href)
-                ? 'bg-ice text-deep'
-                : 'text-slate-soft hover:bg-ice/60 hover:text-deep',
+                ? 'bg-white/12 text-head'
+                : 'text-muted hover:bg-white/12 hover:text-head',
             ]}
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
@@ -52,7 +52,7 @@ const isActive = (href: string) =>
     <button
       type="button"
       id="nav-toggle"
-      class="shrink-0 rounded-lg border border-ice p-2 text-deep lg:hidden"
+      class="shrink-0 rounded-lg border border-line p-2 text-head lg:hidden"
       aria-expanded="false"
       aria-controls="mobile-nav"
     >
@@ -63,13 +63,13 @@ const isActive = (href: string) =>
     </button>
   </div>
 
-  <nav id="mobile-nav" class="hidden border-t border-ice bg-snow lg:hidden" aria-label="行動版選單">
+  <nav id="mobile-nav" class="hidden border-t border-line bg-surface lg:hidden" aria-label="行動版選單">
     <div class="mx-auto max-w-6xl px-4 py-3 sm:px-5">
       {
         NAV.map((item) => (
           <a
             href={item.href}
-            class="block rounded-lg px-3 py-3 text-sm font-medium text-deep hover:bg-ice"
+            class="block rounded-lg px-3 py-3 text-sm font-medium text-head hover:bg-white/12"
           >
             {item.label}
           </a>

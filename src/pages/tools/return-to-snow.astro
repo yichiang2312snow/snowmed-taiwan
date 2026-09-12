@@ -85,8 +85,8 @@ const questions = [
   summary="受傷或手術後想再滑雪？用時間、症狀、肌力對稱性、功能測試、落地控制與心理準備度六個面向，看看你到哪一個階段了，以及下一步該做什麼。"
   description="傷後回歸滑雪的準備度自評：以肌力對稱性、單腳跳測試、落地控制與心理準備度取代單純的時間表。"
 >
-  <div class="rounded-2xl border-l-4 border-brand bg-ice/40 p-5">
-    <p class="text-sm leading-relaxed break-words text-deep">
+  <div class="rounded-2xl border-l-4 border-accent bg-white/8 p-5">
+    <p class="text-sm leading-relaxed break-words text-head">
       <strong>「休息半年就可以了」不是好答案。</strong>
       它用時間取代了能力。同樣術後六個月的兩個人，肌力恢復程度可能差很多，讓後者上雪場的風險完全不同。這個工具問的是：<strong
         >你現在的身體，達到了哪些可以被測量的條件？</strong
@@ -97,24 +97,24 @@ const questions = [
   <form id="rts-form" class="mt-8 space-y-6">
     {
       questions.map((q, i) => (
-        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
-          <legend class="px-2 text-xs font-black tracking-widest text-brandlight">
+        <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <legend class="px-2 text-xs font-black tracking-widest text-accent">
             {i + 1} / {questions.length} · {q.domain}
           </legend>
 
-          <h2 class="text-base leading-snug font-bold break-words text-deep sm:text-lg">{q.q}</h2>
-          <p class="mt-1.5 text-xs leading-relaxed break-words text-slate-soft">{q.hint}</p>
+          <h2 class="text-base leading-snug font-bold break-words text-head sm:text-lg">{q.q}</h2>
+          <p class="mt-1.5 text-xs leading-relaxed break-words text-muted">{q.hint}</p>
 
           <div class="mt-4 grid gap-2">
             {q.options.map((o) => (
-              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
                 <input
                   type="radio"
                   name={q.id}
                   value={o.score}
-                  class="h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                  class="h-4 w-4 shrink-0 accent-[var(--color-accent)]"
                 />
-                <span class="min-w-0 break-words text-deep">{o.label}</span>
+                <span class="min-w-0 break-words text-head">{o.label}</span>
               </label>
             ))}
           </div>
@@ -122,13 +122,13 @@ const questions = [
       ))
     }
 
-    <p id="rts-error" class="rounded-xl bg-ice/60 px-4 py-3 text-sm font-bold text-deep" hidden>
+    <p id="rts-error" class="rounded-xl bg-white/12 px-4 py-3 text-sm font-bold text-head" hidden>
       還有題目沒有作答，請全部選完再送出。
     </p>
 
     <button
       type="submit"
-      class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
     >
       看我到哪個階段了
     </button>
@@ -136,34 +136,34 @@ const questions = [
 
   <div id="rts-result" class="mt-10 scroll-mt-20" hidden>
     <div id="rts-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
-      <p class="text-xs font-black tracking-widest text-slate-soft uppercase">你的階段</p>
+      <p class="text-xs font-black tracking-widest text-muted uppercase">你的階段</p>
       <p id="rts-stage" class="mt-3 text-xl font-black break-words sm:text-2xl"></p>
-      <p id="rts-summary" class="mt-3 text-sm leading-relaxed break-words text-deep"></p>
+      <p id="rts-summary" class="mt-3 text-sm leading-relaxed break-words text-head"></p>
 
-      <div class="mt-6 rounded-xl bg-white/70 p-5">
-        <p class="text-sm font-bold text-deep">下一步建議</p>
-        <ul id="rts-next" class="mt-2.5 space-y-2 text-sm leading-relaxed break-words text-slate-soft"></ul>
+      <div class="mt-6 rounded-xl bg-white/10 p-5">
+        <p class="text-sm font-bold text-head">下一步建議</p>
+        <ul id="rts-next" class="mt-2.5 space-y-2 text-sm leading-relaxed break-words text-muted"></ul>
       </div>
 
-      <div id="rts-gap-wrap" class="mt-5 rounded-xl bg-white/70 p-5" hidden>
-        <p class="text-sm font-bold text-deep">目前最弱的環節</p>
-        <p id="rts-gap" class="mt-1.5 text-sm leading-relaxed break-words text-slate-soft"></p>
+      <div id="rts-gap-wrap" class="mt-5 rounded-xl bg-white/10 p-5" hidden>
+        <p class="text-sm font-bold text-head">目前最弱的環節</p>
+        <p id="rts-gap" class="mt-1.5 text-sm leading-relaxed break-words text-muted"></p>
       </div>
     </div>
 
-    <div class="mt-6 rounded-xl border border-ice bg-white p-5">
-        <p class="text-xs leading-relaxed break-words text-slate-soft">
+    <div class="mt-6 rounded-xl border border-line bg-panel p-5">
+        <p class="text-xs leading-relaxed break-words text-muted">
           本檢測的判斷邏輯參考運動醫學的臨床評估原則。想了解背後的傷害機轉與防護原理，可參考
-          <a href="/articles" class="font-bold text-brand hover:underline">本站知識庫</a>
+          <a href="/articles" class="font-bold text-accent hover:underline">本站知識庫</a>
           與
-          <a href={SITE_A.url} target="_blank" rel="noopener noreferrer" class="font-bold text-brand hover:underline">{SITE_A.labelLong}</a>。
+          <a href={SITE_A.url} target="_blank" rel="noopener noreferrer" class="font-bold text-accent hover:underline">{SITE_A.labelLong}</a>。
         </p>
       </div>
 
       <button
       type="button"
       id="rts-reset"
-      class="mt-5 rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"
+      class="mt-5 rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-white/8"
       >重新評估</button
     >
   </div>
@@ -271,7 +271,7 @@ const questions = [
       const STAGES = [
         {
           title: '階段一：還在復健期，先不要規劃行程',
-          cls: 'border-red-500 bg-red-50',
+          cls: 'border-red-500 bg-red-500/15',
           summary:
             '目前至少有一項指標明顯落後。這個階段上雪場，再次受傷的風險很高，而且可能造成比第一次更難處理的傷勢。',
           next: [
@@ -283,7 +283,7 @@ const questions = [
         },
         {
           title: '階段二：進行中，距離回歸還有一段',
-          cls: 'border-orange-400 bg-orange-50',
+          cls: 'border-orange-400 bg-orange-500/15',
           summary:
             '你已經脫離急性期，但肌力或功能上仍有明顯缺口。再給自己 2–3 個月的時間，把差距補到九成左右。',
           next: [
@@ -295,7 +295,7 @@ const questions = [
         },
         {
           title: '階段三：接近準備好了，可以開始規劃',
-          cls: 'border-amber-400 bg-amber-50',
+          cls: 'border-amber-400 bg-amber-500/15',
           summary:
             '大部分指標已經接近標準。可以開始規劃一趟「降級版」的回歸行程，但請務必和你的醫師或治療師確認過。',
           next: [
@@ -307,7 +307,7 @@ const questions = [
         },
         {
           title: '階段四：各項指標都達標',
-          cls: 'border-emerald-400 bg-emerald-50',
+          cls: 'border-emerald-400 bg-emerald-500/15',
           summary:
             '六個面向都到位了。這代表你的身體具備回到雪上的條件 —— 但第一趟仍然建議降級，讓身體在真實的雪況下再驗證一次。',
           next: [
@@ -338,7 +338,7 @@ const questions = [
           const li = document.createElement('li');
           li.className = 'flex gap-2.5';
           const dot = document.createElement('span');
-          dot.className = 'shrink-0 text-brand';
+          dot.className = 'shrink-0 text-accent';
           dot.textContent = '·';
           const span = document.createElement('span');
           span.className = 'min-w-0';

@@ -4,7 +4,7 @@ interface Props {
   class?: string;
 }
 const { tone = 'snow', class: cls = '' } = Astro.props;
-const bg = { snow: 'bg-snow', white: 'bg-white', ice: 'bg-ice/50' }[tone];
+const bg = { snow: 'bg-surface', white: 'bg-panel', ice: 'bg-white/8' }[tone];
 ---
 
 <section class={`${bg} ${cls}`}>

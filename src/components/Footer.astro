@@ -3,19 +3,19 @@ import { SITE, NAV, IMAGE_CREDITS } from '../consts';
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-auto border-t border-ice bg-deep text-white">
+<footer class="mt-auto border-t border-line bg-bg text-white">
   <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-3">
     <div class="min-w-0">
       <p class="text-lg font-black break-words">{SITE.name}</p>
-      <p class="mt-2 text-sm leading-relaxed break-words text-brandlight">{SITE.poweredBy}</p>
-      <p class="mt-4 max-w-xs text-sm leading-relaxed break-words text-ice/80">
+      <p class="mt-2 text-sm leading-relaxed break-words text-accent">{SITE.poweredBy}</p>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed break-words text-body/85">
         免費、免註冊、不收集個資的滑雪運動醫學工具平台。
       </p>
     </div>
 
     <nav aria-label="頁尾選單" class="min-w-0">
-      <p class="mb-3 text-sm font-bold text-brandlight">網站導覽</p>
-      <ul class="space-y-2 text-sm text-ice/80">
+      <p class="mb-3 text-sm font-bold text-accent">網站導覽</p>
+      <ul class="space-y-2 text-sm text-body/85">
         {
           NAV.map((item) => (
             <li>
@@ -32,8 +32,8 @@ const year = new Date().getFullYear();
     </nav>
 
     <div class="min-w-0">
-      <p class="mb-3 text-sm font-bold text-brandlight">重要提醒</p>
-      <p class="text-sm leading-relaxed break-words text-ice/70">
+      <p class="mb-3 text-sm font-bold text-accent">重要提醒</p>
+      <p class="text-sm leading-relaxed break-words text-muted">
         本網站內容為一般性健康衛教資訊，不能取代醫師面對面的診察、診斷或治療。若有身體不適或運動傷害，請儘速就醫並與您的主治醫師討論。
       </p>
     </div>
@@ -42,12 +42,12 @@ const year = new Date().getFullYear();
   <!-- 圖片出處（CC BY 授權要求標示作者與來源） -->
   <div class="border-t border-white/10">
     <div class="mx-auto max-w-6xl px-5 py-8">
-      <h2 class="mb-3 text-sm font-bold text-brandlight">圖片出處 Image credits</h2>
-      <ul class="space-y-2 text-xs leading-relaxed text-ice/60">
+      <h2 class="mb-3 text-sm font-bold text-accent">圖片出處 Image credits</h2>
+      <ul class="space-y-2 text-xs leading-relaxed text-muted">
         {
           IMAGE_CREDITS.map((c) => (
             <li class="break-words">
-              <span class="text-ice/80">{c.where}：</span>
+              <span class="text-body/85">{c.where}：</span>
               <a
                 href={c.sourceUrl}
                 target="_blank"
@@ -74,7 +74,7 @@ const year = new Date().getFullYear();
               >
                 {c.license}
               </a>
-              <span class="text-ice/40">（{c.modified}）</span>
+              <span class="text-muted/70">（{c.modified}）</span>
             </li>
           ))
         }
@@ -84,7 +84,7 @@ const year = new Date().getFullYear();
 
   <div class="border-t border-white/10">
     <div
-      class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-ice/60 sm:flex-row sm:items-center sm:justify-between"
+      class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between"
     >
       <p>© {year} {SITE.name}</p>
       <p>Taiwan · Ski &amp; Snowsports Medicine</p>

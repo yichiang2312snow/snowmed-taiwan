@@ -44,10 +44,10 @@ const scope = [
   eyebrow="Ski &amp; Snowsports Medicine"
   description="什麼是滑雪運動醫學？認識雙板與單板的典型受傷機轉、常見傷害類型，以及從行前準備到重返雪場的完整照護範圍。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
       <div class="prose-tc">
-        <p class="text-lg leading-relaxed font-medium text-deep">
+        <p class="text-lg leading-relaxed font-medium text-head">
           滑雪運動醫學（Ski &amp; Snowsports Medicine）是運動醫學的一個次專科，專門處理雪地運動特有的傷害型態、環境風險與回歸規劃。
         </p>
         <p>
@@ -57,28 +57,28 @@ const scope = [
     </div>
   </section>
 
-  <section class="bg-snow">
+  <section class="bg-surface">
     <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
-      <h2 class="text-2xl font-black text-deep sm:text-3xl">常見的雪地運動傷害</h2>
-      <p class="mt-3 max-w-2xl text-base leading-relaxed text-slate-soft">
+      <h2 class="text-2xl font-black text-head sm:text-3xl">常見的雪地運動傷害</h2>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-muted">
         以下整理的是臨床上最常遇到的類型。請注意：這些是一般性的衛教說明，實際診斷仍需經過醫師的理學檢查與必要的影像檢查。
       </p>
 
       <div class="mt-10 space-y-6">
         {
           injuries.map((group) => (
-            <div class="overflow-hidden rounded-2xl border border-ice bg-white">
-              <div class="flex flex-wrap items-center gap-3 border-b border-ice bg-ice/40 px-6 py-4">
-                <h3 class="text-lg font-black text-deep">{group.part}</h3>
-                <span class="rounded-full bg-deep px-3 py-1 text-xs font-bold text-white">
+            <div class="overflow-hidden rounded-2xl border border-line bg-panel">
+              <div class="flex flex-wrap items-center gap-3 border-b border-line bg-white/8 px-6 py-4">
+                <h3 class="text-lg font-black text-head">{group.part}</h3>
+                <span class="rounded-full bg-bg px-3 py-1 text-xs font-bold text-white">
                   {group.who}
                 </span>
               </div>
-              <dl class="divide-y divide-ice">
+              <dl class="divide-y divide-line">
                 {group.items.map(([name, desc]) => (
                   <div class="px-6 py-5">
-                    <dt class="font-bold text-deep">{name}</dt>
-                    <dd class="mt-1.5 text-sm leading-relaxed text-slate-soft">{desc}</dd>
+                    <dt class="font-bold text-head">{name}</dt>
+                    <dd class="mt-1.5 text-sm leading-relaxed text-muted">{desc}</dd>
                   </div>
                 ))}
               </dl>
@@ -89,19 +89,19 @@ const scope = [
     </div>
   </section>
 
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
-      <h2 class="text-2xl font-black text-deep sm:text-3xl">照護範圍：一個完整的循環</h2>
+      <h2 class="text-2xl font-black text-head sm:text-3xl">照護範圍：一個完整的循環</h2>
 
       <ol class="mt-10 grid gap-5 sm:grid-cols-2">
         {
           scope.map(([stage, body], i) => (
-            <li class="rounded-2xl border border-ice bg-snow p-7">
-              <span class="text-xs font-black tracking-widest text-brandlight">
+            <li class="rounded-2xl border border-line bg-surface p-7">
+              <span class="text-xs font-black tracking-widest text-accent">
                 STEP {i + 1}
               </span>
-              <h3 class="mt-2 text-lg font-bold text-deep">{stage}</h3>
-              <p class="mt-3 text-sm leading-relaxed text-slate-soft">{body}</p>
+              <h3 class="mt-2 text-lg font-bold text-head">{stage}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-muted">{body}</p>
             </li>
           ))
         }
@@ -109,29 +109,29 @@ const scope = [
     </div>
   </section>
 
-  <section class="bg-ice/50">
+  <section class="bg-white/8">
     <div class="mx-auto max-w-3xl px-5 py-14">
-      <div class="rounded-2xl border-l-4 border-brand bg-white p-7">
-        <h2 class="text-lg font-black text-deep">在雪場受傷了，當下該怎麼辦？</h2>
-        <ul class="mt-4 space-y-3 text-sm leading-relaxed text-slate-soft">
+      <div class="rounded-2xl border-l-4 border-accent bg-panel p-7">
+        <h2 class="text-lg font-black text-head">在雪場受傷了，當下該怎麼辦？</h2>
+        <ul class="mt-4 space-y-3 text-sm leading-relaxed text-muted">
           <li>
-            <strong class="text-deep">先確保安全：</strong
+            <strong class="text-head">先確保安全：</strong
             >把雪板或雪杖交叉插在自己上方的雪地上，提醒後方來者。不要停在坡道轉折的視線死角。
           </li>
           <li>
-            <strong class="text-deep">不要逞強滑下山：</strong
+            <strong class="text-head">不要逞強滑下山：</strong
             >膝蓋有「啪」的一聲、關節腫得很快、或完全無法承重，都應該直接呼叫雪場巡邏隊（Ski Patrol）。
           </li>
           <li>
-            <strong class="text-deep">頭部撞擊一律停止：</strong
+            <strong class="text-head">頭部撞擊一律停止：</strong
             >即使沒有昏迷，只要有頭暈、噁心、反應遲鈍，當天就不要再上山。
           </li>
           <li>
-            <strong class="text-deep">保留所有資料：</strong
+            <strong class="text-head">保留所有資料：</strong
             >當地診所的診斷書、X 光與 MRI 光碟、用藥紀錄都要留著，回台灣看診時非常關鍵。
           </li>
         </ul>
-        <p class="mt-5 text-xs text-slate-soft">
+        <p class="mt-5 text-xs text-muted">
           以上為一般性原則，不能取代現場的專業判斷。緊急狀況請立即聯絡雪場巡邏隊或當地緊急醫療系統。
         </p>
       </div>

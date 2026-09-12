@@ -10,21 +10,21 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
   description="輸入滑雪出發日期，自動產生分期的行前訓練計畫：肌力打底、離心轉化、平衡專項到賽前減量。"
 >
   <form id="plan-form" class="space-y-6">
-    <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
-      <label for="departure" class="block text-sm font-bold text-deep">出發日期</label>
-      <p class="mt-1 text-xs text-slate-soft">你這趟滑雪行程的第一天。</p>
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+      <label for="departure" class="block text-sm font-bold text-head">出發日期</label>
+      <p class="mt-1 text-xs text-muted">你這趟滑雪行程的第一天。</p>
       <input
         type="date"
         id="departure"
         name="departure"
         required
-        class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep focus:border-brand focus:outline-none"
+        class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head focus:border-accent focus:outline-none"
       />
     </div>
 
-    <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
-      <legend class="px-2 text-sm font-bold text-deep">目前的運動習慣</legend>
-      <p class="mt-1 text-xs text-slate-soft">誠實一點，計畫才會有用。</p>
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+      <legend class="px-2 text-sm font-bold text-head">目前的運動習慣</legend>
+      <p class="mt-1 text-xs text-muted">誠實一點，計畫才會有用。</p>
       <div class="mt-4 grid gap-2">
         {
           [
@@ -33,15 +33,15 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
             { v: 'regular', label: '規律運動，每週 2–3 次' },
             { v: 'active', label: '運動習慣很好，每週 4 次以上' },
           ].map((o) => (
-            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
               <input
                 type="radio"
                 name="level"
                 value={o.v}
                 required
-                class="h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                class="h-4 w-4 shrink-0 accent-[var(--color-accent)]"
               />
-              <span class="min-w-0 break-words text-deep">{o.label}</span>
+              <span class="min-w-0 break-words text-head">{o.label}</span>
             </label>
           ))
         }
@@ -50,37 +50,37 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 
     <button
       type="submit"
-      class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
     >
       產生我的訓練計畫
     </button>
   </form>
 
-  <p id="plan-error" class="mt-4 rounded-xl bg-ice/60 px-4 py-3 text-sm font-bold text-deep" hidden>
+  <p id="plan-error" class="mt-4 rounded-xl bg-white/12 px-4 py-3 text-sm font-bold text-head" hidden>
   </p>
 
   <div id="plan-result" class="mt-10 scroll-mt-20" hidden>
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div class="min-w-0">
-        <p class="text-xs font-black tracking-widest text-brandlight uppercase">你的計畫</p>
-        <h2 id="plan-title" class="mt-1 text-xl font-black break-words text-deep sm:text-2xl"></h2>
+        <p class="text-xs font-black tracking-widest text-accent uppercase">你的計畫</p>
+        <h2 id="plan-title" class="mt-1 text-xl font-black break-words text-head sm:text-2xl"></h2>
       </div>
       <button
         type="button"
         id="plan-print"
-        class="shrink-0 rounded-xl border border-ice bg-white px-4 py-2.5 text-sm font-bold text-deep hover:bg-ice/50 print:hidden"
+        class="shrink-0 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm font-bold text-head hover:bg-white/8 print:hidden"
         >列印 / 存成 PDF</button
       >
     </div>
 
-    <p id="plan-note" class="mt-3 text-sm leading-relaxed break-words text-slate-soft"></p>
+    <p id="plan-note" class="mt-3 text-sm leading-relaxed break-words text-muted"></p>
 
     <div id="plan-weeks" class="mt-7 space-y-4"></div>
 
-    <div class="mt-8 rounded-2xl border border-ice bg-snow p-6 print:hidden">
-      <p class="text-sm font-bold text-deep">不確定自己現在的程度？</p>
-      <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">
-        先做一次<a href="/tools/fitness-check" class="font-bold text-brand hover:underline"
+    <div class="mt-8 rounded-2xl border border-line bg-surface p-6 print:hidden">
+      <p class="text-sm font-bold text-head">不確定自己現在的程度？</p>
+      <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+        先做一次<a href="/tools/fitness-check" class="font-bold text-accent hover:underline"
           >行前體能自我檢測</a
         >，它會告訴你五項能力裡最弱的是哪一項，訓練時就知道該把重點放在哪。
       </p>
@@ -314,23 +314,23 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         weekCursor += len;
 
         const card = document.createElement('div');
-        card.className = 'min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6';
+        card.className = 'min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6';
 
         const head = document.createElement('div');
         head.className = 'flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1';
 
         const h3 = document.createElement('h3');
-        h3.className = 'text-lg font-black text-deep';
+        h3.className = 'text-lg font-black text-head';
         h3.textContent = `${phase.name}（${len} 週）`;
 
         const range = document.createElement('p');
-        range.className = 'text-xs text-slate-soft';
+        range.className = 'text-xs text-muted';
         range.textContent = `${fmt(start)} – ${fmt(end)} · ${freq.perWeek}`;
 
         head.append(h3, range);
 
         const goal = document.createElement('p');
-        goal.className = 'mt-2 text-sm break-words text-brand';
+        goal.className = 'mt-2 text-sm break-words text-accent';
         goal.textContent = `目標：${phase.goal}`;
 
         const ul = document.createElement('ul');
@@ -338,9 +338,9 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         for (const item of phase.items) {
           const li = document.createElement('li');
           li.className =
-            'flex min-w-0 gap-2.5 rounded-xl border border-ice bg-white px-4 py-2.5 text-sm leading-relaxed break-words text-slate-soft';
+            'flex min-w-0 gap-2.5 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm leading-relaxed break-words text-muted';
           const dot = document.createElement('span');
-          dot.className = 'shrink-0 text-brandlight';
+          dot.className = 'shrink-0 text-accent';
           dot.textContent = '·';
           const span = document.createElement('span');
           span.className = 'min-w-0';

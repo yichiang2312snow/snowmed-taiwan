@@ -54,8 +54,8 @@ const groups = [
   summary="在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？勾選符合的狀況，這個工具會依照紅旗症狀給你建議行動。"
   description="滑雪受傷當下該怎麼辦？依照紅旗症狀逐步判斷是否需要呼叫雪場巡邏隊、當地就醫，或停止滑行後觀察。"
 >
-  <div class="rounded-2xl border-l-4 border-red-500 bg-red-50 p-5">
-    <p class="text-sm leading-relaxed break-words text-red-800">
+  <div class="rounded-2xl border-l-4 border-red-500 bg-red-500/15 p-5">
+    <p class="text-sm leading-relaxed break-words text-red-200">
       <strong>如果情況危急，先打電話，不要先填這個表。</strong>
       意識不清、大量出血、呼吸困難、懷疑頸椎或脊椎受傷 —— 立刻聯絡雪場巡邏隊或當地緊急醫療系統。
     </p>
@@ -64,7 +64,7 @@ const groups = [
   <form id="triage-form" class="mt-8 space-y-7">
     {
       groups.map((g) => (
-        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5 sm:p-6">
+        <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
           <legend class="px-2">
             <span
               class:list={[
@@ -77,21 +77,21 @@ const groups = [
               ]}
               aria-hidden="true"
             />
-            <span class="ml-2 align-middle text-sm font-black text-deep">{g.heading}</span>
+            <span class="ml-2 align-middle text-sm font-black text-head">{g.heading}</span>
           </legend>
 
-          <p class="mt-1 text-xs break-words text-slate-soft">{g.hint}</p>
+          <p class="mt-1 text-xs break-words text-muted">{g.hint}</p>
 
           <div class="mt-4 grid gap-2">
             {g.items.map((item) => (
-              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-ice bg-white px-4 py-3 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-ice/60">
+              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
                 <input
                   type="checkbox"
                   name={g.id}
                   value={item}
-                  class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-brand)]"
+                  class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
                 />
-                <span class="min-w-0 leading-relaxed break-words text-deep">{item}</span>
+                <span class="min-w-0 leading-relaxed break-words text-head">{item}</span>
               </label>
             ))}
           </div>
@@ -102,14 +102,14 @@ const groups = [
     <div class="flex flex-wrap gap-3">
       <button
         type="submit"
-        class="flex-1 rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep"
+        class="flex-1 rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
       >
         看建議
       </button>
       <button
         type="reset"
         id="tr-reset"
-        class="rounded-xl border border-ice bg-white px-6 py-4 text-sm font-bold text-deep hover:bg-ice/50"
+        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-white/8"
       >
         清除
       </button>
@@ -118,21 +118,21 @@ const groups = [
 
   <div id="triage-result" class="mt-10 scroll-mt-20" hidden>
     <div id="tr-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
-      <p class="text-xs font-black tracking-widest text-slate-soft uppercase">建議行動</p>
+      <p class="text-xs font-black tracking-widest text-muted uppercase">建議行動</p>
       <p class="mt-3 flex flex-wrap items-center gap-3">
         <span id="tr-emoji" class="text-4xl leading-none" aria-hidden="true"></span>
         <span id="tr-title" class="text-xl font-black break-words sm:text-2xl"></span>
       </p>
 
-      <ul id="tr-actions" class="mt-6 space-y-3 text-sm leading-relaxed break-words text-deep"></ul>
+      <ul id="tr-actions" class="mt-6 space-y-3 text-sm leading-relaxed break-words text-head"></ul>
 
-      <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-white/70 p-5" hidden>
-        <p class="text-sm font-bold text-deep">你勾選的項目中，觸發判斷的是：</p>
-        <ul id="tr-flags" class="mt-2 space-y-1.5 text-sm break-words text-slate-soft"></ul>
+      <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-white/10 p-5" hidden>
+        <p class="text-sm font-bold text-head">你勾選的項目中，觸發判斷的是：</p>
+        <ul id="tr-flags" class="mt-2 space-y-1.5 text-sm break-words text-muted"></ul>
       </div>
     </div>
 
-    <p class="mt-5 text-xs leading-relaxed break-words text-slate-soft">
+    <p class="mt-5 text-xs leading-relaxed break-words text-muted">
       這個工具在「可能沒事」和「該找人看」之間，一律選擇後者。如果你的感覺比結果更嚴重，請以你的感覺為準。
     </p>
   </div>
@@ -187,7 +187,7 @@ const groups = [
         red: {
           emoji: '🔴',
           title: '立即呼叫雪場巡邏隊',
-          cls: 'border-red-500 bg-red-50',
+          cls: 'border-red-500 bg-red-500/15',
           actions: [
             '不要嘗試自己移動或滑下山。',
             '請同行者立刻聯絡雪場巡邏隊（Ski Patrol），或撥打當地緊急電話。',
@@ -199,7 +199,7 @@ const groups = [
         orange: {
           emoji: '🟠',
           title: '今天停止滑行，儘快在當地就醫',
-          cls: 'border-orange-400 bg-orange-50',
+          cls: 'border-orange-400 bg-orange-500/15',
           actions: [
             '今天不要再上山，即使覺得「好像還可以」。',
             '請雪場巡邏隊或當地診所做初步評估。頭部撞擊後的症狀尤其不能拖。',
@@ -211,7 +211,7 @@ const groups = [
         yellow: {
           emoji: '🟡',
           title: '停止今天的滑行，回國後就醫',
-          cls: 'border-amber-400 bg-amber-50',
+          cls: 'border-amber-400 bg-amber-500/15',
           actions: [
             '今天收工。繼續滑會讓原本單純的傷勢變複雜。',
             '冰敷 15–20 分鐘、每隔幾小時一次，並適度加壓、抬高。',
@@ -223,7 +223,7 @@ const groups = [
         green: {
           emoji: '🟢',
           title: '沒有符合需要立即處理的警訊',
-          cls: 'border-emerald-400 bg-emerald-50',
+          cls: 'border-emerald-400 bg-emerald-500/15',
           actions: [
             '目前沒有勾到任何一組的紅旗症狀。',
             '還是建議降低今天剩下的強度，選擇熟悉的緩坡。',

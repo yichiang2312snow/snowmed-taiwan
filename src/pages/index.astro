@@ -47,7 +47,7 @@ const trust = [
 
 <BaseLayout>
   <!-- HERO -->
-  <section class="relative isolate overflow-hidden bg-deep text-white">
+  <section class="relative isolate overflow-hidden bg-bg text-white">
     <Image
       src={heroImage}
       alt="高山雪場的滑雪道與纜車，遠方是連綿的雪山稜線"
@@ -58,14 +58,14 @@ const trust = [
       fetchpriority="high"
     />
     <div
-      class="absolute inset-0 -z-10 bg-gradient-to-r from-deep/96 via-deep/90 to-deep/72"
+      class="absolute inset-0 -z-10 bg-gradient-to-r from-bg/96 via-bg/90 to-bg/70"
       aria-hidden="true"
     >
     </div>
 
     <div class="mx-auto max-w-5xl px-5 py-16 sm:py-24 lg:py-28">
       <p
-        class="mb-5 inline-block rounded-full border border-brandlight/60 bg-deep/40 px-3.5 py-1.5 text-[11px] font-bold tracking-[0.12em] text-brandlight sm:px-4 sm:text-xs"
+        class="mb-5 inline-block rounded-full border border-accent/60 bg-bg/50 px-3.5 py-1.5 text-[11px] font-bold tracking-[0.12em] text-accent sm:px-4 sm:text-xs"
       >
         免費 · 免註冊 · 不收集個資
       </p>
@@ -74,7 +74,7 @@ const trust = [
         <span class="block">台灣滑雪運動醫學</span>
         <span class="block">科學平台</span>
       </h1>
-      <p class="mt-3 text-xs font-medium text-brandlight sm:text-sm">
+      <p class="mt-3 text-xs font-medium text-accent sm:text-sm">
         {SITE.poweredBy}
       </p>
 
@@ -82,14 +82,14 @@ const trust = [
         你可能還不認識我，但這裡有你出發滑雪前最需要的小工具。
       </p>
 
-      <p class="mt-4 max-w-2xl text-base leading-relaxed break-words text-ice/90 sm:text-lg">
+      <p class="mt-4 max-w-2xl text-base leading-relaxed break-words text-body sm:text-lg">
         第一次準備出國滑雪，是否覺得裝備、體能、海外保險排山倒海而來？這個網站專門為滑雪初心者與雪友打造——沒有複雜的理論，只有即點即用的互動小工具與防護清單，幫你省下摸索的力氣，安心享受雪地裡的每一步。
       </p>
 
       <div class="mt-9 flex flex-wrap gap-3">
         <a
           href="#tools"
-          class="rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-deep transition-colors hover:bg-ice"
+          class="rounded-xl bg-panel px-6 py-3.5 text-sm font-bold text-head transition-colors hover:bg-white/12"
           >直接開始用工具</a
         >
         <a
@@ -102,12 +102,12 @@ const trust = [
   </section>
 
   <!-- 工具 -->
-  <section id="tools" class="scroll-mt-20 bg-snow">
+  <section id="tools" class="scroll-mt-20 bg-surface">
     <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
       <div class="max-w-2xl">
-        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Tools</p>
-        <h2 class="text-2xl font-black text-deep sm:text-3xl">{TOOLS.length} 個滑雪醫學小工具</h2>
-        <p class="mt-3 text-base leading-relaxed break-words text-slate-soft">
+        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Tools</p>
+        <h2 class="text-2xl font-black text-head sm:text-3xl">{TOOLS.length} 個滑雪醫學小工具</h2>
+        <p class="mt-3 text-base leading-relaxed break-words text-muted">
           不用註冊、不用留 email、不用等回覆。點進去就能用，結果只有你自己看得到。
         </p>
       </div>
@@ -119,15 +119,15 @@ const trust = [
   </section>
 
   <!-- 海外受傷緊急入口 -->
-  <section class="bg-red-50">
+  <section class="bg-red-500/15">
     <div class="mx-auto max-w-6xl px-5 py-10 sm:py-12">
-      <div class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border-2 border-red-500 bg-white p-6 sm:p-8">
+      <div class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border-2 border-red-500 bg-panel p-6 sm:p-8">
         <div class="min-w-0">
-          <p class="text-xs font-black tracking-widest text-red-700 uppercase">Emergency</p>
-          <h2 class="mt-2 text-xl font-black break-words text-deep sm:text-2xl">
+          <p class="text-xs font-black tracking-widest text-red-200 uppercase">Emergency</p>
+          <h2 class="mt-2 text-xl font-black break-words text-head sm:text-2xl">
             人在國外雪場，受傷了？
           </h2>
-          <p class="mt-2 max-w-xl text-sm leading-relaxed break-words text-slate-soft">
+          <p class="mt-2 max-w-xl text-sm leading-relaxed break-words text-muted">
             急救電話、PRICE 處置原則、日本主要雪場附近的醫院與診所（附官方來源），以及回國申請理賠必備的文件清單。
           </p>
         </div>
@@ -141,15 +141,15 @@ const trust = [
   </section>
 
   <!-- 為什麼可信 -->
-  <section id="why-trust" class="scroll-mt-20 bg-white">
+  <section id="why-trust" class="scroll-mt-20 bg-panel">
     <div class="mx-auto max-w-5xl px-5 py-14 sm:py-20">
       <div class="max-w-2xl">
-        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Why trust this</p>
-        <h2 class="text-2xl font-black break-words text-deep sm:text-3xl">
+        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Why trust this</p>
+        <h2 class="text-2xl font-black break-words text-head sm:text-3xl">
           你不認識我，為什麼要用這裡的東西？
         </h2>
-        <p class="mt-3 text-base leading-relaxed break-words text-slate-soft">
-          這是一個合理的問題。所以這個平台的設計原則是：<strong class="text-deep"
+        <p class="mt-3 text-base leading-relaxed break-words text-muted">
+          這是一個合理的問題。所以這個平台的設計原則是：<strong class="text-head"
             >讓你不需要信任任何人，也能自己判斷內容能不能用。</strong
           >
         </p>
@@ -158,42 +158,42 @@ const trust = [
       <div class="mt-10 grid gap-5 sm:grid-cols-2">
         {
           trust.map((t, i) => (
-            <div class="min-w-0 rounded-2xl border border-ice bg-snow p-6">
-              <span class="text-xs font-black tracking-widest text-brandlight">
+            <div class="min-w-0 rounded-2xl border border-line bg-surface p-6">
+              <span class="text-xs font-black tracking-widest text-accent">
                 0{i + 1}
               </span>
-              <h3 class="mt-2 text-lg font-bold break-words text-deep">{t.title}</h3>
-              <p class="mt-2.5 text-sm leading-relaxed break-words text-slate-soft">{t.body}</p>
+              <h3 class="mt-2 text-lg font-bold break-words text-head">{t.title}</h3>
+              <p class="mt-2.5 text-sm leading-relaxed break-words text-muted">{t.body}</p>
             </div>
           ))
         }
       </div>
 
-      <div class="mt-8 rounded-2xl border-l-4 border-brand bg-ice/40 p-6">
-        <p class="text-sm leading-relaxed break-words text-deep">
+      <div class="mt-8 rounded-2xl border-l-4 border-accent bg-white/8 p-6">
+        <p class="text-sm leading-relaxed break-words text-head">
           <strong>那我是誰？</strong>
           我是{SITE.doctor}，全台第一位滑雪運動醫學專科醫師。這個平台是我把門診裡重複回答了無數次的問題，整理成任何人都能自己使用的形式。
-          <a href="/about" class="font-bold text-brand hover:underline">關於這個平台的更多說明 →</a>
+          <a href="/about" class="font-bold text-accent hover:underline">關於這個平台的更多說明 →</a>
         </p>
       </div>
     </div>
   </section>
 
   <!-- 許願區 -->
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
-      <div class="rounded-2xl border border-ice bg-snow p-7 sm:p-10">
-        <p class="text-xs font-black tracking-[0.2em] text-brand uppercase">Wishlist</p>
-        <h2 class="mt-2 text-2xl font-black break-words text-deep sm:text-3xl">
+      <div class="rounded-2xl border border-line bg-surface p-7 sm:p-10">
+        <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">Wishlist</p>
+        <h2 class="mt-2 text-2xl font-black break-words text-head sm:text-3xl">
           想要什麼工具？寫下來
         </h2>
-        <p class="mt-3 max-w-2xl text-base leading-relaxed break-words text-slate-soft">
+        <p class="mt-3 max-w-2xl text-base leading-relaxed break-words text-muted">
           滑雪族群裡新手很多，每個人卡住的地方都不一樣。如果你想到某個「要是有個東西能幫我 OO 就好了」的時刻，寫在許願區
           —— 我會把最多人需要的做成工具。免註冊、可匿名。
         </p>
         <a
           href="/wishlist"
-          class="mt-7 inline-block rounded-xl bg-brand px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-deep"
+          class="mt-7 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
           >去許願區 →</a
         >
       </div>
@@ -201,16 +201,16 @@ const trust = [
   </section>
 
   <!-- 知識庫（根目錄卡片索引） -->
-  <section id="articles" class="scroll-mt-20 bg-snow">
+  <section id="articles" class="scroll-mt-20 bg-surface">
     <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div class="min-w-0">
-          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-brand uppercase">Knowledge</p>
-          <h2 class="text-2xl font-black text-deep sm:text-3xl">知識庫</h2>
+          <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Knowledge</p>
+          <h2 class="text-2xl font-black text-head sm:text-3xl">知識庫</h2>
         </div>
         {
           siteUpdated && (
-            <p class="text-xs text-slate-soft">
+            <p class="text-xs text-muted">
               共 {posts.length} 篇 · 最後更新 {formatDate(siteUpdated)}
             </p>
           )
@@ -235,7 +235,7 @@ const trust = [
             ))}
           </div>
         ) : (
-          <p class="mt-10 rounded-2xl border-2 border-dashed border-ice bg-white p-10 text-center text-sm text-slate-soft">
+          <p class="mt-10 rounded-2xl border-2 border-dashed border-line bg-panel p-10 text-center text-sm text-muted">
             還沒有文章。
           </p>
         )

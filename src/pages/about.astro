@@ -31,10 +31,10 @@ const principles = [
   eyebrow="About"
   description="台灣滑雪運動醫學科學平台為什麼存在、內容怎麼產生、以及為什麼你不需要信任任何人也能使用它。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
       <div class="prose-tc">
-        <p class="text-lg leading-relaxed font-medium text-deep">
+        <p class="text-lg leading-relaxed font-medium text-head">
           台灣沒有雪，卻有幾十萬名滑雪愛好者。我們有世界級的雪友熱情，卻幾乎沒有對應的醫療支援系統。
         </p>
 
@@ -70,10 +70,10 @@ const principles = [
       <ul class="mt-12 space-y-4">
         {
           principles.map((p, i) => (
-            <li class="min-w-0 rounded-2xl border border-ice bg-snow p-6">
-              <span class="text-xs font-black tracking-widest text-brandlight">0{i + 1}</span>
-              <h3 class="mt-2 text-lg font-bold break-words text-deep">{p.title}</h3>
-              <p class="mt-2.5 text-sm leading-relaxed break-words text-slate-soft">{p.body}</p>
+            <li class="min-w-0 rounded-2xl border border-line bg-surface p-6">
+              <span class="text-xs font-black tracking-widest text-accent">0{i + 1}</span>
+              <h3 class="mt-2 text-lg font-bold break-words text-head">{p.title}</h3>
+              <p class="mt-2.5 text-sm leading-relaxed break-words text-muted">{p.body}</p>
             </li>
           ))
         }
@@ -81,43 +81,43 @@ const principles = [
     </div>
   </section>
 
-  <section class="bg-snow">
+  <section class="bg-surface">
     <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
-      <h2 class="text-2xl font-black text-deep">那，做這個平台的人是誰？</h2>
+      <h2 class="text-2xl font-black text-head">那，做這個平台的人是誰？</h2>
 
-      <div class="mt-6 rounded-2xl border border-ice bg-white p-6 sm:p-8">
-        <p class="text-lg font-black text-deep">{SITE.doctor}</p>
-        <p class="mt-1 text-sm text-slate-soft">{SITE.doctorEn}</p>
-        <p class="mt-4 text-sm leading-relaxed break-words text-slate-soft">
+      <div class="mt-6 rounded-2xl border border-line bg-panel p-6 sm:p-8">
+        <p class="text-lg font-black text-head">{SITE.doctor}</p>
+        <p class="mt-1 text-sm text-muted">{SITE.doctorEn}</p>
+        <p class="mt-4 text-sm leading-relaxed break-words text-muted">
           全台第一位滑雪運動醫學專科醫師。這個平台上的工具與文章由我撰寫與維護。
         </p>
-        <p class="mt-4 text-sm leading-relaxed break-words text-slate-soft">
+        <p class="mt-4 text-sm leading-relaxed break-words text-muted">
           如果你想看更多深入的衛教內容，或是需要個別化的門診諮詢，那些放在我的個人網站：
         </p>
         <a
           href={SITE_A.url}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-5 inline-block rounded-xl bg-brand px-6 py-3 text-sm font-bold text-white hover:bg-deep"
+          class="mt-5 inline-block rounded-xl bg-white px-6 py-3 text-sm font-bold text-bg hover:bg-accent"
           >前往個人網站 →</a
         >
       </div>
 
-      <div class="mt-8 rounded-2xl border-l-4 border-brand bg-ice/40 p-6">
-        <h3 class="font-black text-deep">想要什麼工具？</h3>
-        <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">
+      <div class="mt-8 rounded-2xl border-l-4 border-accent bg-white/8 p-6">
+        <h3 class="font-black text-head">想要什麼工具？</h3>
+        <p class="mt-2 text-sm leading-relaxed break-words text-muted">
           這個平台會持續增加工具，而決定做什麼的依據，就是雪友實際說出來的需求。歡迎到
-          <a href="/wishlist" class="font-bold text-brand hover:underline">許願留言區</a>
+          <a href="/wishlist" class="font-bold text-accent hover:underline">許願留言區</a>
           留下你的想法 —— 免註冊、可匿名。
         </p>
       </div>
     </div>
   </section>
 
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
-      <h2 class="text-2xl font-black text-deep">內容的界線</h2>
-      <div class="prose-tc mt-4 text-slate-soft">
+      <h2 class="text-2xl font-black text-head">內容的界線</h2>
+      <div class="prose-tc mt-4 text-muted">
         <p>
           這個平台上的所有內容都是<strong>一般性的健康衛教資訊</strong>，不是醫療診斷，也不能取代醫師面對面的診察、檢查與治療。
         </p>
@@ -129,8 +129,8 @@ const principles = [
         </p>
       </div>
 
-      <h2 class="mt-12 text-2xl font-black text-deep">圖片授權</h2>
-      <p class="mt-3 text-sm leading-relaxed break-words text-slate-soft">
+      <h2 class="mt-12 text-2xl font-black text-head">圖片授權</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-muted">
         本站使用的照片全部採用 CC BY（姓名標示）授權，共 {IMAGE_CREDITS.length} 張，完整的作者、授權與來源標示列在每一頁的頁尾。
       </p>
     </div>

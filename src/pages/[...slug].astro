@@ -38,20 +38,20 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
 
   <article>
     <!-- HERO 區 -->
-    <header class="border-b border-ice bg-white">
+    <header class="border-b border-line bg-panel">
       <div class="mx-auto max-w-3xl px-5 pt-10 pb-8 sm:pt-16">
-        <a href="/" class="text-sm font-bold text-brand hover:underline">← 回文章列表</a>
+        <a href="/" class="text-sm font-bold text-accent hover:underline">← 回文章列表</a>
 
         <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
-          <span class="rounded-full bg-ice px-3 py-1 font-bold text-deep">
+          <span class="rounded-full bg-white/12 px-3 py-1 font-bold text-head">
             {entry.data.category}
           </span>
-          <time datetime={entry.data.date.toISOString()} class="text-slate-soft">
+          <time datetime={entry.data.date.toISOString()} class="text-muted">
             發佈於 {formatDate(entry.data.date)}
           </time>
           {
             showUpdated && updated && (
-              <time datetime={updated.toISOString()} class="text-slate-soft">
+              <time datetime={updated.toISOString()} class="text-muted">
                 · 最後更新 {formatDate(updated)}
               </time>
             )
@@ -59,29 +59,29 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
         </div>
 
         <h1
-          class="mt-4 text-2xl leading-snug font-black break-words text-deep sm:text-4xl"
+          class="mt-4 text-2xl leading-snug font-black break-words text-head sm:text-4xl"
         >
           {entry.data.title}
         </h1>
 
-        <p class="mt-4 text-base leading-relaxed break-words text-slate-soft sm:text-lg">
+        <p class="mt-4 text-base leading-relaxed break-words text-muted sm:text-lg">
           {entry.data.description}
         </p>
 
         <div
-          class="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-ice pt-5 text-sm"
+          class="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line pt-5 text-sm"
         >
           <div class="flex min-w-0 items-center gap-2.5">
             <span
-              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-deep text-xs font-black text-brandlight"
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-bg text-xs font-black text-accent"
               aria-hidden="true">楊</span
             >
             <span class="min-w-0">
-              <span class="block font-bold break-words text-deep">{entry.data.author}</span>
-              <span class="block text-xs text-slate-soft">作者</span>
+              <span class="block font-bold break-words text-head">{entry.data.author}</span>
+              <span class="block text-xs text-muted">作者</span>
             </span>
           </div>
-          <ViewCount slug={entry.id} mode="article" class="shrink-0 text-slate-soft" />
+          <ViewCount slug={entry.id} mode="article" class="shrink-0 text-muted" />
         </div>
 
         {
@@ -93,7 +93,7 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
                 alt={entry.data.heroAlt ?? ''}
                 widths={[640, 1024, 1600]}
                 sizes="(max-width: 768px) 100vw, 768px"
-                class="h-auto w-full rounded-2xl border border-ice"
+                class="h-auto w-full rounded-2xl border border-line"
                 loading="eager"
               />
             </figure>
@@ -103,7 +103,7 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
     </header>
 
     <!-- 內文 -->
-    <div class="bg-white">
+    <div class="bg-panel">
       <div class="prose-tc mx-auto max-w-3xl px-5 py-10 break-words sm:py-14">
         <Content />
       </div>
@@ -111,11 +111,11 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
 
     {
       entry.data.tags.length > 0 && (
-        <div class="bg-white">
+        <div class="bg-panel">
           <div class="mx-auto max-w-3xl px-5 pb-12">
-            <div class="flex flex-wrap gap-2 border-t border-ice pt-6">
+            <div class="flex flex-wrap gap-2 border-t border-line pt-6">
               {entry.data.tags.map((t) => (
-                <span class="rounded-full bg-snow px-3 py-1.5 text-xs font-medium text-slate-soft">
+                <span class="rounded-full bg-surface px-3 py-1.5 text-xs font-medium text-muted">
                   #{t}
                 </span>
               ))}
@@ -125,9 +125,9 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
       )
     }
 
-    <div class="bg-ice/40">
+    <div class="bg-white/8">
       <div class="mx-auto max-w-3xl px-5 py-10">
-        <p class="text-xs leading-relaxed break-words text-slate-soft">
+        <p class="text-xs leading-relaxed break-words text-muted">
           本文為一般性健康衛教資訊，依據撰稿當下的臨床共識整理，不能取代醫師面對面的診察、診斷或治療。每個人的傷勢與身體條件不同，實際處置請與您的主治醫師討論。
         </p>
       </div>
@@ -136,9 +136,9 @@ const others = (await getCollection('articles', ({ data }) => !data.draft))
 
   {
     others.length > 0 && (
-      <section class="bg-snow">
+      <section class="bg-surface">
         <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
-          <h2 class="text-xl font-black text-deep sm:text-2xl">其他文章</h2>
+          <h2 class="text-xl font-black text-head sm:text-2xl">其他文章</h2>
           <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {others.map(({ entry: e, updated: u }) => (
               <ArticleCard

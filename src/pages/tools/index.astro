@@ -9,9 +9,9 @@ import { TOOLS } from '../../consts';
   eyebrow="Tools"
   description="免費、免註冊的滑雪運動醫學工具：行前體能檢測、訓練計畫產生器、受傷分流判斷、回歸雪場評估、出發前檢查清單。"
 >
-  <section class="bg-white">
+  <section class="bg-panel">
     <div class="mx-auto max-w-6xl px-5 py-12 sm:py-16">
-      <p class="max-w-2xl text-base leading-relaxed break-words text-slate-soft">
+      <p class="max-w-2xl text-base leading-relaxed break-words text-muted">
         每個工具都可以直接使用，不需要註冊、不需要留下任何聯絡方式。你填的資料只留在自己的瀏覽器裡，不會傳送到任何伺服器。
       </p>
 
@@ -19,11 +19,17 @@ import { TOOLS } from '../../consts';
         {TOOLS.map((t) => <ToolCard {...t} />)}
       </div>
 
-      <div class="mt-12 rounded-2xl border border-ice bg-snow p-6">
-        <h2 class="font-black text-deep">想要什麼工具？</h2>
-        <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">
+      <div class="mt-12 rounded-2xl border border-line bg-surface p-6">
+        <h2 class="font-black text-head">想要什麼工具？</h2>
+        <p class="mt-2 text-sm leading-relaxed break-words text-muted">
           這個平台會持續增加工具。如果你在準備滑雪或處理傷勢的過程中，遇到某個「如果有個東西能幫我算一下就好了」的時刻，
-          歡迎<a href="/about" class="font-bold text-brand hover:underline">告訴我</a>。
+          歡迎<a href="/wishlist" class="font-bold text-accent hover:underline">告訴我</a>。
+        </p>
+        <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+          或是覺得某個工具哪裡使用起來不順手的話，也可以在<a
+            href="/wishlist"
+            class="font-bold text-accent hover:underline">許願留言區</a
+          >留言回覆喔。
         </p>
       </div>
     </div>

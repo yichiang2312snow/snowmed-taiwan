@@ -45,11 +45,11 @@ const filters = [
   <form id="cl-filters" class="space-y-5 print:hidden">
     {
       filters.map((f) => (
-        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
-          <legend class="px-2 text-sm font-bold text-deep">{f.label}</legend>
+        <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <legend class="px-2 text-sm font-bold text-head">{f.label}</legend>
           <div class="mt-3 flex flex-wrap gap-2">
             {f.options.map((o, i) => (
-              <label class="min-w-0 cursor-pointer rounded-xl border border-ice bg-white px-4 py-2.5 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
+              <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-4 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
                 <input
                   type="radio"
                   name={f.name}
@@ -67,35 +67,35 @@ const filters = [
   </form>
 
   <!-- 進度 -->
-  <div class="mt-8 rounded-2xl border border-ice bg-deep p-5 text-white sm:p-6">
+  <div class="mt-8 rounded-2xl border border-line bg-bg p-5 text-white sm:p-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
       <p class="text-sm font-bold">你的清單完成度</p>
       <p class="text-sm tabular-nums">
         <span id="cl-done" class="text-2xl font-black">0</span>
-        <span class="text-ice/70"> / <span id="cl-total">0</span> 項</span>
+        <span class="text-muted"> / <span id="cl-total">0</span> 項</span>
       </p>
     </div>
     <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-white/20">
       <div
         id="cl-bar"
-        class="h-full rounded-full bg-brandlight transition-all duration-500"
+        class="h-full rounded-full bg-accent transition-all duration-500"
         style="width:0%"
       >
       </div>
     </div>
-    <p id="cl-critical" class="mt-3 text-xs text-ice/80"></p>
+    <p id="cl-critical" class="mt-3 text-xs text-body/85"></p>
   </div>
 
   <div class="mt-5 flex flex-wrap gap-3 print:hidden">
     <button
       type="button"
       id="cl-print"
-      class="rounded-xl bg-brand px-5 py-3 text-sm font-bold text-white hover:bg-deep">列印 / 存成 PDF</button
+      class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-bg hover:bg-accent">列印 / 存成 PDF</button
     >
     <button
       type="button"
       id="cl-clear"
-      class="rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"
+      class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-white/8"
       >清除所有勾選</button
     >
   </div>
@@ -109,9 +109,9 @@ const filters = [
             <span class="text-xl leading-none" aria-hidden="true">
               {section.emoji}
             </span>
-            <h2 class="text-lg font-black break-words text-deep sm:text-xl">{section.title}</h2>
+            <h2 class="text-lg font-black break-words text-head sm:text-xl">{section.title}</h2>
           </div>
-          <p class="mt-1.5 text-sm break-words text-slate-soft">{section.intro}</p>
+          <p class="mt-1.5 text-sm break-words text-muted">{section.intro}</p>
 
           <ul class="mt-4 space-y-2.5">
             {section.items.map((item) => (
@@ -120,26 +120,26 @@ const filters = [
                 data-boards={(item.boards ?? []).join(',')}
                 data-levels={(item.levels ?? []).join(',')}
                 data-injuries={(item.injuries ?? []).join(',')}
-                class="min-w-0 overflow-hidden rounded-xl border border-ice bg-white"
+                class="min-w-0 overflow-hidden rounded-xl border border-line bg-panel"
               >
                 <label class="flex min-w-0 cursor-pointer items-start gap-3 p-4">
                   <input
                     type="checkbox"
                     data-check
                     value={item.id}
-                    class="mt-1 h-4.5 w-4.5 shrink-0 accent-[var(--color-brand)]"
+                    class="mt-1 h-4.5 w-4.5 shrink-0 accent-[var(--color-accent)]"
                   />
                   <span class="min-w-0">
-                    <span class="block text-sm leading-relaxed font-medium break-words text-deep">
+                    <span class="block text-sm leading-relaxed font-medium break-words text-head">
                       {item.label}
                       {item.critical && (
-                        <span class="ml-2 rounded-full bg-ice px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-deep">
+                        <span class="ml-2 rounded-full bg-white/12 px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-head">
                           重點
                         </span>
                       )}
                     </span>
                     {item.why && (
-                      <span class="mt-1.5 block text-xs leading-relaxed break-words text-slate-soft">
+                      <span class="mt-1.5 block text-xs leading-relaxed break-words text-muted">
                         {item.why}
                       </span>
                     )}

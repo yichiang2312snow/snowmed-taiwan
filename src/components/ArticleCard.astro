@@ -22,11 +22,11 @@ const showUpdated = isUpdated(date, updated);
 ---
 
 <article
-  class="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-ice bg-white transition-shadow hover:shadow-xl hover:shadow-deep/5"
+  class="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel transition-shadow hover:shadow-xl hover:shadow-deep/5"
 >
   {
     image && (
-      <div class="aspect-[16/7] w-full overflow-hidden bg-ice">
+      <div class="aspect-[16/7] w-full overflow-hidden bg-white/12">
         <Image
           src={image}
           alt={imageAlt ?? ''}
@@ -41,29 +41,29 @@ const showUpdated = isUpdated(date, updated);
 
   <div class="flex min-w-0 flex-1 flex-col p-6">
     <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
-      <span class="rounded-full bg-ice px-3 py-1 font-bold text-deep">{category}</span>
-      <time datetime={date.toISOString()} class="text-slate-soft">
+      <span class="rounded-full bg-white/12 px-3 py-1 font-bold text-head">{category}</span>
+      <time datetime={date.toISOString()} class="text-muted">
         {formatDate(date)}
       </time>
       {
         showUpdated && updated && (
-          <span class="text-slate-soft">· 更新於 {formatDate(updated)}</span>
+          <span class="text-muted">· 更新於 {formatDate(updated)}</span>
         )
       }
     </div>
 
-    <h2 class="text-lg leading-snug font-bold break-words text-deep sm:text-xl">
-      <a href={`/${slug}`} class="after:absolute after:inset-0 group-hover:text-brand">
+    <h2 class="text-lg leading-snug font-bold break-words text-head sm:text-xl">
+      <a href={`/${slug}`} class="after:absolute after:inset-0 group-hover:text-accent">
         {title}
       </a>
     </h2>
 
-    <p class="mt-2.5 line-clamp-3 text-sm leading-relaxed break-words text-slate-soft">
+    <p class="mt-2.5 line-clamp-3 text-sm leading-relaxed break-words text-muted">
       {description}
     </p>
 
     <div
-      class="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-ice pt-4 text-xs text-slate-soft"
+      class="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line pt-4 text-xs text-muted"
     >
       <span class="min-w-0 truncate">{author}</span>
       <ViewCount slug={slug} mode="index" class="shrink-0" />
