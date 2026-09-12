@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
+import { SITE_A } from '../../consts';
 
 const questions = [
   {
@@ -150,7 +151,16 @@ const questions = [
       </div>
     </div>
 
-    <button
+    <div class="mt-6 rounded-xl border border-ice bg-white p-5">
+        <p class="text-xs leading-relaxed break-words text-slate-soft">
+          本檢測的判斷邏輯參考運動醫學的臨床評估原則。想了解背後的傷害機轉與防護原理，可參考
+          <a href="/articles" class="font-bold text-brand hover:underline">本站知識庫</a>
+          與
+          <a href={SITE_A.url} target="_blank" rel="noopener noreferrer" class="font-bold text-brand hover:underline">{SITE_A.labelLong}</a>。
+        </p>
+      </div>
+
+      <button
       type="button"
       id="rts-reset"
       class="mt-5 rounded-xl border border-ice bg-white px-5 py-3 text-sm font-bold text-deep hover:bg-ice/50"

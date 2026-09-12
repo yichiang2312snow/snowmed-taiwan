@@ -1,0 +1,435 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { RESORTS, EMERGENCY_NUMBER } from '../data/resorts';
+import { SITE_A } from '../consts';
+
+const priceSteps = [
+  {
+    letter: 'P',
+    word: 'Protection',
+    zh: '保護',
+    body: '先讓受傷部位不再受到更多外力。停止活動、離開危險區域、必要時固定。這一步最常被跳過，也是代價最高的一步。',
+  },
+  {
+    letter: 'R',
+    word: 'Rest',
+    zh: '休息',
+    body: '不是完全不動，而是避免會引發疼痛的動作。現在的觀念傾向「適度、無痛範圍內的活動」比完全不動恢復得好。',
+  },
+  {
+    letter: 'I',
+    word: 'Ice',
+    zh: '冰敷',
+    body: '每次 15–20 分鐘，中間間隔數小時。用毛巾隔開，不要直接冰到皮膚。主要目的是止痛，不是加速癒合。',
+  },
+  {
+    letter: 'C',
+    word: 'Compression',
+    zh: '加壓',
+    body: '彈性繃帶由遠端往近端纏，力道以「不會麻、不會發紫」為準。睡覺時放鬆。',
+  },
+  {
+    letter: 'E',
+    word: 'Elevation',
+    zh: '抬高',
+    body: '把受傷部位抬到高於心臟的位置，幫助減少腫脹。躺著把腳墊在枕頭上最有效。',
+  },
+];
+
+const avoid = [
+  ['熱敷', '急性期熱敷會增加腫脹。至少 48–72 小時內避免。'],
+  ['酒精', '會擴張血管、加重腫脹，也會掩蓋症狀變化。'],
+  ['按摩／推拿', '急性期揉壓可能讓出血和腫脹更嚴重。'],
+  ['繼續滑', '這是最常見、也最容易把小傷變大傷的決定。'],
+];
+
+const claimDocs = [
+  {
+    id: 'diagnosis',
+    label: '診斷證明書（正本）',
+    detail:
+      '要有醫師簽章、傷病名稱、就診日期。申請商業保險理賠和健保核退都需要。務必在當地就醫時就要求開立，回國後再要非常困難。',
+    critical: true,
+  },
+  {
+    id: 'receipt',
+    label: '費用收據（正本）與費用明細',
+    detail: '收據正本通常只有一份，而且健保與商業保險可能都要。請向醫院要「收據正本 + 費用明細」，必要時多開一份或請醫院蓋章證明。',
+    critical: true,
+  },
+  {
+    id: 'record',
+    label: '病歷摘要或就醫紀錄',
+    detail: '記錄受傷機轉與處置內容。回台灣接手的醫師會需要，理賠審查有時也會要求。',
+  },
+  {
+    id: 'images',
+    label: 'X 光／MRI 等影像光碟或檔案',
+    detail: '影像本身比報告更有價值。回台灣後不必重照一次，省時間也省輻射與費用。離開前務必索取。',
+    critical: true,
+  },
+  {
+    id: 'passport',
+    label: '護照影本與入出境紀錄',
+    detail: '健保自墊核退需要證明就醫當下人在國外。',
+  },
+  {
+    id: 'translation',
+    label: '中文或英文翻譯本',
+    detail: '日文診斷書回台灣申請時通常需要翻譯。部分國際診所可直接開英文版，開立時就先問。',
+  },
+  {
+    id: 'policy',
+    label: '保單號碼與保險公司海外聯絡電話',
+    detail: '出發前就存進手機離線筆記。有些保單要求「就醫前先通知」才全額理賠。',
+    critical: true,
+  },
+];
+---
+
+<BaseLayout
+  title="海外受傷緊急處置中心"
+  eyebrow="Emergency"
+  description="在日本雪場受傷了怎麼辦？急救電話、PRICE 急性處置原則、日本主要雪場（湯澤、白馬、二世谷、星野TOMAMU）附近的醫院與診所資訊，以及回國後申請健保核退與保險理賠需要的文件清單。"
+>
+  <!-- 緊急電話 -->
+  <section class="bg-red-50">
+    <div class="mx-auto max-w-3xl px-5 py-8">
+      <p class="text-xs font-black tracking-widest text-red-700 uppercase">在日本，狀況危急時</p>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2">
+        <a
+          href={`tel:${EMERGENCY_NUMBER.japan.number}`}
+          class="block rounded-2xl border-2 border-red-500 bg-white p-5 transition-colors hover:bg-red-50"
+        >
+          <p class="text-4xl font-black text-red-600">{EMERGENCY_NUMBER.japan.number}</p>
+          <p class="mt-1 text-sm font-bold text-deep">{EMERGENCY_NUMBER.japan.label}</p>
+          <p class="mt-2 text-xs leading-relaxed break-words text-slate-soft">
+            {EMERGENCY_NUMBER.japan.note}
+          </p>
+        </a>
+        <a
+          href={`tel:${EMERGENCY_NUMBER.japanPolice.number}`}
+          class="block rounded-2xl border border-ice bg-white p-5 transition-colors hover:bg-snow"
+        >
+          <p class="text-4xl font-black text-deep">{EMERGENCY_NUMBER.japanPolice.number}</p>
+          <p class="mt-1 text-sm font-bold text-deep">{EMERGENCY_NUMBER.japanPolice.label}</p>
+          <p class="mt-2 text-xs leading-relaxed break-words text-slate-soft">
+            {EMERGENCY_NUMBER.japanPolice.note}
+          </p>
+        </a>
+      </div>
+      <p class="mt-4 text-sm leading-relaxed break-words text-red-800">
+        <strong>人還在雪道上的話，先找雪場巡邏隊（Ski Patrol）</strong>
+        —— 他們比救護車更快到得了現場，而且有把人從雪道運下山的裝備。巡邏隊電話請在買雪票時就先問到並存進手機。
+      </p>
+    </div>
+  </section>
+
+  <!-- 分流入口 -->
+  <section class="bg-deep text-white">
+    <div class="mx-auto max-w-3xl px-5 py-10">
+      <h2 class="text-xl font-black">不確定嚴不嚴重？</h2>
+      <p class="mt-2 text-sm leading-relaxed break-words text-ice/85">
+        用紅黃綠燈分流工具，兩分鐘判斷該叫巡邏隊、該當地就醫，還是可以先觀察。
+      </p>
+      <a
+        href="/tools/injury-triage"
+        class="mt-5 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-deep hover:bg-ice"
+        >開始判斷 →</a
+      >
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <h2 class="text-2xl font-black text-deep">急性處置：PRICE 原則</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-slate-soft">
+        受傷後 48–72 小時內的處理原則。順序就是優先級 —— 保護永遠排在最前面。
+      </p>
+
+      <ol class="mt-8 space-y-3">
+        {
+          priceSteps.map((s) => (
+            <li class="flex min-w-0 gap-4 rounded-2xl border border-ice bg-snow p-5">
+              <span
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-deep text-xl font-black text-brandlight"
+                aria-hidden="true"
+              >
+                {s.letter}
+              </span>
+              <div class="min-w-0">
+                <p class="font-bold break-words text-deep">
+                  {s.zh}
+                  <span class="ml-2 text-xs font-medium text-slate-soft">{s.word}</span>
+                </p>
+                <p class="mt-1.5 text-sm leading-relaxed break-words text-slate-soft">{s.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <h3 class="mt-10 text-lg font-black text-deep">這四件事不要做</h3>
+      <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+        {
+          avoid.map(([name, why]) => (
+            <li class="min-w-0 rounded-xl border-l-4 border-red-400 bg-red-50 p-4">
+              <p class="text-sm font-bold text-red-800">✕ {name}</p>
+              <p class="mt-1 text-xs leading-relaxed break-words text-red-900/80">{why}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-8 rounded-2xl border border-ice bg-snow p-5">
+        <p class="text-sm leading-relaxed break-words text-slate-soft">
+          <strong class="text-deep">關於 PRICE 的一點補充：</strong>
+          運動醫學界近年對「冰敷」和「完全休息」的角色有不少討論，方向是強調<strong class="text-deep"
+            >保護之後要盡早回到無痛範圍內的適度活動</strong
+          >，而不是躺著不動等它好。這裡保留 PRICE 的架構是因為它好記、在緊急狀況下夠用；但如果你的傷勢需要進入復健階段，實際的活動量請和你的醫師或治療師討論。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 雪場醫療資訊 -->
+  <section id="resorts" class="scroll-mt-20 bg-snow">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <h2 class="text-2xl font-black text-deep">日本主要雪場的醫療機構</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-slate-soft">
+        每一筆資料都附上官方來源連結與查證日期。<strong class="text-deep"
+          >雪季門診時間每年都會變動，出發前請務必自己再確認一次</strong
+        >，並在買雪票時問到雪場巡邏隊的電話。
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-2">
+        {
+          RESORTS.map((r) => (
+            <a
+              href={`#${r.id}`}
+              class="rounded-full border border-ice bg-white px-4 py-2 text-sm font-bold text-deep hover:border-brandlight hover:bg-ice/40"
+            >
+              {r.name}
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="mt-10 space-y-10">
+        {
+          RESORTS.map((r) => (
+            <article id={r.id} class="scroll-mt-20">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 class="text-xl font-black break-words text-deep">{r.name}</h3>
+                <span class="text-sm text-slate-soft">{r.nameJa}</span>
+              </div>
+              <p class="mt-1 text-xs text-slate-soft">{r.area}</p>
+
+              <p class="mt-2 text-xs break-words text-slate-soft">
+                涵蓋雪場：{r.resorts.join('、')}
+              </p>
+
+              <p class="mt-4 rounded-xl bg-ice/50 px-4 py-3 text-sm leading-relaxed break-words text-deep">
+                {r.note}
+              </p>
+
+              <div class="mt-5 space-y-4">
+                {r.facilities.map((f) => (
+                  <div class="min-w-0 overflow-hidden rounded-2xl border border-ice bg-white">
+                    <div class="border-b border-ice bg-snow px-5 py-3">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span
+                          class:list={[
+                            'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+                            f.type === 'hospital'
+                              ? 'bg-deep text-white'
+                              : 'bg-ice text-deep',
+                          ]}
+                        >
+                          {f.type === 'hospital' ? '綜合醫院' : '診所'}
+                        </span>
+                        {f.languages && (
+                          <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                            {f.languages}
+                          </span>
+                        )}
+                      </div>
+                      <p class="mt-2 font-black break-words text-deep">{f.name}</p>
+                      {f.nameEn && (
+                        <p class="text-xs break-words text-slate-soft">{f.nameEn}</p>
+                      )}
+                    </div>
+
+                    <dl class="divide-y divide-ice text-sm">
+                      <div class="flex min-w-0 gap-3 px-5 py-3">
+                        <dt class="w-14 shrink-0 text-xs font-bold text-slate-soft">地址</dt>
+                        <dd class="min-w-0 break-words text-deep">{f.address}</dd>
+                      </div>
+                      <div class="flex min-w-0 gap-3 px-5 py-3">
+                        <dt class="w-14 shrink-0 text-xs font-bold text-slate-soft">電話</dt>
+                        <dd class="min-w-0">
+                          <a
+                            href={`tel:${f.phone.replace(/-/g, '')}`}
+                            class="font-bold text-brand underline underline-offset-2"
+                          >
+                            {f.phone}
+                          </a>
+                        </dd>
+                      </div>
+                      <div class="flex min-w-0 gap-3 px-5 py-3">
+                        <dt class="w-14 shrink-0 text-xs font-bold text-slate-soft">科別</dt>
+                        <dd class="min-w-0 break-words text-deep">{f.departments}</dd>
+                      </div>
+                      {f.hours && (
+                        <div class="flex min-w-0 gap-3 px-5 py-3">
+                          <dt class="w-14 shrink-0 text-xs font-bold text-slate-soft">時間</dt>
+                          <dd class="min-w-0 break-words text-deep">{f.hours}</dd>
+                        </div>
+                      )}
+                      {f.note && (
+                        <div class="px-5 py-3">
+                          <p class="text-xs leading-relaxed break-words text-slate-soft">
+                            {f.note}
+                          </p>
+                        </div>
+                      )}
+                    </dl>
+
+                    <div class="border-t border-ice bg-snow px-5 py-2.5">
+                      <p class="text-[11px] break-words text-slate-soft">
+                        資料來源：
+                        <a
+                          href={f.source}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="text-brand underline underline-offset-2"
+                        >
+                          {f.sourceLabel}
+                        </a>
+                        <span class="text-slate-soft/70"> · 查證日期 {f.checkedAt}</span>
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-10 rounded-2xl border-l-4 border-brand bg-white p-6">
+        <p class="text-sm leading-relaxed break-words text-slate-soft">
+          <strong class="text-deep">還沒有你要去的雪場？</strong>
+          這份清單會持續增加。你可以到
+          <a href="/wishlist" class="font-bold text-brand hover:underline">許願留言區</a>
+          告訴我你想看哪個雪場，我會優先查證那一區。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 理賠 checklist -->
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <h2 class="text-2xl font-black text-deep">回國後要申請理賠，這些文件缺一不可</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-slate-soft">
+        <strong class="text-deep">最關鍵的一句話：這些東西全部都要在當地、離開醫院前拿到。</strong>
+        回台灣之後再跟日本的醫院要，難度會高很多，有些甚至要不到。勾選狀態會存在你的瀏覽器裡。
+      </p>
+
+      <ul class="mt-8 space-y-2.5">
+        {
+          claimDocs.map((d) => (
+            <li class="min-w-0 overflow-hidden rounded-xl border border-ice bg-snow">
+              <label class="flex min-w-0 cursor-pointer items-start gap-3 p-4">
+                <input
+                  type="checkbox"
+                  data-claim
+                  value={d.id}
+                  class="mt-1 h-4.5 w-4.5 shrink-0 accent-[var(--color-brand)]"
+                />
+                <span class="min-w-0">
+                  <span class="block text-sm leading-relaxed font-medium break-words text-deep">
+                    {d.label}
+                    {d.critical && (
+                      <span class="ml-2 rounded-full bg-ice px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-deep">
+                        必備
+                      </span>
+                    )}
+                  </span>
+                  <span class="mt-1.5 block text-xs leading-relaxed break-words text-slate-soft">
+                    {d.detail}
+                  </span>
+                </span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-8 rounded-2xl border border-ice bg-snow p-6">
+        <h3 class="font-black text-deep">兩個很容易踩的坑</h3>
+        <ul class="mt-3 space-y-3 text-sm leading-relaxed break-words text-slate-soft">
+          <li>
+            <strong class="text-deep">1. 滑雪可能不在你的保單涵蓋範圍內。</strong>
+            滑雪在部分旅平險被列為高風險活動，要另外加購才理賠。出發前一定要跟保險公司確認「滑雪／冬季運動」有沒有被排除。
+          </li>
+          <li>
+            <strong class="text-deep">2. 收據正本只有一份。</strong>
+            健保自墊核退和商業保險理賠可能都要正本。請在醫院就先問能不能多開一份，或請保險公司接受「正本查驗後退還」。
+          </li>
+        </ul>
+      </div>
+
+      <p class="mt-6 text-xs leading-relaxed break-words text-slate-soft">
+        以上為一般性的流程整理，不構成保險建議。各家保單條款不同、健保核退的規定也會修訂，實際請以保險公司與衛生福利部中央健康保險署的公告為準。
+      </p>
+    </div>
+  </section>
+
+  <!-- 導流 -->
+  <section class="bg-ice/40">
+    <div class="mx-auto max-w-3xl px-5 py-10">
+      <p class="text-sm leading-relaxed break-words text-slate-soft">
+        <strong class="text-deep">想了解這些處置背後的醫學原理？</strong>
+        本站的判斷邏輯參考運動醫學的臨床處置原則。更深入的傷害機轉說明，可以參考
+        <a href="/ski-medicine" class="font-bold text-brand hover:underline">滑雪傷害圖鑑</a>
+        與
+        <a
+          href={SITE_A.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-bold text-brand hover:underline">{SITE_A.label}</a
+        >。
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const KEY = 'snowmed:claim-docs';
+  const boxes = Array.from(document.querySelectorAll<HTMLInputElement>('[data-claim]'));
+
+  if (boxes.length) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) ?? '[]') as string[];
+      for (const b of boxes) if (saved.includes(b.value)) b.checked = true;
+    } catch {
+      /* 讀不到就當作沒有勾過 */
+    }
+
+    for (const b of boxes) {
+      b.addEventListener('change', () => {
+        try {
+          localStorage.setItem(
+            KEY,
+            JSON.stringify(boxes.filter((x) => x.checked).map((x) => x.value))
+          );
+        } catch {
+          /* 無痕模式等情況忽略 */
+        }
+      });
+    }
+  }
+</script>

@@ -1,0 +1,310 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '其他'];
+---
+
+<BaseLayout
+  title="許願留言區"
+  eyebrow="Wishlist"
+  description="你想要什麼滑雪相關的工具或資訊？這裡收集雪友的許願，作為這個平台未來開發的方向。免註冊、可匿名。"
+>
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p class="text-base leading-relaxed break-words text-slate-soft">
+        滑雪族群裡新手很多，每個人卡住的地方都不一樣。<strong class="text-deep"
+          >如果你想到某個「要是有個東西能幫我 OO 就好了」的時刻，寫在這裡。</strong
+        >
+      </p>
+      <p class="mt-4 text-base leading-relaxed break-words text-slate-soft">
+        我會定期看這些許願，並把最多人需要的做成工具。不用註冊、可以匿名，也不需要留任何聯絡方式。
+      </p>
+
+      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-soft">
+        <span>✓ 免註冊</span>
+        <span>✓ 可匿名</span>
+        <span>✓ 不需要 email</span>
+        <span>✓ 送出後由我審核才會公開</span>
+      </div>
+
+      <!-- 表單 -->
+      <form id="wish-form" class="mt-10 space-y-5">
+        <fieldset class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
+          <legend class="px-2 text-sm font-bold text-deep">這是關於什麼的？</legend>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {
+              categories.map((c, i) => (
+                <label class="min-w-0 cursor-pointer rounded-xl border border-ice bg-white px-4 py-2.5 text-sm transition-colors has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
+                  <input
+                    type="radio"
+                    name="category"
+                    value={c}
+                    checked={i === 0}
+                    class="sr-only"
+                  />
+                  <span class="break-words">{c}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
+          <label for="wish-text" class="block text-sm font-bold text-deep">你的許願</label>
+          <p class="mt-1 text-xs leading-relaxed break-words text-slate-soft">
+            越具體越好。例如「希望有個工具能算出我該買多長的板子」比「希望有裝備建議」有用得多。
+          </p>
+          <textarea
+            id="wish-text"
+            name="text"
+            rows="5"
+            maxlength="500"
+            required
+            placeholder="例如：希望有一個工具，可以輸入我的行程天數和體能狀況，告訴我每天該滑幾小時比較不會受傷。"
+            class="mt-3 w-full resize-y rounded-xl border border-ice bg-white px-4 py-3 text-base leading-relaxed text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+          ></textarea>
+          <p class="mt-1.5 text-right text-xs text-slate-soft">
+            <span id="wish-count">0</span> / 500
+          </p>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
+            <label for="wish-resort" class="block text-sm font-bold text-deep">
+              相關雪場 <span class="font-normal text-slate-soft">（選填）</span>
+            </label>
+            <input
+              type="text"
+              id="wish-resort"
+              name="resort"
+              maxlength="40"
+              placeholder="例如：白馬八方尾根"
+              class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+            />
+          </div>
+
+          <div class="min-w-0 rounded-2xl border border-ice bg-snow p-5">
+            <label for="wish-nickname" class="block text-sm font-bold text-deep">
+              暱稱 <span class="font-normal text-slate-soft">（選填）</span>
+            </label>
+            <input
+              type="text"
+              id="wish-nickname"
+              name="nickname"
+              maxlength="20"
+              placeholder="不填就顯示「匿名雪友」"
+              class="mt-3 w-full rounded-xl border border-ice bg-white px-4 py-3 text-base text-deep placeholder:text-slate-soft/60 focus:border-brand focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- 蜜罐欄位：給機器人填的，真人看不到 -->
+        <div class="hidden" aria-hidden="true">
+          <label for="wish-website">Website</label>
+          <input type="text" id="wish-website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="rounded-2xl border-l-4 border-brand bg-ice/40 p-5">
+          <p class="text-xs leading-relaxed break-words text-slate-soft">
+            <strong class="text-deep">送出前請注意：</strong>
+            這是公開的留言區，請<strong class="text-deep"
+              >不要填入姓名、電話、email、病歷號或任何可以認出你是誰的資訊</strong
+            >。如果你想描述自己的傷勢，請只講一般性的狀況（例如「膝蓋受傷後」），不要寫具體的就醫細節。需要個別化的醫療建議，請直接就醫。
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          id="wish-submit"
+          class="w-full rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-deep disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          送出許願
+        </button>
+
+        <p
+          id="wish-msg"
+          class="rounded-xl px-4 py-3 text-sm leading-relaxed font-bold break-words"
+          hidden
+        >
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- 已公開的許願 -->
+  <section class="bg-snow">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-2xl font-black text-deep">大家許了什麼願</h2>
+        <p id="wish-total" class="text-xs text-slate-soft"></p>
+      </div>
+
+      <div id="wish-list" class="mt-8 space-y-4">
+        <p class="rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft">
+          載入中…
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('wish-form') as HTMLFormElement | null;
+  const msg = document.getElementById('wish-msg');
+  const list = document.getElementById('wish-list');
+  const totalEl = document.getElementById('wish-total');
+  const textarea = document.getElementById('wish-text') as HTMLTextAreaElement | null;
+  const counter = document.getElementById('wish-count');
+  const submitBtn = document.getElementById('wish-submit') as HTMLButtonElement | null;
+
+  textarea?.addEventListener('input', () => {
+    if (counter) counter.textContent = String(textarea.value.length);
+  });
+
+  const show = (text: string, kind: 'ok' | 'err') => {
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className =
+      'rounded-xl px-4 py-3 text-sm leading-relaxed font-bold break-words ' +
+      (kind === 'ok' ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800');
+    msg.hidden = false;
+  };
+
+  const fmtDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        timeZone: 'Asia/Taipei',
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  async function loadWishes() {
+    if (!list) return;
+    try {
+      const res = await fetch('/api/wishes');
+      const data = await res.json();
+      const wishes: any[] = Array.isArray(data.wishes) ? data.wishes : [];
+
+      if (totalEl) {
+        totalEl.textContent = data.total
+          ? `目前已收到 ${data.total} 則許願，公開 ${wishes.length} 則`
+          : '';
+      }
+
+      list.textContent = '';
+
+      if (wishes.length === 0) {
+        const empty = document.createElement('p');
+        empty.className =
+          'rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft';
+        empty.textContent = '還沒有公開的許願。你可以是第一個。';
+        list.append(empty);
+        return;
+      }
+
+      for (const w of wishes) {
+        const card = document.createElement('article');
+        card.className = 'min-w-0 rounded-2xl border border-ice bg-white p-5 sm:p-6';
+
+        const meta = document.createElement('div');
+        meta.className = 'flex flex-wrap items-center gap-x-3 gap-y-2 text-xs';
+
+        const cat = document.createElement('span');
+        cat.className = 'rounded-full bg-ice px-3 py-1 font-bold text-deep';
+        cat.textContent = String(w.category ?? '其他');
+        meta.append(cat);
+
+        if (w.resort) {
+          const r = document.createElement('span');
+          r.className = 'text-slate-soft';
+          r.textContent = `📍 ${w.resort}`;
+          meta.append(r);
+        }
+
+        const date = document.createElement('span');
+        date.className = 'text-slate-soft';
+        date.textContent = fmtDate(String(w.createdAt ?? ''));
+        meta.append(date);
+
+        const body = document.createElement('p');
+        body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-deep';
+        body.textContent = String(w.text ?? '');
+
+        const who = document.createElement('p');
+        who.className = 'mt-4 border-t border-ice pt-3 text-xs text-slate-soft';
+        who.textContent = `— ${w.nickname ?? '匿名雪友'}`;
+
+        card.append(meta, body, who);
+
+        if (w.reply) {
+          const reply = document.createElement('div');
+          reply.className = 'mt-4 rounded-xl border-l-4 border-brand bg-ice/40 p-4';
+          const label = document.createElement('p');
+          label.className = 'text-xs font-bold text-brand';
+          label.textContent = '平台回覆';
+          const rbody = document.createElement('p');
+          rbody.className = 'mt-1.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-deep';
+          rbody.textContent = String(w.reply);
+          reply.append(label, rbody);
+          card.append(reply);
+        }
+
+        list.append(card);
+      }
+    } catch {
+      list.textContent = '';
+      const err = document.createElement('p');
+      err.className =
+        'rounded-2xl border-2 border-dashed border-ice bg-white p-8 text-center text-sm text-slate-soft';
+      err.textContent = '目前讀不到許願清單，請稍後再試。';
+      list.append(err);
+    }
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn) return;
+
+    const data = new FormData(form);
+    const payload = {
+      category: String(data.get('category') ?? ''),
+      text: String(data.get('text') ?? ''),
+      resort: String(data.get('resort') ?? ''),
+      nickname: String(data.get('nickname') ?? ''),
+      website: String(data.get('website') ?? ''),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送出中…';
+
+    try {
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+
+      if (res.ok && result.ok) {
+        show('收到了，謝謝你！你的許願已經進入待審佇列，我看過之後會公開出來。', 'ok');
+        form.reset();
+        if (counter) counter.textContent = '0';
+        loadWishes();
+      } else {
+        show(result.error ?? '送出失敗，請稍後再試。', 'err');
+      }
+    } catch {
+      show('送出失敗，請檢查網路連線後再試一次。', 'err');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出許願';
+    }
+  });
+
+  loadWishes();
+</script>

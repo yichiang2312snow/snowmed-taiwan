@@ -23,10 +23,10 @@ export const SITE = {
 
 export const NAV = [
   { href: '/tools', label: '工具' },
+  { href: '/emergency', label: '海外受傷' },
   { href: '/articles', label: '知識庫' },
-  { href: '/ski-medicine', label: '滑雪傷害圖鑑' },
-  { href: '/injury-prevention', label: '傷害預防' },
-  { href: '/about', label: '關於這個平台' },
+  { href: '/wishlist', label: '許願區' },
+  { href: '/about', label: '關於' },
 ] as const;
 
 /**
@@ -131,3 +131,10 @@ export const TOOLS = [
     who: '所有要出發的人，尤其第一次去的',
   },
 ] as const;
+
+/** 網站 A：楊醫師個人官網（工具結果頁的深度衛教連結導向這裡） */
+export const SITE_A = {
+  url: 'https://dr-yang-yi-chiang-website.vercel.app/',
+  label: '楊怡強醫師衛教專文',
+  labelLong: '楊怡強醫師個人網站的衛教專文',
+} as const;
