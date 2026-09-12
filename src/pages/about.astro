@@ -1,97 +1,138 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../consts';
+import { SITE, SITE_A, IMAGE_CREDITS } from '../consts';
 
-// TODO 待楊醫師填寫：學經歷、專科執照、雪場資歷、證照
-const credentials = {
-  education: ['【待補】醫學系畢業學校與年份'],
-  training: ['【待補】住院醫師訓練醫院與科別', '【待補】專科醫師證書'],
-  sports: ['【待補】滑雪資歷（開始年份、主要雪場、滑行程度）', '【待補】滑雪教練／指導員證照（如有）'],
-  affiliations: ['【待補】目前服務院所與職稱', '【待補】學會會員資格'],
-};
+const principles = [
+  {
+    title: '每個工具都要說出自己的依據',
+    body: '這個平台上的每一個工具，下面都有「這個工具是根據什麼做的」和「什麼情況下不適用」兩個區塊。你應該要能看完這兩段之後，自己決定要不要採用它的結論 —— 而不是因為作者是醫師就照做。',
+  },
+  {
+    title: '不確定的事就不要寫',
+    body: '雪場醫療機構的地址與電話，每一筆都附上官方來源連結和查證日期。查不到的就不放。有人可能在受傷、著急、語言不通的狀況下依賴這些資訊，寫個大概是不負責任的。',
+  },
+  {
+    title: '建議一律偏保守',
+    body: '在「可能沒事」和「該去看醫師」之間，這裡的工具一律導向後者。分流工具寧可讓你多叫一次巡邏隊，也不要少叫一次。',
+  },
+  {
+    title: '不收集你的資料',
+    body: '沒有帳號、沒有登入、沒有追蹤碼。你在工具裡填的身高體重、勾選的清單，全部只存在你自己的瀏覽器裡。許願留言區也不需要 email，送出者的 IP 只留雜湊值做防灌水用，不存原文。',
+  },
+  {
+    title: '不賣東西',
+    body: '不賣課程、不賣裝備、不導購。這裡不會出現「所以你需要買 OO」這種結論。提到裝備時，講的是為什麼需要那個功能，不是推薦哪個牌子。',
+  },
+];
 ---
 
 <BaseLayout
-  title="關於我"
+  title="關於這個平台"
   eyebrow="About"
-  description="關於台灣滑雪運動醫學科學平台：這個平台為什麼存在、內容怎麼產生、以及為什麼你不需要信任任何人也能使用它。"
+  description="台灣滑雪運動醫學科學平台為什麼存在、內容怎麼產生、以及為什麼你不需要信任任何人也能使用它。"
 >
   <section class="bg-white">
-    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
       <div class="prose-tc">
-        <p class="text-xl leading-relaxed font-medium text-deep">
-          我是楊怡強，一位運動醫學醫師，也是一個滑雪的人。
+        <p class="text-lg leading-relaxed font-medium text-deep">
+          台灣沒有雪，卻有幾十萬名滑雪愛好者。我們有世界級的雪友熱情，卻幾乎沒有對應的醫療支援系統。
         </p>
 
         <p>
-          台灣是一個沒有雪的地方，但每年有數以萬計的台灣人飛到日本、韓國、歐洲、北美的雪場。我們有世界級的雪友熱情，卻幾乎沒有對應的醫療支援系統。
-        </p>
-
-        <p>
-          在門診裡，我一次又一次遇到同樣的情境：一位雪友從國外回來，帶著一張看不懂的外文診斷書、一個腫脹的膝蓋，和一個沒有人能明確回答的問題 ——
+          在門診裡，同樣的情境一次又一次出現：一位雪友從國外回來，帶著一張看不懂的外文診斷書、一個腫脹的膝蓋，和一個沒有人能明確回答的問題 ——
           <strong>「我下個雪季還能滑嗎？」</strong>
         </p>
 
         <p>
-          問題不在於台灣的骨科或復健科不夠好，而在於<strong>雪地運動的受傷情境太特殊</strong>。不了解固定器（binding）的釋放邏輯、不知道「cat track」上為什麼容易出事、沒有在深雪裡摔過，就很難真正理解病人描述的那一瞬間發生了什麼。
+          問題不在於台灣的骨科或復健科不夠好，而在於<strong>雪地運動的受傷情境太特殊</strong>：腳被固定器綁在一塊長板上、高速移動、低溫與高海拔、連續多日的疲勞累積，而且大多數人是<strong>在國外受傷</strong>的。
         </p>
 
         <p>
-          所以我選擇把這件事做成專業：<strong>把滑雪運動醫學帶進台灣的診間</strong>。從行前體能準備、裝備設定建議、受傷當下的處置判斷，到回國後的診斷治療與回歸雪場的完整規劃 —— 讓台灣雪友不必再靠運氣和網路資訊自救。
+          這個平台，是把門診裡重複回答過無數次的問題，整理成<strong>任何人都能自己拿來用的形式</strong>。
         </p>
 
-        <blockquote>
-          我的目標很單純：讓每一個台灣雪友，都能<strong>安全地滑更久</strong>。
-        </blockquote>
+        <h2>為什麼刻意不做成「名醫個人網站」</h2>
+
+        <p>
+          因為那樣會讓一件事變得很奇怪：一個從來沒聽過我的人，憑什麼相信我給的建議？
+        </p>
+
+        <p>
+          如果一個網站的可信度建立在「這個醫師很有名」上面，那它對陌生訪客就是無效的 ——
+          他要嘛盲目相信，要嘛直接離開。兩種都不是好結果。
+        </p>
+
+        <p>
+          所以這個平台的設計原則是：<strong>讓你不需要信任任何人，也能自己判斷內容能不能用。</strong>
+        </p>
       </div>
+
+      <ul class="mt-12 space-y-4">
+        {
+          principles.map((p, i) => (
+            <li class="min-w-0 rounded-2xl border border-ice bg-snow p-6">
+              <span class="text-xs font-black tracking-widest text-brandlight">0{i + 1}</span>
+              <h3 class="mt-2 text-lg font-bold break-words text-deep">{p.title}</h3>
+              <p class="mt-2.5 text-sm leading-relaxed break-words text-slate-soft">{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
   <section class="bg-snow">
-    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
-      <h2 class="text-2xl font-black text-deep">學經歷與資格</h2>
-      <p class="mt-2 text-sm text-slate-soft">
-        （此區塊內容待楊醫師提供後填入，我不會代為撰寫任何學歷或證照資訊）
-      </p>
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
+      <h2 class="text-2xl font-black text-deep">那，做這個平台的人是誰？</h2>
 
-      <dl class="mt-8 space-y-8">
-        {
-          [
-            ['學歷', credentials.education],
-            ['訓練與專科', credentials.training],
-            ['滑雪資歷', credentials.sports],
-            ['現職與學會', credentials.affiliations],
-          ].map(([label, items]) => (
-            <div class="rounded-2xl border border-ice bg-white p-6">
-              <dt class="text-sm font-bold tracking-widest text-brand uppercase">{label}</dt>
-              <dd>
-                <ul class="mt-3 space-y-2 text-sm leading-relaxed text-slate-soft">
-                  {(items as string[]).map((i) => (
-                    <li class="flex gap-2">
-                      <span class="text-brandlight">·</span>
-                      <span>{i}</span>
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
+      <div class="mt-6 rounded-2xl border border-ice bg-white p-6 sm:p-8">
+        <p class="text-lg font-black text-deep">{SITE.doctor}</p>
+        <p class="mt-1 text-sm text-slate-soft">{SITE.doctorEn}</p>
+        <p class="mt-4 text-sm leading-relaxed break-words text-slate-soft">
+          全台第一位滑雪運動醫學專科醫師。這個平台上的工具與文章由我撰寫與維護。
+        </p>
+        <p class="mt-4 text-sm leading-relaxed break-words text-slate-soft">
+          如果你想看更多深入的衛教內容，或是需要個別化的門診諮詢，那些放在我的個人網站：
+        </p>
+        <a
+          href={SITE_A.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-5 inline-block rounded-xl bg-brand px-6 py-3 text-sm font-bold text-white hover:bg-deep"
+          >前往個人網站 →</a
+        >
+      </div>
+
+      <div class="mt-8 rounded-2xl border-l-4 border-brand bg-ice/40 p-6">
+        <h3 class="font-black text-deep">想要什麼工具？</h3>
+        <p class="mt-2 text-sm leading-relaxed break-words text-slate-soft">
+          這個平台會持續增加工具，而決定做什麼的依據，就是雪友實際說出來的需求。歡迎到
+          <a href="/wishlist" class="font-bold text-brand hover:underline">許願留言區</a>
+          留下你的想法 —— 免註冊、可匿名。
+        </p>
+      </div>
     </div>
   </section>
 
-  <section class="bg-deep text-white">
-    <div class="mx-auto max-w-3xl px-5 py-16 text-center sm:py-20">
-      <h2 class="text-2xl font-black">有問題想問？</h2>
-      <p class="mt-4 leading-relaxed text-ice/85">
-        不論是行前準備、傷後復原，或只是想確認「這樣痛正不正常」，都歡迎聯絡。
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
+      <h2 class="text-2xl font-black text-deep">內容的界線</h2>
+      <div class="prose-tc mt-4 text-slate-soft">
+        <p>
+          這個平台上的所有內容都是<strong>一般性的健康衛教資訊</strong>，不是醫療診斷，也不能取代醫師面對面的診察、檢查與治療。
+        </p>
+        <p>
+          工具給的是「方向」和「該不該找專業協助」的判斷，不是「你到底怎麼了」的答案。後者需要理學檢查與影像，沒有任何線上工具能取代。
+        </p>
+        <p>
+          如果工具的結果和你的實際感受不一致，<strong>請以你的身體感受和專業醫療意見為準</strong>。急性外傷、劇烈疼痛、肢體無力或麻木，請直接就醫或撥打 119。
+        </p>
+      </div>
+
+      <h2 class="mt-12 text-2xl font-black text-deep">圖片授權</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-slate-soft">
+        本站使用的照片全部採用 CC BY（姓名標示）授權，共 {IMAGE_CREDITS.length} 張，完整的作者、授權與來源標示列在每一頁的頁尾。
       </p>
-      <a
-        href="/contact"
-        class="mt-8 inline-block rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-deep hover:bg-ice"
-        >聯絡我</a
-      >
     </div>
   </section>
 </BaseLayout>
