@@ -61,6 +61,25 @@ export interface Language {
   checkedAt?: string;
 }
 
+/**
+ * 住宿是不是「ski-in / ski-out」（雪道直結）。
+ *
+ * 這件事在台灣的雪場介紹裡常被寫得很寬鬆 —— 「就在雪場旁」「交通便利」
+ * 可能是穿著雪鞋走出大門就能滑，也可能是還要搭 10 分鐘接駁車。
+ * 所以這裡只分三級，而且一定寫出官方標的實際距離或時間。
+ */
+export interface SkiInOut {
+  /** full = 真的雪道直結；partial = 雪場旁但要走一段或搭接駁；none = 雪場本身沒有住宿 */
+  level: 'full' | 'partial' | 'none';
+  /** 具體說明：是哪一間、官方寫幾分鐘 */
+  detail: string;
+  /** official = 雪場或飯店官網；secondary = 官方觀光單位或專業資料站 */
+  sourceLevel?: 'official' | 'secondary';
+  source?: string;
+  sourceLabel?: string;
+  checkedAt?: string;
+}
+
 export interface Pricing {
   /** 一日纜車券大人票價（日圓） */
   adultYen: number | null;
@@ -92,5 +111,6 @@ export interface Resort {
   difficulty: Difficulty;
   family: Family;
   language: Language;
+  skiInOut: SkiInOut;
   pricing: Pricing;
 }

@@ -7,6 +7,7 @@ import {
   LEVEL_LABELS,
   PRICE_TIER_LABELS,
   FAMILY_RATING_LABELS,
+  SKI_IN_OUT_LABELS,
   REFERENCE_SITES,
 } from '../../data/japanResorts';
 
@@ -24,6 +25,11 @@ const musts = [
   { v: 'family', label: '一定要適合帶小孩', hint: '只留下托兒與兒童設施評價「很適合」的雪場' },
   { v: 'chinese', label: '一定要有中文服務', hint: '官網有繁體中文版，或官方明文有中文教練' },
   { v: 'value', label: '票價不要太貴', hint: '排除一日券屬於日本最高價一級的雪場' },
+  {
+    v: 'skiinout',
+    label: '一定要能 ski-in / ski-out',
+    hint: '只留下有雪道直結住宿的雪場。「在雪場旁但要走一段或搭接駁」的不算',
+  },
 ];
 
 const yen = (n: number | null) =>
@@ -34,8 +40,8 @@ const yen = (n: number | null) =>
   title="日本雪場選擇指引"
   emoji="🗾"
   time="約 2 分鐘"
-  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域。每個雪場都附上雪道難易度比率、帶小孩的條件、中英文服務、一日券價格，以及當地的醫療資訊 —— 每一筆都標明出處與查證日期。"
-  description="日本滑雪雪場怎麼選？收錄 10 個台灣人常去的日本雪場，比較雪道難易度比率（綠線、紅線、黑線）、是否適合帶小孩、有無中文服務、一日纜車券價格與交通門戶，每筆資料附官方出處。"
+  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域。每個雪場都附上雪道難易度比率、帶小孩的條件、中英文服務、是否有 ski-in / ski-out 住宿、一日券價格，以及當地的醫療資訊 —— 每一筆都標明出處與查證日期。"
+  description="日本滑雪雪場怎麼選？收錄 10 個台灣人常去的日本雪場，比較雪道難易度比率（綠線、紅線、黑線）、是否適合帶小孩、有無中文服務、有無 ski-in ski-out 雪道直結住宿、一日纜車券價格與交通門戶，每筆資料附官方出處。"
 >
   <form id="jr-form" class="space-y-6">
     <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
@@ -156,6 +162,7 @@ const yen = (n: number | null) =>
               r.language.hasTraditionalChinese || r.language.chineseInstructor ? '1' : '0'
             }
             data-tier={r.pricing.tier}
+            data-skiinout={r.skiInOut.level}
           >
             <div class="border-b border-line bg-surface px-5 py-4">
               <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -193,7 +200,7 @@ const yen = (n: number | null) =>
                 />
               </div>
 
-              <div class="grid gap-3 sm:grid-cols-3">
+              <div class="grid gap-3 sm:grid-cols-2">
                 <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
                   <p class="text-[11px] font-black tracking-widest text-accent uppercase">帶小孩</p>
                   <p class="mt-1 text-sm font-bold break-words text-head">
@@ -260,6 +267,40 @@ const yen = (n: number | null) =>
                     </li>
                     {r.pricing.note && <li>{r.pricing.note}</li>}
                   </ul>
+                </div>
+
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">
+                    Ski-in / Ski-out
+                  </p>
+                  <p class="mt-1 flex items-center gap-2 text-sm font-bold break-words text-head">
+                    <span
+                      class:list={[
+                        'inline-block h-2.5 w-2.5 shrink-0 rounded-full',
+                        r.skiInOut.level === 'full' && 'bg-emerald-500',
+                        r.skiInOut.level === 'partial' && 'bg-amber-400',
+                        r.skiInOut.level === 'none' && 'bg-slate-400',
+                      ]}
+                      aria-hidden="true"
+                    />
+                    {SKI_IN_OUT_LABELS[r.skiInOut.level]}
+                  </p>
+                  <p class="mt-2 text-xs leading-relaxed break-words text-muted">
+                    {r.skiInOut.detail}
+                  </p>
+                  {r.skiInOut.source && (
+                    <p class="mt-2 text-[11px] leading-relaxed break-words text-muted">
+                      <a
+                        href={r.skiInOut.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline underline-offset-2 hover:text-head"
+                      >
+                        {r.skiInOut.sourceLabel ?? '資料來源'}
+                      </a>
+                      {r.skiInOut.checkedAt && <span> · 查證 {r.skiInOut.checkedAt}</span>}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -352,7 +393,7 @@ const yen = (n: number | null) =>
       再拿你的條件去比對。
     </p>
     <p>
-      四組資料採用不同的處理原則。<strong>雪道難易度比率</strong>只採信雪場官方；官方沒有彙總、只逐條列出雪道時，由官方雪道表清點換算並標明出來；官方完全沒有資料時（例如志賀高原、Hakuba
+      五組資料採用不同的處理原則。<strong>雪道難易度比率</strong>只採信雪場官方；官方沒有彙總、只逐條列出雪道時，由官方雪道表清點換算並標明出來；官方完全沒有資料時（例如志賀高原、Hakuba
       Valley、留壽都），就直接寫「查無官方難易度比率」並說明原因 ——
       因為不同資料站的計算基礎根本不同（有的按雪道條數、有的按滑走距離），硬湊一個數字比留白更糟。
     </p>
@@ -364,6 +405,9 @@ const yen = (n: number | null) =>
     <p>
       <strong>票價</strong>標明適用雪季，因為每年都調。留壽都這種窗口牌價與線上預售差到三千多日圓的，會特別註明該買哪一種。
       <strong>帶小孩</strong>則看三件事：有沒有托兒（以及收托年齡下限）、兒童設施、兒童票優惠。
+    </p>
+    <p>
+      <strong>Ski-in / ski-out</strong> 在中文介紹裡常被寫得很寬鬆 ——「就在雪場旁」可能是穿著雪鞋走出大門就能滑，也可能是還要搭十分鐘接駁車。所以這裡只分三級：官方確認雪道直結、在雪場旁但要走一段或搭接駁、雪場本身沒有住宿，並寫出官方標示的實際距離。對受傷的人來說這差很多：雪道直結代表巡邏隊能把你直接送到飯店門口。
     </p>
     <p>
       每個區域如果本站已經查證過當地的醫療機構，卡片會直接連到
@@ -433,7 +477,8 @@ const yen = (n: number | null) =>
           (gateway === 'any' || el.dataset.gateway === gateway) &&
           (!musts.includes('family') || el.dataset.family === 'high') &&
           (!musts.includes('chinese') || el.dataset.chinese === '1') &&
-          (!musts.includes('value') || el.dataset.tier !== 'high');
+          (!musts.includes('value') || el.dataset.tier !== 'high') &&
+          (!musts.includes('skiinout') || el.dataset.skiinout === 'full');
 
         el.hidden = !ok;
         if (ok) {

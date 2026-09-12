@@ -37,6 +37,12 @@ export const PRICE_TIER_LABELS = {
   high: '偏高',
 } as const;
 
+export const SKI_IN_OUT_LABELS = {
+  full: '有雪道直結住宿',
+  partial: '雪場旁，但要走一段或搭接駁',
+  none: '雪場本身沒有住宿',
+} as const;
+
 export const FAMILY_RATING_LABELS = {
   high: '很適合',
   medium: '尚可',
@@ -105,6 +111,15 @@ export const RESORTS: Resort[] = [
       source: 'https://gala.co.jp/winter/school',
       checkedAt: '2026-09-13',
     },
+    skiInOut: {
+      level: 'none',
+      detail:
+        '雪場本身沒有任何住宿，是純日歸型雪場。住宿集中在越後湯澤站周邊的溫泉旅館，每天搭新幹線一站或接駁車上山。不過 GALA 湯澤站直接連通滑雪中心，扛雪具的距離其實比很多雪場短。',
+      sourceLevel: 'official',
+      source: 'https://gala.co.jp/zh-CHT/winter/',
+      sourceLabel: 'GALA 湯澤官方（設施一覽未列住宿）',
+      checkedAt: '2026-09-13',
+    },
     pricing: {
       adultYen: 6500,
       childYen: 3000,
@@ -153,6 +168,15 @@ export const RESORTS: Resort[] = [
       englishService: '四所雪校合計提供英文課程',
       chineseInstructor: '官方繁中站載明有雪校提供全中文的雙板與單板課程',
       source: 'https://www.princehotels.com/zh-hant/ski/karuizawa/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'partial',
+      detail:
+        '輕井澤王子大飯店就在雪場旁，但官方頁面沒有標示「雪道直結」。旅遊業者的資料寫的是步行約 5–10 分鐘，或搭飯店園區內的接駁車 —— 距離很近，但不是穿著雪靴走出大門就能滑。',
+      sourceLevel: 'official',
+      source: 'https://www.princehotels.co.jp/karuizawa-west/facility/ski/',
+      sourceLabel: '輕井澤王子大飯店 WEST 官方',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -204,6 +228,15 @@ export const RESORTS: Resort[] = [
       englishService: 'Sherpa International Ski School 提供英文課程',
       chineseInstructor: 'Sherpa International Ski School 提供中文課程，但官方註明人數有限、強烈建議提前預約',
       source: 'https://www.princehotels.com/zh-hant/ski/naeba/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'full',
+      detail:
+        '苗場王子大飯店官方標示「雪道直結、步行 0 分鐘」，約 1,200 間客房緊鄰雪道，是本州規模最大的雪道直結飯店之一。',
+      sourceLevel: 'official',
+      source: 'https://www.princehotels.co.jp/naeba/',
+      sourceLabel: '苗場王子大飯店官方',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -261,6 +294,15 @@ export const RESORTS: Resort[] = [
       source: 'https://www.happo-one.jp/en/school/',
       checkedAt: '2026-09-13',
     },
+    skiInOut: {
+      level: 'full',
+      detail:
+        '有，但要挑。八方尾根的 STARRY RESIDENCE SUITE 雪道直結，Cortina 的 Hotel Green Plaza 白馬、栂池的「ひらた」也在雪道正前方。但白馬是由十個獨立雪場組成的區域，多數住宿在村內，要搭接駁車往返 —— 訂房前務必確認是哪個雪場、哪條雪道旁。',
+      sourceLevel: 'secondary',
+      source: 'https://www.go-nagano.net/accommodation/id20665',
+      sourceLabel: 'Go! NAGANO 長野縣官方觀光網站',
+      checkedAt: '2026-09-13',
+    },
     pricing: {
       adultYen: 9800,
       childYen: 4900,
@@ -307,6 +349,15 @@ export const RESORTS: Resort[] = [
         'Shiga Kogen International Ski School、Skiwi Ski School、Sugiyama Ski & Snowsports School 等三所提供英語課程',
       chineseInstructor: null,
       source: 'https://www.shigakogen.gr.jp/english/topics/ski-snowboard-schools.html',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'full',
+      detail:
+        '雪道直結的住宿非常多，是這份清單裡選擇最豐富的。志賀高原王子大飯店東、南、西三館全部直結燒額山雪場；奧志賀的 Hotel Grand Phenix 可以穿著雪板直接進出。',
+      sourceLevel: 'secondary',
+      source: 'https://www.go-nagano.net/accommodation/id20600',
+      sourceLabel: 'Go! NAGANO 長野縣官方觀光網站',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -356,6 +407,15 @@ export const RESORTS: Resort[] = [
       englishService: '村內有多家外籍經營的業者提供英語滑雪課、租借與保母服務；托兒中心亦有英語人員',
       chineseInstructor: null,
       source: 'https://en.nozawaski.com/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'partial',
+      detail:
+        '大多數住宿在溫泉街裡，不是雪道直結。長野縣官方觀光網站列出的例子，是步行約 5 分鐘到「遊ロード」電動步道、約 9 分鐘到長坂纜車站。好處是晚上泡外湯、逛溫泉街都走路就到。',
+      sourceLevel: 'secondary',
+      source: 'https://www.go-nagano.net/accommodation/id20665',
+      sourceLabel: 'Go! NAGANO 長野縣官方觀光網站',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -415,6 +475,15 @@ export const RESORTS: Resort[] = [
       source: 'https://www.niseko.ne.jp/en/niseko-ski-school/',
       checkedAt: '2026-09-13',
     },
+    skiInOut: {
+      level: 'full',
+      detail:
+        'Hilton 二世谷村官方寫明「走出大門就是雪道」，一樓免費寄放雪具。比羅夫（Grand Hirafu）一帶也有多家雪道直結的飯店與公寓。不過二世谷住宿選擇非常多，也有不少在村內需要搭接駁車的，訂房時要看清楚。',
+      sourceLevel: 'official',
+      source: 'https://nisekovillage.hiltonjapan.co.jp/activity/winter-information',
+      sourceLabel: 'Hilton 二世谷村官方',
+      checkedAt: '2026-09-13',
+    },
     pricing: {
       adultYen: 13500,
       childYen: 8100,
@@ -459,6 +528,15 @@ export const RESORTS: Resort[] = [
       englishService: 'International Ski School 提供英語課程',
       chineseInstructor: null,
       source: 'https://rusutsu.com/en/international-ski-lessons/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'full',
+      detail:
+        '留壽都度假村飯店正對 West Mountain 雪道，雪道直結；山頂有兒童雪園與初級雪道。飯店、溫泉、室內造波泳池都在同一區，整趟行程幾乎不用搭車。',
+      sourceLevel: 'official',
+      source: 'https://rusutsu.com/rusutsu-resort-hotel-and-convention/',
+      sourceLabel: '留壽都度假村官方',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -510,6 +588,15 @@ export const RESORTS: Resort[] = [
       chineseInstructor:
         '官方掛牌的「富良野中文教室」提供中文與廣東話課程，初級到高級皆有；兒童雪校也對應中文',
       source: 'https://www.princehotels.com/zh-tw/ski/furano/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'full',
+      detail:
+        '新富良野王子大飯店官方標示「到雪道 0 分鐘」，館內就有雪具租借，可以空手 ski-in / ski-out。',
+      sourceLevel: 'official',
+      source: 'https://www.princehotels.co.jp/shinfurano/contents/stay/winter.html',
+      sourceLabel: '新富良野王子大飯店官方',
       checkedAt: '2026-09-13',
     },
     pricing: {
@@ -564,6 +651,15 @@ export const RESORTS: Resort[] = [
       chineseInstructor:
         '官方明文「日語、英語、中文教練在籍」。但未說明是普通話或粵語，也未說明能否指定中文教練',
       source: 'https://www.snowtomamu.jp/winter/ski/lesson/',
+      checkedAt: '2026-09-13',
+    },
+    skiInOut: {
+      level: 'full',
+      detail:
+        'RISONARE Tomamu 官方寫明設有「雪道直結的滑雪者入口」，穿上雪板就能直接滑出去，一路滑到纜車，或滑進 Hotaru Street —— 2017 年開幕、日本第一條 ski-in / ski-out 商店街，9 家餐廳與商店沿著雪道中段排開，穿著雪靴就能滑到店門口。注意：同園區的 The Tower 官方頁面沒有標示雪道直結，訂房時要看清楚是哪一館。',
+      sourceLevel: 'official',
+      source: 'https://www.snowtomamu.jp/winter/topics/resonare-point/',
+      sourceLabel: '星野度假村 TOMAMU 官方（RISONARE）',
       checkedAt: '2026-09-13',
     },
     pricing: {
