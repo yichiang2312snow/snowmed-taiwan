@@ -7,7 +7,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
 <BaseLayout
   title="許願留言區"
   eyebrow="Wishlist"
-  description="你想要什麼滑雪相關的工具或資訊？這裡收集雪友的許願，作為這個平台未來開發的方向。免註冊、可匿名。"
+  description="你想要什麼滑雪相關的工具或資訊？覺得哪個工具用起來不順手？這裡收集雪友的回饋與許願，作為這個平台未來開發的方向。免註冊、可匿名。"
 >
   <section class="bg-panel">
     <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
@@ -20,15 +20,66 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
         我會定期看這些許願，並把最多人需要的做成工具。不用註冊、可以匿名，也不需要留任何聯絡方式。
       </p>
 
-      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
-        <span>✓ 免註冊</span>
-        <span>✓ 可匿名</span>
-        <span>✓ 不需要 email</span>
-        <span>✓ 送出後由我審核才會公開</span>
+      <!-- 方式一：完整回饋表單 -->
+      <div class="mt-10">
+        <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">方式一</p>
+        <h2 class="mt-2 text-xl font-black break-words text-head sm:text-2xl">
+          網站回饋表單（適合寫得完整一點）
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+          想完整描述一件事 —— 某個工具用起來哪裡卡、雪場資訊有誤要更正、或你想要的服務還沒出現
+          —— 用這份表單最方便。
+        </p>
+
+        <p
+          class="mt-4 rounded-xl border border-line bg-surface px-4 py-3 text-xs leading-relaxed break-words text-muted"
+        >
+          <strong class="text-head">說明：</strong>這份表單由 Google
+          表單提供，不強制登入，但送出的內容會經過 Google
+          的伺服器。如果你不希望內容經過第三方服務，請直接用下面的<strong class="text-head"
+            >快速許願</strong
+          >，那是跑在本站自己的伺服器上的。
+        </p>
+
+        <div class="mt-5 overflow-hidden rounded-2xl border border-linestrong bg-white">
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLScb4iH-LwOTdHfNI3o84ptP64D-_jjm_PCiuUWgBDWDhB2yzw/viewform?embedded=true"
+            title="台灣滑雪運動醫學科學平台 網站回饋表單"
+            loading="lazy"
+            class="block h-[820px] w-full border-0 sm:h-[900px]">載入表單中…</iframe
+          >
+        </div>
+
+        <a
+          href="https://forms.gle/B34nXuqTV49g7yzHA"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-3 inline-block text-sm font-bold text-accent hover:underline"
+          >表單沒顯示出來？在新分頁開啟 →</a
+        >
+      </div>
+
+      <!-- 方式二：快速許願 -->
+      <div class="mt-14 border-t border-line pt-12">
+        <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">方式二</p>
+        <h2 class="mt-2 text-xl font-black break-words text-head sm:text-2xl">
+          快速許願（會公開展示在下面）
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+          一句話就能講完的話，用這個。送出後由我審核，通過的會出現在本頁最下方，讓其他雪友也看得到。
+        </p>
+
+        <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
+          <span>✓ 免註冊</span>
+          <span>✓ 可匿名</span>
+          <span>✓ 不需要 email</span>
+          <span>✓ 不經過第三方服務</span>
+          <span>✓ 送出後由我審核才會公開</span>
+        </div>
       </div>
 
       <!-- 表單 -->
-      <form id="wish-form" class="mt-10 space-y-5">
+      <form id="wish-form" class="mt-6 space-y-5">
         <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
           <legend class="px-2 text-sm font-bold text-head">這是關於什麼的？</legend>
           <div class="mt-3 flex flex-wrap gap-2">
