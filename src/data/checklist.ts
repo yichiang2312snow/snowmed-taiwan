@@ -336,7 +336,7 @@ export const CHECKLIST: ChecklistSection[] = [
     phase: 'riding',
     title: '滑行期間的原則',
     emoji: '⛷️',
-    intro: '出發前先讀一次，到了雪場會自動想起來。',
+    intro: '出發前先讀一次，到了雪場會自動想起來。讀完請打勾，表示你已經記住了。',
     items: [
       {
         id: 'warmup',

@@ -1,0 +1,336 @@
+---
+/**
+ * 腦震盪症狀人形圖：每個症狀用連線指到它表現的身體位置。
+ *
+ * 做了兩個版本，依螢幕寬度切換：
+ * - 寬螢幕：標籤分在人形左右兩側
+ * - 手機：頭部標籤橫放在最上方，人形在左、其餘標籤疊在右側
+ * 手機如果硬塞兩側，字會小到讀不了；而標籤依「指到的位置由上往下」排列，
+ * 可以保證連線彼此不交叉。
+ *
+ * 所有位置都在 build 時算好，不需要 JavaScript；顏色全部走主題 token，深淺色模式都能讀。
+ */
+import { BODY_REGIONS, type BodyRegion } from '../data/concussionSymptoms';
+
+const RED = '#ef4444';
+const AMBER = '#f59e0b';
+
+type Side = 'left' | 'right' | 'top';
+
+type Variant = {
+  key: 'wide' | 'narrow';
+  width: number;
+  fig: { x: number; y: number; s: number };
+  font: number;
+  cols: Record<Side, { x: number; w: number }>;
+  sideOf: (r: BodyRegion) => Side;
+};
+
+const VARIANTS: Variant[] = [
+  {
+    key: 'wide',
+    width: 760,
+    fig: { x: 380, y: 4, s: 1 },
+    font: 13,
+    cols: { left: { x: 8, w: 244 }, right: { x: 508, w: 244 }, top: { x: 0, w: 0 } },
+    sideOf: (r) => r.side,
+  },
+  {
+    // 手機：頭部那一大塊橫放在最上面、直線往下連到頭；其他標籤疊在人形右側。
+    // 這樣右側每個標籤的高度都貼近它指到的位置，連線平緩、不會互相交叉。
+    key: 'narrow',
+    width: 360,
+    fig: { x: 76, y: 0, s: 0.6 },
+    font: 12.5,
+    cols: { left: { x: 0, w: 0 }, right: { x: 150, w: 208 }, top: { x: 2, w: 356 } },
+    sideOf: (r) => (r.id === 'head' ? 'top' : 'right'),
+  },
+];
+
+/**
+ * 依字寬斷行：中日文算 1 個字寬、英數算半個。
+ * 優先在「，、」後面斷（語意完整），整段放不下才逐字斷，而且標點不放行首。
+ */
+const charW = (ch: string) => (/[\x20-\x7e]/.test(ch) ? 0.56 : 1);
+const textW = (t: string) => [...t].reduce((w, ch) => w + charW(ch), 0);
+
+function wrapChars(text: string, maxEm: number): string[] {
+  const lines: string[] = [];
+  let cur = '';
+  for (const ch of text) {
+    if (cur && textW(cur + ch) > maxEm && !/[，、。）」：]/.test(ch)) {
+      lines.push(cur);
+      cur = ch;
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function wrap(text: string, maxEm: number): string[] {
+  if (textW(text) <= maxEm) return [text];
+  const segments = text.match(/[^，、]+[，、]?/g) ?? [text];
+  const lines: string[] = [];
+  let cur = '';
+  for (const seg of segments) {
+    if (!cur) {
+      cur = seg;
+    } else if (textW(cur + seg) <= maxEm) {
+      cur += seg;
+    } else {
+      lines.push(cur);
+      cur = seg;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines.flatMap((ln) => (textW(ln) > maxEm ? wrapChars(ln, maxEm) : [ln]));
+}
+
+function build(v: Variant) {
+  const pad = v.key === 'wide' ? 12 : 10;
+  const titleSize = v.font + 1;
+  const titleGap = 7;
+  const lineH = Math.round(v.font * 1.45);
+  const itemGap = 3;
+  const boxGap = 10;
+  const dotIndent = 14;
+  const anchorOffset = pad + titleSize * 0.6;
+
+  // 放在最上方的標籤先量高度，人形往下讓出位置
+  const topRegions = BODY_REGIONS.filter((r) => v.sideOf(r) === 'top');
+
+  let figOffset = v.fig.y;
+
+  const measure = (r: BodyRegion) => {
+    const col = v.cols[v.sideOf(r)];
+    const maxEm = Math.floor((col.w - pad * 2 - dotIndent) / v.font);
+    const items = [
+      ...r.red.map((t) => ({ tone: RED, lines: wrap(t, maxEm) })),
+      ...r.other.map((t) => ({ tone: AMBER, lines: wrap(t, maxEm) })),
+    ];
+    const bodyH =
+      items.reduce((h, it) => h + it.lines.length * lineH, 0) + itemGap * (items.length - 1);
+    return { col, items, h: pad + titleSize + titleGap + bodyH + pad };
+  };
+
+  if (topRegions.length) {
+    const topH = topRegions.reduce((h, r) => h + measure(r).h + boxGap, 2);
+    figOffset = topH + 22; // 留一段給往下的連線
+  }
+
+  const place = (x: number, y: number) => ({ x: v.fig.x + x * v.fig.s, y: figOffset + y * v.fig.s });
+
+  const boxes = BODY_REGIONS.map((r) => {
+    const side = v.sideOf(r);
+    const { col, items, h } = measure(r);
+    // 寬螢幕放左側的標籤，連線指到身體左半邊
+    const mirror = v.key === 'wide' && side === 'left' ? -1 : 1;
+    const targets = r.targets.map(([x, y]) => place(x * mirror, y));
+    return {
+      r,
+      side,
+      col,
+      items,
+      h,
+      targets,
+      topTarget: Math.min(...targets.map((t) => t.y)),
+      hasRed: r.red.length > 0,
+      y: 0,
+    };
+  });
+
+  // 最上方的標籤依序往下疊
+  let topBottom = 2 - boxGap;
+  for (const b of boxes.filter((x) => x.side === 'top')) {
+    b.y = topBottom + boxGap;
+    topBottom = b.y + b.h;
+  }
+
+  // 左右兩欄依「指到的位置」由上往下排，盡量貼齊目標高度，放不下就往下推
+  for (const side of ['left', 'right'] as const) {
+    let bottom = Math.max(2, topBottom + 14) - boxGap;
+    for (const b of boxes.filter((x) => x.side === side).sort((a, c) => a.topTarget - c.topTarget)) {
+      b.y = Math.max(b.topTarget - anchorOffset, bottom + boxGap);
+      bottom = b.y + b.h;
+    }
+  }
+
+  const rendered = boxes.map((b) => {
+    const anchor =
+      b.side === 'top'
+        ? { x: b.targets[0].x, y: b.y + b.h }
+        : { x: b.side === 'left' ? b.col.x + b.col.w : b.col.x, y: b.y + anchorOffset };
+    let cursor = b.y + pad + titleSize + titleGap;
+    const rows = b.items.map((it) => {
+      const top = cursor;
+      cursor += it.lines.length * lineH + itemGap;
+      return {
+        tone: it.tone,
+        dot: { x: b.col.x + pad + 4, y: top + lineH * 0.5 },
+        lines: it.lines.map((text, i) => ({
+          text,
+          x: b.col.x + pad + dotIndent,
+          y: top + lineH * 0.5 + i * lineH,
+        })),
+      };
+    });
+    return { ...b, anchor, rows, titleY: b.y + pad + titleSize * 0.5 };
+  });
+
+  const height = Math.ceil(
+    Math.max(figOffset + 612 * v.fig.s, ...boxes.map((b) => b.y + b.h)) + 4
+  );
+
+  return { v, boxes: rendered, height, titleSize, pad, figOffset };
+}
+
+const layouts = VARIANTS.map(build);
+
+// 人形（以身體中線為 x = 0）
+const ARMS = [
+  [-66, 160, -84, 262, -92, 352],
+  [66, 160, 84, 262, 92, 352],
+];
+const LEGS = [
+  [-26, 360, -32, 480, -36, 576],
+  [26, 360, 32, 480, 36, 576],
+];
+const TORSO =
+  'M-58,150 Q0,138 58,150 Q74,156 74,172 Q78,262 50,372 L-50,372 Q-78,262 -74,172 Q-74,156 -58,150 Z';
+const pts = (a: number[]) => a.join(' ');
+---
+
+<figure class="min-w-0 rounded-2xl border border-line bg-surface p-4 sm:p-6">
+  {
+    layouts.map((L) => (
+      <svg
+        viewBox={`0 0 ${L.v.width} ${L.height}`}
+        class:list={['h-auto w-full', L.v.key === 'wide' ? 'hidden sm:block' : 'block sm:hidden']}
+        role="img"
+        aria-label="腦震盪症狀位置示意圖：頭部與大腦、眼睛、頸部、全身、胃部、手與腳，各自可能出現的症狀"
+        style="font-family: inherit"
+      >
+        {/* ── 人形 ── */}
+        <g transform={`translate(${L.v.fig.x} ${L.figOffset}) scale(${L.v.fig.s})`}>
+          {/* 先畫一層外框色、再疊一層填色，拼起來就是一個乾淨的剪影輪廓 */}
+          {[
+            { color: 'var(--color-linestrong)', grow: 6 },
+            { color: 'var(--color-panel)', grow: 0 },
+          ].map(({ color, grow }) => (
+            <g style={`fill:${color};stroke:${color}`} stroke-linecap="round" stroke-linejoin="round">
+              {LEGS.map((l) => (
+                <polyline points={pts(l)} style={`fill:none;stroke-width:${36 + grow}`} />
+              ))}
+              {ARMS.map((a) => (
+                <polyline points={pts(a)} style={`fill:none;stroke-width:${26 + grow}`} />
+              ))}
+              <path d={TORSO} style={`stroke-width:${grow}`} />
+              <rect x="-14" y="118" width="28" height="40" rx="6" style={`stroke-width:${grow}`} />
+              <circle cx="0" cy="85" r="42" style={`stroke-width:${grow}`} />
+              <circle cx="-94" cy="372" r="15" style={`stroke-width:${grow}`} />
+              <circle cx="94" cy="372" r="15" style={`stroke-width:${grow}`} />
+              <ellipse cx="-44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+              <ellipse cx="44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+            </g>
+          ))}
+
+          {/* 大腦、眼睛、胃：讓「連到哪裡」一眼就看得出來 */}
+          <g style="stroke:var(--color-linestrong);stroke-width:1.6" stroke-linecap="round">
+            <ellipse cx="0" cy="67" rx="28" ry="19" style="fill:var(--color-tint2)" />
+            <path d="M0,49 L0,85 M-17,58 q7,6 0,13 M17,58 q-7,6 0,13" style="fill:none" />
+            <path
+              d="M8,270 C24,262 42,270 40,290 C38,310 18,314 8,304 C2,298 10,290 2,286 C-6,282 -4,274 8,270 Z"
+              style="fill:var(--color-tint2)"
+            />
+          </g>
+          <circle cx="-14" cy="101" r="3.5" style="fill:var(--color-linestrong)" />
+          <circle cx="14" cy="101" r="3.5" style="fill:var(--color-linestrong)" />
+        </g>
+
+        {/* ── 連線（底下墊一條背景色，穿過人形時仍然清楚） ── */}
+        {L.boxes.map((b) =>
+          b.targets.map((t) => (
+            <g stroke-linecap="round">
+              <line
+                x1={b.anchor.x}
+                y1={b.anchor.y}
+                x2={t.x}
+                y2={t.y}
+                style="stroke:var(--color-surface);stroke-width:5"
+              />
+              <line
+                x1={b.anchor.x}
+                y1={b.anchor.y}
+                x2={t.x}
+                y2={t.y}
+                style="stroke:var(--color-body);stroke-width:1.5"
+              />
+              <circle
+                cx={t.x}
+                cy={t.y}
+                r="5"
+                style={`fill:${b.hasRed ? RED : AMBER};stroke:var(--color-surface);stroke-width:2`}
+              />
+            </g>
+          ))
+        )}
+
+        {/* ── 症狀標籤 ── */}
+        {L.boxes.map((b) => (
+          <g>
+            <rect
+              x={b.col.x}
+              y={b.y}
+              width={b.col.w}
+              height={b.h}
+              rx="10"
+              style="fill:var(--color-panel);stroke:var(--color-line);stroke-width:1"
+            />
+            <text
+              x={b.col.x + L.pad}
+              y={b.titleY}
+              dominant-baseline="central"
+              font-size={L.titleSize}
+              font-weight="800"
+              style="fill:var(--color-head)"
+            >
+              {b.r.title}
+            </text>
+            {b.rows.map((row) => (
+              <g>
+                <circle cx={row.dot.x} cy={row.dot.y} r="3.8" style={`fill:${row.tone}`} />
+                {row.lines.map((ln) => (
+                  <text
+                    x={ln.x}
+                    y={ln.y}
+                    dominant-baseline="central"
+                    font-size={L.v.font}
+                    style="fill:var(--color-body)"
+                  >
+                    {ln.text}
+                  </text>
+                ))}
+              </g>
+            ))}
+          </g>
+        ))}
+      </svg>
+    ))
+  }
+
+  <figcaption class="mt-4 space-y-2 text-xs leading-relaxed break-words">
+    <p class="flex items-start gap-2 text-body">
+      <span class="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={`background:${RED}`} aria-hidden="true"></span>
+      <span><strong class="text-head">紅點</strong>：出現任何一項，立刻停止活動並就醫（就是上面紅框裡的症狀）</span>
+    </p>
+    <p class="flex items-start gap-2 text-body">
+      <span class="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={`background:${AMBER}`} aria-hidden="true"></span>
+      <span><strong class="text-head">黃點</strong>：其他可能出現的症狀 —— 當天不要再滑，並把觀察到的狀況告訴醫師</span>
+    </p>
+    <p class="text-muted">
+      這張圖只是把症狀對應到身體位置，方便一眼看懂，不能用來判斷有沒有腦震盪。
+    </p>
+  </figcaption>
+</figure>

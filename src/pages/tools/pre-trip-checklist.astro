@@ -67,15 +67,28 @@ const filters = [
   </form>
 
   <!-- 進度 -->
-  <div class="on-dark mt-8 rounded-2xl border border-line bg-band p-5 text-white sm:p-6">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+  <div
+    id="cl-progress"
+    class="on-dark mt-8 rounded-2xl border border-line bg-band p-5 text-white sm:p-6"
+  >
+    <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
       <p class="text-sm font-bold">你的清單完成度</p>
-      <p class="text-sm tabular-nums">
-        <span id="cl-done" class="text-2xl font-black">0</span>
-        <span class="text-muted"> / <span id="cl-total">0</span> 項</span>
+      <p class="tabular-nums" aria-live="polite">
+        <span id="cl-pct" data-bump class="inline-block text-4xl font-black text-accent">0%</span>
+        <span class="ml-2 text-sm text-muted">
+          <span id="cl-done">0</span> / <span id="cl-total">0</span> 項
+        </span>
       </p>
     </div>
-    <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-tint3">
+    <div
+      id="cl-track"
+      class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-tint3"
+      role="progressbar"
+      aria-label="清單完成度"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
       <div
         id="cl-bar"
         class="h-full rounded-full bg-accent transition-all duration-500"
@@ -100,8 +113,50 @@ const filters = [
     >
   </div>
 
+  <!--
+    跟著畫面走的進度條：往下捲、上面的完成度看不到時才出現，
+    捲完清單就收起來。只是視覺提示（上面那塊已經會用 aria-live 念出來），
+    而且不攔截點擊，不會擋到下面的勾選框。
+  -->
+  <div
+    id="cl-float"
+    class="on-dark pointer-events-none fixed inset-x-0 bottom-0 z-40 translate-y-full opacity-0 transition-all duration-300 print:hidden"
+    aria-hidden="true"
+  >
+    <div class="mx-auto max-w-3xl px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div
+        class="rounded-2xl border border-line bg-band/95 px-4 py-3 shadow-2xl shadow-black/40 backdrop-blur"
+      >
+        <div class="flex items-center gap-3">
+          <span
+            id="cl-float-pct"
+            data-bump
+            class="inline-block w-16 shrink-0 text-2xl font-black text-accent tabular-nums"
+            >0%</span
+          >
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline justify-between gap-2 text-xs">
+              <span id="cl-float-msg" class="truncate font-bold text-head"></span>
+              <span class="shrink-0 text-body tabular-nums">
+                <span id="cl-float-done">0</span> / <span id="cl-float-total">0</span> 項
+              </span>
+            </div>
+            <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-tint3">
+              <div
+                id="cl-float-bar"
+                class="h-full rounded-full bg-accent transition-all duration-500"
+                style="width:0%"
+              >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 清單 -->
-  <div class="mt-10 space-y-12">
+  <div id="cl-list" class="mt-10 space-y-12">
     {
       PHASES.map((phase) => (
         <div data-phase={phase.id} class="min-w-0">
@@ -169,6 +224,9 @@ const filters = [
     }
   </div>
 
+  <!-- 留一段空白，捲到最後一項時不會被底部進度條蓋住 -->
+  <div class="h-24 print:hidden" aria-hidden="true"></div>
+
   <Fragment slot="basis">
     <p>
       清單的五個分區，對應的是滑雪傷害真正能被介入的五個環節：<strong>防護裝備</strong>、<strong
@@ -213,6 +271,17 @@ const filters = [
 </ToolLayout>
 
 <style>
+  @media (prefers-reduced-motion: no-preference) {
+    .cl-bump {
+      animation: cl-bump 0.35s ease-out;
+    }
+  }
+  @keyframes cl-bump {
+    40% {
+      transform: scale(1.22);
+    }
+  }
+
   @media print {
     :global(header),
     :global(footer) {
@@ -283,6 +352,22 @@ const filters = [
       updateProgress();
     };
 
+    let lastPct = -1;
+
+    /** 依進度給一句短短的鼓勵，讓人知道自己有在前進 */
+    const progressMessage = (pct: number) =>
+      pct === 0
+        ? '勾一項，就前進一點'
+        : pct < 25
+          ? '起步了，繼續加油'
+          : pct < 50
+            ? '持續前進中'
+            : pct < 75
+              ? '已經過一半了'
+              : pct < 100
+                ? '快完成了'
+                : '全部完成 🎉';
+
     const updateProgress = () => {
       const visibleBoxes = boxes.filter((b) => !b.closest('[data-item]')?.hidden);
       const done = visibleBoxes.filter((b) => b.checked).length;
@@ -295,9 +380,27 @@ const filters = [
       };
       set('cl-done', String(done));
       set('cl-total', String(total));
+      set('cl-pct', `${pct}%`);
+      set('cl-float-done', String(done));
+      set('cl-float-total', String(total));
+      set('cl-float-pct', `${pct}%`);
+      set('cl-float-msg', progressMessage(pct));
 
-      const bar = document.getElementById('cl-bar');
-      if (bar) bar.style.width = pct + '%';
+      for (const id of ['cl-bar', 'cl-float-bar']) {
+        const bar = document.getElementById(id);
+        if (bar) bar.style.width = pct + '%';
+      }
+      document.getElementById('cl-track')?.setAttribute('aria-valuenow', String(pct));
+
+      // 數字往上跳的時候輕輕放大一下（第一次載入不跳）
+      if (lastPct >= 0 && pct > lastPct) {
+        for (const el of document.querySelectorAll<HTMLElement>('[data-bump]')) {
+          el.classList.remove('cl-bump');
+          void el.offsetWidth;
+          el.classList.add('cl-bump');
+        }
+      }
+      lastPct = pct;
 
       const criticalBoxes = visibleBoxes.filter((b) =>
         b.closest('[data-item]')?.textContent?.includes('重點')
@@ -349,5 +452,27 @@ const filters = [
     });
 
     applyFilters();
+
+    // 底部進度條：上面的完成度捲出畫面、而且清單還在畫面上時才顯示
+    const floatBar = document.getElementById('cl-float');
+    const progressCard = document.getElementById('cl-progress');
+    const list = document.getElementById('cl-list');
+    if (floatBar && progressCard && list && 'IntersectionObserver' in window) {
+      let cardVisible = true;
+      let listVisible = false;
+      const sync = () => {
+        const show = !cardVisible && listVisible;
+        floatBar.classList.toggle('translate-y-full', !show);
+        floatBar.classList.toggle('opacity-0', !show);
+      };
+      new IntersectionObserver(([e]) => {
+        cardVisible = e.isIntersecting;
+        sync();
+      }).observe(progressCard);
+      new IntersectionObserver(([e]) => {
+        listVisible = e.isIntersecting;
+        sync();
+      }).observe(list);
+    }
   }
 </script>

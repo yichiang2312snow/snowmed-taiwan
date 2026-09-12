@@ -1,18 +1,10 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import { SITE, SITE_A } from '../../consts';
+import ConcussionBodyMap from '../../components/ConcussionBodyMap.astro';
+import { RED_FLAGS } from '../../data/concussionSymptoms';
 
-const redFlags = [
-  '頸部疼痛或壓痛',
-  '出現癲癇或抽搐',
-  '意識喪失（不管多短）',
-  '意識狀態持續變差，或愈來愈難叫醒',
-  '劇烈或愈來愈嚴重的頭痛',
-  '反覆嘔吐',
-  '躁動、易怒、明顯的攻擊性',
-  '複視（看東西有兩個影子）',
-  '手腳無力、麻木或刺痛',
-];
+const redFlags = RED_FLAGS;
 
 const grades = [
   {
@@ -100,6 +92,17 @@ const recovery = [
       在日本請撥 <a href="tel:119" class="font-black text-accent underline">119</a>。人還在雪道上，先找雪場巡邏隊。
     </p>
   </div>
+
+  <!-- 症狀人形圖 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">症狀會出現在身體哪裡</h2>
+    <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+      把這一頁提到的症狀標在身體上。腦震盪不只是「頭痛」—— 眼睛、脖子、胃、手腳都可能出現警訊。
+    </p>
+    <div class="mt-5">
+      <ConcussionBodyMap />
+    </div>
+  </section>
 
   <!-- 認識 -->
   <section class="mt-10">

@@ -3,21 +3,23 @@
  * 深色／淺色切換。
  * 選擇存在瀏覽器的 localStorage，下次回來還記得。
  * 避免閃爍的關鍵在 BaseLayout <head> 裡那段會先執行的小程式。
+ *
+ * 圖示與文字都顯示「按下去會切換成的模式」：
+ * 深色時是太陽＋「白天模式」，淺色時是月亮＋「夜間模式」。
+ * 切換顯示用 CSS（light: 變體）處理，而不是等 JavaScript 執行 ——
+ * 否則存的是淺色模式的人，載入瞬間會先看到錯的字。
  */
 ---
 
 <button
   type="button"
   id="theme-toggle"
-  class="shrink-0 rounded-lg border border-line p-2 text-head transition-colors hover:bg-tint1"
-  aria-label="切換深色或淺色背景"
-  title="切換深色／淺色背景"
+  class="inline-flex shrink-0 flex-col items-center gap-0.5 rounded-lg border border-line px-1.5 py-1 text-head transition-colors hover:bg-tint1 sm:flex-row sm:gap-1.5 sm:py-2 sm:pr-2.5 sm:pl-2"
+  aria-label="切換白天或夜間模式"
 >
-  <!-- 深色模式時顯示太陽（代表「切到淺色」） -->
   <svg
     viewBox="0 0 24 24"
-    class="h-5 w-5"
-    data-icon-sun
+    class="h-5 w-5 light:hidden"
     fill="none"
     stroke="currentColor"
     stroke-width="2"
@@ -29,11 +31,9 @@
       stroke-linecap="round"></path>
   </svg>
 
-  <!-- 淺色模式時顯示月亮（代表「切到深色」） -->
   <svg
     viewBox="0 0 24 24"
-    class="hidden h-5 w-5"
-    data-icon-moon
+    class="hidden h-5 w-5 light:block"
     fill="none"
     stroke="currentColor"
     stroke-width="2"
@@ -41,19 +41,22 @@
   >
     <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" stroke-linejoin="round"></path>
   </svg>
+
+  <span class="text-[10px] leading-none font-bold whitespace-nowrap sm:text-sm sm:leading-normal light:hidden" aria-hidden="true">
+    白天模式
+  </span>
+  <span class="hidden text-[10px] leading-none font-bold whitespace-nowrap sm:text-sm sm:leading-normal light:inline" aria-hidden="true">
+    夜間模式
+  </span>
 </button>
 
 <script>
   const KEY = 'snowmed:theme';
   const btn = document.getElementById('theme-toggle');
-  const sun = btn?.querySelector('[data-icon-sun]');
-  const moon = btn?.querySelector('[data-icon-moon]');
 
-  const syncIcons = () => {
+  const syncLabel = () => {
     const light = document.documentElement.dataset.theme === 'light';
-    sun?.classList.toggle('hidden', light);
-    moon?.classList.toggle('hidden', !light);
-    btn?.setAttribute('aria-pressed', String(light));
+    btn?.setAttribute('aria-label', light ? '切換到夜間模式' : '切換到白天模式');
   };
 
   btn?.addEventListener('click', () => {
@@ -68,8 +71,8 @@
     } catch {
       /* 無痕模式讀寫不到就算了，切換在本次瀏覽仍然有效 */
     }
-    syncIcons();
+    syncLabel();
   });
 
-  syncIcons();
+  syncLabel();
 </script>
