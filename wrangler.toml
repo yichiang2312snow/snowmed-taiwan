@@ -1,0 +1,9 @@
+# Cloudflare Pages 設定
+name = "snowmed-taiwan"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "./dist"
+
+# 瀏覽計數器用的 KV 儲存空間（不需要 API 金鑰，Pages Functions 直接透過 binding 存取）
+[[kv_namespaces]]
+binding = "VIEWS"
+id = "13f11aca05d548908393b8c73e65a136"

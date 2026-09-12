@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-serif: "Noto Serif TC", "Songti TC", ui-serif, Georgia, serif;
+
+  /* 品牌色：高山雪地 × 醫療專業 */
+  --color-ink: #0d1a27;
+  --color-deep: #0e3450;
+  --color-brand: #16688f;
+  --color-brandlight: #2f9bc7;
+  --color-ice: #dceef8;
+  --color-snow: #f6fafc;
+  --color-slate-soft: #5b7086;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-snow);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+/* 中文標題稍微收緊字距，避免過鬆 */
+h1, h2, h3, h4 {
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-wrap: balance;
+  /* 中文標點不要落在行首 */
+  line-break: strict;
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background-color: var(--color-brandlight);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brandlight);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* 文章內文排版 */
+.prose-tc {
+  font-size: 1.0625rem;
+}
+.prose-tc h2 {
+  margin-top: 2.75rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-deep);
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--color-brandlight);
+}
+.prose-tc h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.175rem;
+  font-weight: 700;
+  color: var(--color-deep);
+}
+.prose-tc p {
+  margin-bottom: 1.25rem;
+}
+.prose-tc ul, .prose-tc ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+.prose-tc ul { list-style: disc; }
+.prose-tc ol { list-style: decimal; }
+.prose-tc li { margin-bottom: 0.5rem; padding-left: 0.25rem; }
+.prose-tc strong { font-weight: 700; color: var(--color-deep); }
+.prose-tc a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-tc blockquote {
+  margin: 1.75rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--color-ice);
+  border-radius: 0.5rem;
+  color: var(--color-deep);
+}
+.prose-tc hr {
+  margin: 2.5rem 0;
+  border-color: #dbe5ec;
+}
+.prose-tc table {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.prose-tc th, .prose-tc td {
+  border: 1px solid #dbe5ec;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+.prose-tc th {
+  background: var(--color-ice);
+  font-weight: 700;
+  color: var(--color-deep);
+}
+
+/* Markdown 待辦清單（- [ ] 寫法）*/
+.prose-tc li:has(input[type='checkbox']) {
+  list-style: none;
+  margin-left: -1.5rem;
+}
+.prose-tc input[type='checkbox'] {
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-brand);
+  vertical-align: -2px;
+}
+
+/* 文章內的圖片一律等比例縮放，寬度不超過內文欄寬 */
+.prose-tc img {
+  height: auto;
+  max-width: 100%;
+  border-radius: 0.75rem;
+}

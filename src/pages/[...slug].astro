@@ -1,0 +1,161 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewCount from '../components/ViewCount.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { lastUpdated } from '../lib/lastUpdated';
+import { formatDate, isUpdated } from '../lib/format';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection('articles', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    // 檔名 20260912-xxx.md  →  網址 /20260912-xxx
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const updated = lastUpdated(entry.filePath);
+const showUpdated = isUpdated(entry.data.date, updated);
+
+// 其他文章（最多 3 篇），排除自己
+const others = (await getCollection('articles', ({ data }) => !data.draft))
+  .filter((e) => e.id !== entry.id)
+  .map((e) => {
+    const u = lastUpdated(e.filePath);
+    return { entry: e, updated: u, sortKey: Math.max(e.data.date.valueOf(), u?.valueOf() ?? 0) };
+  })
+  .sort((a, b) => b.sortKey - a.sortKey)
+  .slice(0, 3);
+---
+
+<BaseLayout title={entry.data.title} banner={false} description={entry.data.description}>
+
+  <article>
+    <!-- HERO 區 -->
+    <header class="border-b border-ice bg-white">
+      <div class="mx-auto max-w-3xl px-5 pt-10 pb-8 sm:pt-16">
+        <a href="/" class="text-sm font-bold text-brand hover:underline">← 回文章列表</a>
+
+        <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+          <span class="rounded-full bg-ice px-3 py-1 font-bold text-deep">
+            {entry.data.category}
+          </span>
+          <time datetime={entry.data.date.toISOString()} class="text-slate-soft">
+            發佈於 {formatDate(entry.data.date)}
+          </time>
+          {
+            showUpdated && updated && (
+              <time datetime={updated.toISOString()} class="text-slate-soft">
+                · 最後更新 {formatDate(updated)}
+              </time>
+            )
+          }
+        </div>
+
+        <h1
+          class="mt-4 text-2xl leading-snug font-black break-words text-deep sm:text-4xl"
+        >
+          {entry.data.title}
+        </h1>
+
+        <p class="mt-4 text-base leading-relaxed break-words text-slate-soft sm:text-lg">
+          {entry.data.description}
+        </p>
+
+        <div
+          class="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-ice pt-5 text-sm"
+        >
+          <div class="flex min-w-0 items-center gap-2.5">
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-deep text-xs font-black text-brandlight"
+              aria-hidden="true">楊</span
+            >
+            <span class="min-w-0">
+              <span class="block font-bold break-words text-deep">{entry.data.author}</span>
+              <span class="block text-xs text-slate-soft">作者</span>
+            </span>
+          </div>
+          <ViewCount slug={entry.id} mode="article" class="shrink-0 text-slate-soft" />
+        </div>
+
+        {
+          entry.data.heroImage && (
+            <figure class="mt-8">
+              {/* 等比例縮放，最大寬度就是內文欄寬（max-w-3xl），不會超出去 */}
+              <Image
+                src={entry.data.heroImage}
+                alt={entry.data.heroAlt ?? ''}
+                widths={[640, 1024, 1600]}
+                sizes="(max-width: 768px) 100vw, 768px"
+                class="h-auto w-full rounded-2xl border border-ice"
+                loading="eager"
+              />
+            </figure>
+          )
+        }
+      </div>
+    </header>
+
+    <!-- 內文 -->
+    <div class="bg-white">
+      <div class="prose-tc mx-auto max-w-3xl px-5 py-10 break-words sm:py-14">
+        <Content />
+      </div>
+    </div>
+
+    {
+      entry.data.tags.length > 0 && (
+        <div class="bg-white">
+          <div class="mx-auto max-w-3xl px-5 pb-12">
+            <div class="flex flex-wrap gap-2 border-t border-ice pt-6">
+              {entry.data.tags.map((t) => (
+                <span class="rounded-full bg-snow px-3 py-1.5 text-xs font-medium text-slate-soft">
+                  #{t}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="bg-ice/40">
+      <div class="mx-auto max-w-3xl px-5 py-10">
+        <p class="text-xs leading-relaxed break-words text-slate-soft">
+          本文為一般性健康衛教資訊，依據撰稿當下的臨床共識整理，不能取代醫師面對面的診察、診斷或治療。每個人的傷勢與身體條件不同，實際處置請與您的主治醫師討論。
+        </p>
+      </div>
+    </div>
+  </article>
+
+  {
+    others.length > 0 && (
+      <section class="bg-snow">
+        <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+          <h2 class="text-xl font-black text-deep sm:text-2xl">其他文章</h2>
+          <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map(({ entry: e, updated: u }) => (
+              <ArticleCard
+                slug={e.id}
+                title={e.data.title}
+                description={e.data.description}
+                date={e.data.date}
+                updated={u}
+                author={e.data.author}
+                category={e.data.category}
+                image={e.data.heroImage}
+                imageAlt={e.data.heroAlt}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

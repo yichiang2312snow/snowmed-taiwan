@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+// TODO 待楊醫師填寫：學經歷、專科執照、雪場資歷、證照
+const credentials = {
+  education: ['【待補】醫學系畢業學校與年份'],
+  training: ['【待補】住院醫師訓練醫院與科別', '【待補】專科醫師證書'],
+  sports: ['【待補】滑雪資歷（開始年份、主要雪場、滑行程度）', '【待補】滑雪教練／指導員證照（如有）'],
+  affiliations: ['【待補】目前服務院所與職稱', '【待補】學會會員資格'],
+};
+---
+
+<BaseLayout
+  title="關於我"
+  eyebrow="About"
+  description={`${SITE.doctor}，${SITE.tagline}。結合運動醫學專業與滑雪實務經驗，為台灣雪友提供完整的醫療照護。`}
+>
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+      <div class="prose-tc">
+        <p class="text-xl leading-relaxed font-medium text-deep">
+          我是楊怡強，一位運動醫學醫師，也是一個滑雪的人。
+        </p>
+
+        <p>
+          台灣是一個沒有雪的地方，但每年有數以萬計的台灣人飛到日本、韓國、歐洲、北美的雪場。我們有世界級的雪友熱情，卻幾乎沒有對應的醫療支援系統。
+        </p>
+
+        <p>
+          在門診裡，我一次又一次遇到同樣的情境：一位雪友從國外回來，帶著一張看不懂的外文診斷書、一個腫脹的膝蓋，和一個沒有人能明確回答的問題 ——
+          <strong>「我下個雪季還能滑嗎？」</strong>
+        </p>
+
+        <p>
+          問題不在於台灣的骨科或復健科不夠好，而在於<strong>雪地運動的受傷情境太特殊</strong>。不了解固定器（binding）的釋放邏輯、不知道「cat track」上為什麼容易出事、沒有在深雪裡摔過，就很難真正理解病人描述的那一瞬間發生了什麼。
+        </p>
+
+        <p>
+          所以我選擇把這件事做成專業：<strong>把滑雪運動醫學帶進台灣的診間</strong>。從行前體能準備、裝備設定建議、受傷當下的處置判斷，到回國後的診斷治療與回歸雪場的完整規劃 —— 讓台灣雪友不必再靠運氣和網路資訊自救。
+        </p>
+
+        <blockquote>
+          我的目標很單純：讓每一個台灣雪友，都能<strong>安全地滑更久</strong>。
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-snow">
+    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black text-deep">學經歷與資格</h2>
+      <p class="mt-2 text-sm text-slate-soft">
+        （此區塊內容待楊醫師提供後填入，我不會代為撰寫任何學歷或證照資訊）
+      </p>
+
+      <dl class="mt-8 space-y-8">
+        {
+          [
+            ['學歷', credentials.education],
+            ['訓練與專科', credentials.training],
+            ['滑雪資歷', credentials.sports],
+            ['現職與學會', credentials.affiliations],
+          ].map(([label, items]) => (
+            <div class="rounded-2xl border border-ice bg-white p-6">
+              <dt class="text-sm font-bold tracking-widest text-brand uppercase">{label}</dt>
+              <dd>
+                <ul class="mt-3 space-y-2 text-sm leading-relaxed text-slate-soft">
+                  {(items as string[]).map((i) => (
+                    <li class="flex gap-2">
+                      <span class="text-brandlight">·</span>
+                      <span>{i}</span>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="bg-deep text-white">
+    <div class="mx-auto max-w-3xl px-5 py-16 text-center sm:py-20">
+      <h2 class="text-2xl font-black">有問題想問？</h2>
+      <p class="mt-4 leading-relaxed text-ice/85">
+        不論是行前準備、傷後復原，或只是想確認「這樣痛正不正常」，都歡迎聯絡。
+      </p>
+      <a
+        href="/contact"
+        class="mt-8 inline-block rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-deep hover:bg-ice"
+        >聯絡我</a
+      >
+    </div>
+  </section>
+</BaseLayout>

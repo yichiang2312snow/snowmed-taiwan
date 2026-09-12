@@ -1,0 +1,89 @@
+---
+import { SITE, NAV, IMAGE_CREDITS } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-ice bg-deep text-white">
+  <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="min-w-0">
+      <p class="text-lg font-black">{SITE.doctor}</p>
+      <p class="mt-1 text-sm tracking-[0.18em] text-brandlight uppercase">{SITE.name}</p>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed break-words text-ice/80">{SITE.tagline}</p>
+    </div>
+
+    <nav aria-label="頁尾選單" class="min-w-0">
+      <p class="mb-3 text-sm font-bold text-brandlight">網站導覽</p>
+      <ul class="space-y-2 text-sm text-ice/80">
+        {
+          NAV.map((item) => (
+            <li>
+              <a href={item.href} class="hover:text-white hover:underline">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/contact" class="hover:text-white hover:underline">聯絡與預約</a></li>
+      </ul>
+    </nav>
+
+    <div class="min-w-0">
+      <p class="mb-3 text-sm font-bold text-brandlight">重要提醒</p>
+      <p class="text-sm leading-relaxed break-words text-ice/70">
+        本網站內容為一般性健康衛教資訊，不能取代醫師面對面的診察、診斷或治療。若有身體不適或運動傷害，請儘速就醫並與您的主治醫師討論。
+      </p>
+    </div>
+  </div>
+
+  <!-- 圖片出處（CC BY 授權要求標示作者與來源） -->
+  <div class="border-t border-white/10">
+    <div class="mx-auto max-w-6xl px-5 py-8">
+      <h2 class="mb-3 text-sm font-bold text-brandlight">圖片出處 Image credits</h2>
+      <ul class="space-y-2 text-xs leading-relaxed text-ice/60">
+        {
+          IMAGE_CREDITS.map((c) => (
+            <li class="break-words">
+              <span class="text-ice/80">{c.where}：</span>
+              <a
+                href={c.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer license"
+                class="underline decoration-white/30 underline-offset-2 hover:text-white"
+              >
+                “{c.title}”
+              </a>
+              {' by '}
+              <a
+                href={c.authorUrl}
+                target="_blank"
+                rel="noopener noreferrer author"
+                class="underline decoration-white/30 underline-offset-2 hover:text-white"
+              >
+                {c.author}
+              </a>
+              {' / '}
+              <a
+                href={c.licenseUrl}
+                target="_blank"
+                rel="noopener noreferrer license"
+                class="underline decoration-white/30 underline-offset-2 hover:text-white"
+              >
+                {c.license}
+              </a>
+              <span class="text-ice/40">（{c.modified}）</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div
+      class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-ice/60 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {year} {SITE.doctor} · {SITE.name}</p>
+      <p>Taiwan · Ski &amp; Snowsports Medicine</p>
+    </div>
+  </div>
+</footer>

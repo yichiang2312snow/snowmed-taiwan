@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const injuries = [
+  {
+    part: '膝關節',
+    who: '雙板為主',
+    items: [
+      ['前十字韌帶（ACL）撕裂', '雙板滑雪最具代表性的傷害。常見於後傾落地、內側刃卡住、或固定器未及時釋放時的旋轉受力。'],
+      ['內側副韌帶（MCL）損傷', '犁式（pizza／snowplow）煞車時膝蓋外翻受力，初學者非常常見。'],
+      ['半月板撕裂', '常與韌帶傷害併發，典型症狀是卡住感、彈響與蹲下時的疼痛。'],
+    ],
+  },
+  {
+    part: '上肢',
+    who: '單板為主',
+    items: [
+      ['手腕骨折（橈骨遠端）', '向後跌倒時反射性用手撐地。單板初學者最典型的傷害，護腕有明確保護效果。'],
+      ['滑雪者拇指（Skier’s Thumb）', '雙板者跌倒時雪杖把手把拇指往外撐開，造成拇指掌指關節尺側副韌帶損傷。容易被當成「扭到」而延誤。'],
+      ['肩關節脫臼／鎖骨骨折', '高速跌倒或肩部直接撞擊所致，復發性脫臼需要特別評估。'],
+    ],
+  },
+  {
+    part: '頭頸與軀幹',
+    who: '共通',
+    items: [
+      ['腦震盪', '不一定會昏迷。頭暈、想吐、反應變慢、記憶空白都算。當天絕對不應再上山。'],
+      ['肋骨骨折／胸壁挫傷', '公園跳台、樹林區撞擊常見，深呼吸會痛是典型表現。'],
+      ['脊椎損傷', '相對少見但後果嚴重，任何背部劇痛合併肢體麻木都要立即停止活動並求助巡邏隊。'],
+    ],
+  },
+];
+
+const scope = [
+  ['出發之前', '體能準備、既往傷病風險評估、裝備與固定器設定建議、高海拔與低溫的身體調適。'],
+  ['雪場當下', '受傷當下的判斷原則：什麼情況可以自己下山、什麼情況一定要叫巡邏隊、要不要當地就醫。'],
+  ['回國之後', '影像判讀、診斷確認、治療策略（保守 vs 手術）、復健計畫的擬定與追蹤。'],
+  ['重返雪場', '客觀的肌力與功能測試、心理準備度評估、第一趟回雪場的難度與強度規劃。'],
+];
+---
+
+<BaseLayout
+  title="滑雪運動醫學"
+  eyebrow="Ski &amp; Snowsports Medicine"
+  description="什麼是滑雪運動醫學？認識雙板與單板的典型受傷機轉、常見傷害類型，以及從行前準備到重返雪場的完整照護範圍。"
+>
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+      <div class="prose-tc">
+        <p class="text-lg leading-relaxed font-medium text-deep">
+          滑雪運動醫學（Ski &amp; Snowsports Medicine）是運動醫學的一個次專科，專門處理雪地運動特有的傷害型態、環境風險與回歸規劃。
+        </p>
+        <p>
+          它之所以需要獨立看待，是因為雪地運動同時具備了幾個其他運動少見的條件：<strong>雙腳被固定在器材上</strong>、<strong>高速移動</strong>、<strong>低溫與高海拔</strong>、<strong>連續多日的疲勞累積</strong>，以及<strong>在異地受傷</strong>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-snow">
+    <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black text-deep sm:text-3xl">常見的雪地運動傷害</h2>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-slate-soft">
+        以下整理的是臨床上最常遇到的類型。請注意：這些是一般性的衛教說明，實際診斷仍需經過醫師的理學檢查與必要的影像檢查。
+      </p>
+
+      <div class="mt-10 space-y-6">
+        {
+          injuries.map((group) => (
+            <div class="overflow-hidden rounded-2xl border border-ice bg-white">
+              <div class="flex flex-wrap items-center gap-3 border-b border-ice bg-ice/40 px-6 py-4">
+                <h3 class="text-lg font-black text-deep">{group.part}</h3>
+                <span class="rounded-full bg-deep px-3 py-1 text-xs font-bold text-white">
+                  {group.who}
+                </span>
+              </div>
+              <dl class="divide-y divide-ice">
+                {group.items.map(([name, desc]) => (
+                  <div class="px-6 py-5">
+                    <dt class="font-bold text-deep">{name}</dt>
+                    <dd class="mt-1.5 text-sm leading-relaxed text-slate-soft">{desc}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white">
+    <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black text-deep sm:text-3xl">照護範圍：一個完整的循環</h2>
+
+      <ol class="mt-10 grid gap-5 sm:grid-cols-2">
+        {
+          scope.map(([stage, body], i) => (
+            <li class="rounded-2xl border border-ice bg-snow p-7">
+              <span class="text-xs font-black tracking-widest text-brandlight">
+                STEP {i + 1}
+              </span>
+              <h3 class="mt-2 text-lg font-bold text-deep">{stage}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-slate-soft">{body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="bg-ice/50">
+    <div class="mx-auto max-w-3xl px-5 py-14">
+      <div class="rounded-2xl border-l-4 border-brand bg-white p-7">
+        <h2 class="text-lg font-black text-deep">在雪場受傷了，當下該怎麼辦？</h2>
+        <ul class="mt-4 space-y-3 text-sm leading-relaxed text-slate-soft">
+          <li>
+            <strong class="text-deep">先確保安全：</strong
+            >把雪板或雪杖交叉插在自己上方的雪地上，提醒後方來者。不要停在坡道轉折的視線死角。
+          </li>
+          <li>
+            <strong class="text-deep">不要逞強滑下山：</strong
+            >膝蓋有「啪」的一聲、關節腫得很快、或完全無法承重，都應該直接呼叫雪場巡邏隊（Ski Patrol）。
+          </li>
+          <li>
+            <strong class="text-deep">頭部撞擊一律停止：</strong
+            >即使沒有昏迷，只要有頭暈、噁心、反應遲鈍，當天就不要再上山。
+          </li>
+          <li>
+            <strong class="text-deep">保留所有資料：</strong
+            >當地診所的診斷書、X 光與 MRI 光碟、用藥紀錄都要留著，回台灣看診時非常關鍵。
+          </li>
+        </ul>
+        <p class="mt-5 text-xs text-slate-soft">
+          以上為一般性原則，不能取代現場的專業判斷。緊急狀況請立即聯絡雪場巡邏隊或當地緊急醫療系統。
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

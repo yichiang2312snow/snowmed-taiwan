@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const weeks = [
+  {
+    label: '出發前 8–12 週',
+    title: '打底：肌力與有氧',
+    items: [
+      '下肢肌力：深蹲、分腿蹲、羅馬尼亞硬舉，每週 2–3 次',
+      '後側鏈與臀部：橋式、側臥髖外展 —— 保護膝蓋的關鍵',
+      '有氧耐力：每週 2–3 次、每次 30 分鐘以上，讓你第三天還滑得動',
+    ],
+  },
+  {
+    label: '出發前 4–8 週',
+    title: '轉化：離心與耐力',
+    items: [
+      '離心訓練：慢速下蹲、下坡走 —— 滑雪其實整天都在做離心收縮',
+      '單腳穩定：單腳蹲、單腳硬舉，模擬換刃時的單側承重',
+      '核心抗旋轉：側平板、Pallof press',
+    ],
+  },
+  {
+    label: '出發前 2–4 週',
+    title: '專項：平衡與反應',
+    items: [
+      '平衡板／波速球上的動態控制',
+      '跳躍與落地控制：雙腳跳、側向跳，重點是「安靜、穩定地落地」',
+      '滑雪蹲（wall sit）撐到 60–90 秒',
+    ],
+  },
+  {
+    label: '雪場上',
+    title: '當下的風險管理',
+    items: [
+      '前 30 分鐘當作熱身，不要第一趟就衝黑線',
+      '下午的受傷風險明顯較高 —— 累了就收，不要「再滑最後一趟」',
+      '不喝酒上山；酒精會同時影響判斷、平衡與體溫調節',
+      '天氣差、能見度低、雪況硬冰時，主動降級難度',
+    ],
+  },
+];
+
+const gear = [
+  ['安全帽', '不是選配。頭部外傷是雪地運動最嚴重的傷害來源，安全帽能顯著降低嚴重度。摔到頭的安全帽要換掉。'],
+  ['固定器 DIN 值', '設定過高，該脫的時候不脫，力量全部進到膝蓋；設定過低又會誤脫。請依體重、身高、鞋底長度與滑行程度由專業技師設定，不要自己憑感覺調。'],
+  ['護腕（單板必備）', '對初學到中階的單板者，護腕對手腕骨折有明確的保護效果，強烈建議配戴。'],
+  ['護目鏡與防曬', '高海拔紫外線強、雪地反射率高。雪盲與曬傷都是真的會發生的事。'],
+  ['雪鞋合腳度', '過鬆會讓控制力下降、代償受力；過緊則造成壓迫與循環問題。值得花一次錢做專業選靴。'],
+];
+---
+
+<BaseLayout
+  title="傷害預防"
+  eyebrow="Injury Prevention"
+  description="滑雪傷害預防完整指南：出發前 8–12 週的分期體能訓練、雪場上的風險管理原則，以及安全帽、固定器 DIN 值、護腕等裝備重點。"
+>
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+      <div class="prose-tc">
+        <p class="text-lg leading-relaxed font-medium text-deep">
+          滑雪受傷，絕大多數不是意外，是「準備不足 × 疲勞 × 超出能力的選擇」累積出來的結果。
+        </p>
+        <p>
+          好消息是，這三項都可以被管理。下面這份指南分成兩個部分：<strong>出發前的身體準備</strong>，和<strong>雪場上的風險管理與裝備</strong>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-snow">
+    <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black text-deep sm:text-3xl">行前訓練時間表</h2>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-slate-soft">
+        如果只能記一件事：<strong class="text-deep">練大腿，也要練屁股</strong>。臀肌無力是膝蓋受傷的重要的風險因子。
+      </p>
+
+      <div class="mt-10 space-y-5">
+        {
+          weeks.map((w) => (
+            <div class="grid gap-5 rounded-2xl border border-ice bg-white p-7 sm:grid-cols-[200px_1fr]">
+              <div>
+                <p class="text-xs font-black tracking-widest text-brandlight uppercase">
+                  {w.label}
+                </p>
+                <h3 class="mt-1.5 text-lg font-bold text-deep">{w.title}</h3>
+              </div>
+              <ul class="space-y-2.5 text-sm leading-relaxed text-slate-soft">
+                {w.items.map((i) => (
+                  <li class="flex gap-2.5">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brandlight" />
+                    <span>{i}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="mt-6 text-sm text-slate-soft">
+        這是通用版本。若你有舊傷、手術病史，或本身體能條件較特殊，建議做個別化評估 ——
+        <a href="/clinic" class="font-bold text-brand hover:underline">了解行前評估服務</a>。
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-white">
+    <div class="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black text-deep sm:text-3xl">裝備：花在對的地方</h2>
+      <dl class="mt-10 divide-y divide-ice overflow-hidden rounded-2xl border border-ice">
+        {
+          gear.map(([name, body]) => (
+            <div class="bg-snow px-7 py-6">
+              <dt class="font-bold text-deep">{name}</dt>
+              <dd class="mt-1.5 text-sm leading-relaxed text-slate-soft">{body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="bg-deep text-white">
+    <div class="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+      <h2 class="text-2xl font-black">出發前的自我檢查清單</h2>
+      <ul class="mt-8 space-y-3 text-sm leading-relaxed text-ice/90">
+        {
+          [
+            '我可以單腳深蹲控制到底再站起來，左右邊差不多',
+            '我做 30 分鐘中等強度有氧不會很喘',
+            '我的安全帽沒有摔過，內襯完整',
+            '我的固定器今年有請技師檢查／設定過',
+            '我知道自己保險的海外醫療與緊急後送涵蓋範圍',
+            '我知道要滑的雪場，巡邏隊的緊急電話號碼',
+          ].map((c) => (
+            <li class="flex gap-3">
+              <span class="text-brandlight">☐</span>
+              <span>{c}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-8 text-sm text-ice/60">
+        六項裡有兩項以上打不了勾，就值得在出發前處理一下。
+      </p>
+    </div>
+  </section>
+</BaseLayout>

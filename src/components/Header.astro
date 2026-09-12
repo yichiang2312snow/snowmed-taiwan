@@ -1,0 +1,96 @@
+---
+import { SITE, NAV } from '../consts';
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="sticky top-0 z-40 border-b border-ice/80 bg-snow/90 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+    <a href="/" class="group flex items-center gap-3">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-deep text-brandlight"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 100 100" class="h-6 w-6" fill="none">
+          <path
+            d="M50 18v64M22 34l56 32M78 34L22 66"
+            stroke="currentColor"
+            stroke-width="9"
+            stroke-linecap="round"></path>
+        </svg>
+      </span>
+      <span class="leading-tight">
+        <span class="block text-base font-black text-deep">{SITE.doctor}</span>
+        <span class="block text-[11px] font-medium tracking-[0.18em] text-slate-soft uppercase"
+          >{SITE.name}</span
+        >
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="主選單">
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              isActive(item.href)
+                ? 'bg-ice text-deep'
+                : 'text-slate-soft hover:bg-ice/60 hover:text-deep',
+            ]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href="/contact"
+        class="ml-2 rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-deep"
+        >預約諮詢</a
+      >
+    </nav>
+
+    <button
+      type="button"
+      id="nav-toggle"
+      class="rounded-lg border border-ice p-2 text-deep lg:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+    >
+      <span class="sr-only">開啟選單</span>
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="mobile-nav" class="hidden border-t border-ice bg-snow lg:hidden" aria-label="行動版選單">
+    <div class="mx-auto max-w-6xl px-5 py-3">
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            class="block rounded-lg px-3 py-3 text-sm font-medium text-deep hover:bg-ice"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href="/contact"
+        class="mt-2 block rounded-lg bg-brand px-3 py-3 text-center text-sm font-bold text-white"
+        >預約諮詢</a
+      >
+    </div>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-nav');
+  toggle?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+</script>
