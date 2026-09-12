@@ -11,7 +11,7 @@ export const SITE = {
   doctorEn: 'Dr. Yi-Chiang Yang',
   author: '楊怡強 醫師',
   description:
-    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、回歸雪場準備度評估、出發前檢核表。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
+    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、何時該照 X 光、回歸雪場準備度評估、出發前檢核表、日本雪場選擇指引。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
   // TODO 待楊醫師確認：以下聯絡資訊目前是預留欄位
   email: '',
   clinicName: '',
@@ -110,6 +110,28 @@ export const IMAGE_CREDITS = [
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
   },
+  {
+    file: 'tools/tool-japan-resorts.jpg',
+    where: '工具卡片：日本雪場選擇指引',
+    title: 'Winter in Hokkaido (Furano Ski Resort)',
+    author: 'LIONEL-ARTS',
+    authorUrl: 'https://www.flickr.com/photos/64408374@N05/',
+    sourceUrl: 'https://www.flickr.com/photos/64408374@N05/26130354680',
+    license: 'CC BY-SA 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
+    modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 2.0 授權',
+  },
+  {
+    file: 'tools/tool-xray-check.jpg',
+    where: '工具卡片：何時該照 X 光',
+    title: 'Knee plain X-ray weight bearing',
+    author: 'Ptrump16',
+    authorUrl: 'https://commons.wikimedia.org/w/index.php?curid=114900544',
+    sourceUrl: 'https://commons.wikimedia.org/w/index.php?curid=114900544',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
+  },
 ] as const;
 
 /** 平台上的工具。新增工具只要在這裡加一筆，首頁和 /tools 都會自動出現 */
@@ -157,5 +179,23 @@ export const TOOLS = [
     summary:
       '選擇板種、程度和舊傷，產生專屬於你的行前清單。涵蓋防護裝備、雪具設定、身體準備、保險文件與雪場原則，可列印或存成 PDF。',
     who: '所有要出發的人，尤其第一次去的',
+  },
+  {
+    href: '/tools/xray-check',
+    name: '何時該照 X 光',
+    emoji: '🩻',
+    time: '約 3 分鐘',
+    summary:
+      '膝蓋或腳踝受傷了，到底需不需要照 X 光？用國際通用的「渥太華規則」逐項檢查，判斷是否需要影像檢查來排除骨折。',
+    who: '膝蓋或腳踝剛受傷、不確定要不要去照影像的人',
+  },
+  {
+    href: '/tools/japan-resorts',
+    name: '日本雪場選擇指引',
+    emoji: '🗾',
+    time: '約 2 分鐘',
+    summary:
+      '第一次去日本滑雪，該選哪個雪場？依照你的程度、天數與重視的條件，篩出適合的區域，並附上當地醫療資訊。',
+    who: '還在決定要去哪個雪場的人',
   },
 ] as const;

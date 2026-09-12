@@ -1,0 +1,369 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { SITE, SITE_A } from '../../consts';
+
+const parts = [
+  { v: 'knee', label: '膝蓋' },
+  { v: 'ankle', label: '腳踝與足部' },
+];
+
+const criteria = [
+  // ── 渥太華膝關節規則 ──────────────────────────────
+  {
+    part: 'knee',
+    id: 'k-age',
+    label: '年齡大於 55 歲',
+    how: '骨質與骨折風險隨年齡改變，這一項不需要檢查，看年齡就知道。',
+  },
+  {
+    part: 'knee',
+    id: 'k-fibula',
+    label: '腓骨頭有壓痛',
+    how: '位置：膝蓋外側、膝關節線再往下約一個指幅，可以摸到一顆突出的小骨頭。用手指壓下去看會不會痛。',
+  },
+  {
+    part: 'knee',
+    id: 'k-patella',
+    label: '單獨只有髕骨（膝蓋骨）壓痛',
+    how: '位置：膝蓋正前方那塊可以左右推動的圓骨。重點是「只有這裡痛」—— 如果周圍也一起痛，這一項不算。',
+  },
+  {
+    part: 'knee',
+    id: 'k-flex',
+    label: '膝蓋無法彎曲到 90 度',
+    how: '坐在椅子上，試著把小腿往後收，讓大腿與小腿呈直角。做不到（因為痛或卡住）就算成立。',
+  },
+  {
+    part: 'knee',
+    id: 'k-weight',
+    label: '受傷當下無法立刻用受傷腳承重',
+    how: '指受傷那一瞬間，受傷腳完全踩不下去、無法站立。',
+  },
+  {
+    part: 'knee',
+    id: 'k-walk',
+    label: '現在無法連續走四步',
+    how: '四步 = 左右腳各踩兩次。可以跛行、可以很慢，只要能走完四步就不算成立。',
+  },
+
+  // ── 渥太華踝關節規則 ──────────────────────────────
+  {
+    part: 'ankle',
+    id: 'a-tibia',
+    label: '內踝頂端往上 6 公分範圍內有壓痛',
+    how: '位置：腳踝內側那顆突出的骨頭（內踝）最高點，往小腿方向 6 公分（約四個手指寬）的後緣。沿著骨頭邊緣按壓。',
+  },
+  {
+    part: 'ankle',
+    id: 'a-fibula',
+    label: '外踝頂端往上 6 公分範圍內有壓痛',
+    how: '位置：腳踝外側那顆突出的骨頭（外踝）最高點，往小腿方向 6 公分的後緣。',
+  },
+  {
+    part: 'ankle',
+    id: 'a-meta5',
+    label: '第五蹠骨基部有壓痛',
+    how: '位置：腳掌外側中段，從小趾往腳跟方向摸，會摸到一塊明顯的突起。',
+  },
+  {
+    part: 'ankle',
+    id: 'a-navicular',
+    label: '舟狀骨有壓痛',
+    how: '位置：腳掌內側中段，足弓最高處前方可以摸到的骨頭突起。',
+  },
+  {
+    part: 'ankle',
+    id: 'a-walk',
+    label: '疼痛以致無法連續走四步',
+    how: '四步 = 左右腳各踩兩次。可以跛行，只要能走完四步就不算成立。',
+  },
+];
+---
+
+<ToolLayout
+  title="何時該照 X 光"
+  emoji="🩻"
+  time="約 3 分鐘 · 需要有人幫忙按壓確認"
+  summary="膝蓋或腳踝受傷了，到底需不需要照 X 光？用國際通用的「渥太華規則」逐項檢查，判斷是否需要影像檢查來排除骨折。"
+  description="滑雪膝蓋或腳踝受傷後需不需要照 X 光？依照渥太華膝關節規則（Ottawa Knee Rules）與渥太華踝關節規則（Ottawa Ankle Rules）逐項自我檢查。"
+>
+  <div class="rounded-2xl border-l-4 border-accent bg-white/8 p-5">
+    <p class="text-sm leading-relaxed break-words text-body">
+      <strong class="text-head">這個規則的目的，是安全地「排除」骨折。</strong>
+      它設計成寧可多照、也不要漏掉 —— 所以只要有<strong class="text-head">任何一項</strong
+      >成立，就建議就醫照 X 光。全部都不成立時，骨折的機會很低，但這不等於沒事（見下方說明）。
+    </p>
+  </div>
+
+  <form id="xray-form" class="mt-8 space-y-6">
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <legend class="px-2 text-sm font-bold text-head">哪裡受傷？</legend>
+      <div class="mt-3 flex flex-wrap gap-2">
+        {
+          parts.map((p, i) => (
+            <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-5 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
+              <input type="radio" name="part" value={p.v} checked={i === 0} class="sr-only" />
+              <span class="break-words">{p.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div>
+      <p class="text-sm font-bold text-head">符合哪幾項？（沒有就都不要勾）</p>
+      <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+        壓痛的部分請由旁人協助按壓，力道以「正常按壓」為準，不要用力戳。
+      </p>
+
+      <ul class="mt-4 space-y-2.5">
+        {
+          criteria.map((c) => (
+            <li
+              data-crit
+              data-part={c.part}
+              class="min-w-0 overflow-hidden rounded-xl border border-line bg-panel"
+            >
+              <label class="flex min-w-0 cursor-pointer items-start gap-3 p-4">
+                <input
+                  type="checkbox"
+                  data-check
+                  name={c.part}
+                  value={c.id}
+                  class="mt-1 h-4.5 w-4.5 shrink-0 accent-[var(--color-accent)]"
+                />
+                <span class="min-w-0">
+                  <span class="block text-sm leading-relaxed font-medium break-words text-head">
+                    {c.label}
+                  </span>
+                  <span class="mt-1.5 block text-xs leading-relaxed break-words text-muted">
+                    {c.how}
+                  </span>
+                </span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <button
+        type="submit"
+        class="flex-1 rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+      >
+        看判斷結果
+      </button>
+      <button
+        type="reset"
+        id="xr-reset"
+        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-white/12"
+      >
+        清除
+      </button>
+    </div>
+  </form>
+
+  <div id="xray-result" class="mt-10 scroll-mt-20" hidden>
+    <div id="xr-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-muted uppercase">判斷結果</p>
+      <p class="mt-3 flex flex-wrap items-center gap-3">
+        <span id="xr-emoji" class="text-4xl leading-none" aria-hidden="true"></span>
+        <span id="xr-title" class="text-xl font-black break-words text-head sm:text-2xl"></span>
+      </p>
+      <p id="xr-summary" class="mt-3 text-sm leading-relaxed break-words text-body"></p>
+
+      <div id="xr-flags-wrap" class="mt-6 rounded-xl bg-white/10 p-5" hidden>
+        <p class="text-sm font-bold text-head">成立的項目：</p>
+        <ul id="xr-flags" class="mt-2 space-y-1.5 text-sm break-words text-body"></ul>
+      </div>
+
+      <ul id="xr-next" class="mt-6 space-y-2.5 text-sm leading-relaxed break-words text-body"></ul>
+    </div>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具用的是<strong>渥太華規則（Ottawa Rules）</strong>——
+      急診與運動醫學領域使用超過三十年的臨床決策規則，目的是在不漏掉骨折的前提下，減少不必要的 X
+      光與輻射暴露。
+    </p>
+    <p>
+      本工具的項目內容，整理自 {SITE.doctor}（臺北榮總復健醫學部）的教學投影片，並對照原始文獻確認：
+    </p>
+    <ul>
+      <li>
+        <strong>渥太華膝關節規則</strong>：Stiell IG, Greenberg GH, Wells GA, et al.
+        <em>Prospective validation of a decision rule for the use of radiography in acute knee injuries.</em>
+        JAMA. 1996;275(8):611–615.
+      </li>
+      <li>
+        <strong>渥太華踝關節規則</strong>：Stiell IG, Greenberg GH, McKnight RD, et al.
+        <em>Decision rules for the use of radiography in acute ankle injuries. Refinement and prospective validation.</em>
+        JAMA. 1993;269(9):1127–1132.
+      </li>
+    </ul>
+    <p>
+      這兩套規則的共同特性是<strong>敏感度接近 100%、特異度偏低</strong>
+      —— 換句話說，它很少漏掉真正的骨折，但也會讓一部分沒骨折的人去照 X
+      光。這是刻意的取捨：漏掉骨折的代價，遠高於多照一次 X 光。
+    </p>
+    <p>
+      補充一點：原始的踝關節規則其實會依壓痛位置區分要照<strong>踝關節</strong>還是<strong>足部</strong>的 X
+      光（內外踝屬於踝關節區，第五蹠骨與舟狀骨屬於中足區）。這個工具只回答「需不需要照」，實際要照哪個部位由醫師判斷。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>不適用於這些情況：</strong>
+        意識不清、受到酒精或藥物影響、下肢有感覺異常或麻木、或身上有其他更嚴重的傷讓你分心而感覺不到痛。這些狀況下壓痛測不準，請直接就醫。
+      </li>
+      <li>
+        <strong>主要在成人身上驗證。</strong>
+        兒童（尤其是骨骼未成熟者）的適用性較有限，家長請直接帶去就醫評估。
+      </li>
+      <li>
+        <strong>只適用於急性外傷。</strong>
+        受傷已經過了一段時間、或本來就是慢性疼痛，這個規則不適用。
+      </li>
+      <li>
+        <strong>X 光看不到韌帶與半月板。</strong>
+        前十字韌帶斷裂、半月板撕裂在 X 光上通常是「正常」的 ——
+        所以「不需要照 X 光」和「你的膝蓋沒事」是兩回事。滑雪最常見的膝關節傷害恰好都屬於後者。
+      </li>
+      <li>
+        <strong>結果是「不需要」但你仍然不放心，就去看醫師。</strong>
+        這個規則是用來輔助判斷、減少不必要的檢查，不是用來說服你不要就醫。
+      </li>
+    </ul>
+
+    <p>
+      如果想了解滑雪常見的膝關節與踝關節傷害機轉，可以參考
+      <a href="/ski-medicine">滑雪傷害圖鑑</a>
+      與
+      <a href={SITE_A.articlesUrl} target="_blank" rel="noopener noreferrer">{SITE_A.labelLong}</a>。
+    </p>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('xray-form') as HTMLFormElement | null;
+  const result = document.getElementById('xray-result');
+
+  if (form && result) {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-crit]'));
+
+    const applyPart = () => {
+      const part = String(new FormData(form).get('part') ?? 'knee');
+      for (const el of items) {
+        const show = el.dataset.part === part;
+        el.hidden = !show;
+        if (!show) {
+          const box = el.querySelector<HTMLInputElement>('[data-check]');
+          if (box) box.checked = false;
+        }
+      }
+      result.hidden = true;
+    };
+
+    form.addEventListener('change', (e) => {
+      if ((e.target as HTMLInputElement)?.name === 'part') applyPart();
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const part = String(data.get('part') ?? 'knee');
+      const partLabel = part === 'knee' ? '膝蓋' : '腳踝或足部';
+
+      const checked = items
+        .filter((el) => !el.hidden)
+        .filter((el) => el.querySelector<HTMLInputElement>('[data-check]')?.checked)
+        .map((el) => el.querySelector('span.font-medium')?.textContent?.trim() ?? '');
+
+      const box = document.getElementById('xr-box');
+      const setText = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+
+      const needXray = checked.length > 0;
+
+      if (needXray) {
+        if (box) box.className = 'rounded-2xl border-l-4 p-6 sm:p-8 border-amber-400 bg-amber-500/15';
+        setText('xr-emoji', '🩻');
+        setText('xr-title', '建議就醫照 X 光');
+        setText(
+          'xr-summary',
+          `你的${partLabel}符合渥太華規則中的 ${checked.length} 項。依照這套規則，建議就醫接受 X 光檢查以排除骨折。這不代表一定有骨折 —— 規則的設計就是寧可多照，也不要漏掉。`
+        );
+      } else {
+        if (box)
+          box.className = 'rounded-2xl border-l-4 p-6 sm:p-8 border-emerald-400 bg-emerald-500/15';
+        setText('xr-emoji', '✅');
+        setText('xr-title', '依照規則，目前不需要 X 光');
+        setText(
+          'xr-summary',
+          `你的${partLabel}沒有符合渥太華規則的任何一項，骨折的機會很低。但請注意：X 光本來就看不到韌帶與半月板，而這正是滑雪最常見的傷害類型。`
+        );
+      }
+
+      const flagsWrap = document.getElementById('xr-flags-wrap');
+      const flagsList = document.getElementById('xr-flags');
+      if (flagsWrap && flagsList) {
+        flagsList.textContent = '';
+        if (checked.length) {
+          for (const c of checked) {
+            const li = document.createElement('li');
+            li.textContent = '· ' + c;
+            flagsList.append(li);
+          }
+          flagsWrap.hidden = false;
+        } else {
+          flagsWrap.hidden = true;
+        }
+      }
+
+      const next = document.getElementById('xr-next');
+      if (next) {
+        next.textContent = '';
+        const lines = needXray
+          ? [
+              '先不要繼續滑，避免把可能的骨折變複雜。',
+              '人還在國外的話，可以先看「海外受傷緊急處置中心」找附近的醫療機構。',
+              '受傷後 72 小時內的處置請參考 PEACE 原則：保護、抬高、避免冰敷與消炎藥、適度加壓。',
+              '就醫時記得索取診斷書與影像光碟，回台灣後接手的醫師會需要。',
+            ]
+          : [
+              '仍然建議停止當天的滑行，觀察腫脹與疼痛的變化。',
+              '如果出現關節不穩定、打軟腿、或兩週後仍未改善，請就醫做理學檢查與必要的超音波或 MRI。',
+              '受傷後 72 小時內的處置請參考 PEACE 原則：保護、抬高、避免冰敷與消炎藥、適度加壓。',
+              '身體的感覺永遠優先於這個工具的結果。覺得不對勁就去看醫師。',
+            ];
+        for (const l of lines) {
+          const li = document.createElement('li');
+          li.className = 'flex gap-2.5';
+          const dot = document.createElement('span');
+          dot.className = 'shrink-0 text-accent';
+          dot.textContent = '·';
+          const span = document.createElement('span');
+          span.className = 'min-w-0';
+          span.textContent = l;
+          li.append(dot, span);
+          next.append(li);
+        }
+      }
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('xr-reset')?.addEventListener('click', () => {
+      window.setTimeout(applyPart, 0);
+    });
+
+    applyPart();
+  }
+</script>

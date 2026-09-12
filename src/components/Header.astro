@@ -1,5 +1,6 @@
 ---
-import { SITE, NAV } from '../consts';
+import { SITE, NAV, TOOLS } from '../consts';
+
 const path = Astro.url.pathname;
 const isExternal = (href: string) => href.startsWith('http');
 const isActive = (href: string) =>
@@ -14,7 +15,7 @@ const isActive = (href: string) =>
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
     <a href="/" class="flex min-w-0 items-center gap-2.5 sm:gap-3">
       <span
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bg text-accent sm:h-10 sm:w-10"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-panel text-accent sm:h-10 sm:w-10"
         aria-hidden="true"
       >
         <svg viewBox="0 0 100 100" class="h-5 w-5 sm:h-6 sm:w-6" fill="none">
@@ -35,25 +36,91 @@ const isActive = (href: string) =>
       </span>
     </a>
 
+    <!-- 桌機版選單 -->
     <nav class="hidden items-center gap-1 lg:flex" aria-label="主選單">
       {
-        NAV.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-              isActive(item.href)
-                ? 'bg-white/12 text-head'
-                : 'text-muted hover:bg-white/12 hover:text-head',
-            ]}
-            aria-current={isActive(item.href) ? 'page' : undefined}
-            target={isExternal(item.href) ? '_blank' : undefined}
-            rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
-          >
-            {item.label}
-            {isExternal(item.href) && <span aria-hidden="true"> ↗</span>}
-          </a>
-        ))
+        NAV.map((item) =>
+          item.href === '/tools' ? (
+            <div class="relative" data-tools-menu>
+              <button
+                type="button"
+                id="tools-trigger"
+                aria-expanded="false"
+                aria-controls="tools-dropdown"
+                aria-haspopup="true"
+                class:list={[
+                  'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive(item.href)
+                    ? 'bg-white/12 text-head'
+                    : 'text-muted hover:bg-white/8 hover:text-head',
+                ]}
+              >
+                {item.label}
+                <svg
+                  viewBox="0 0 20 20"
+                  class="h-3.5 w-3.5 transition-transform"
+                  data-chevron
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M5.5 7.5 10 12l4.5-4.5z" />
+                </svg>
+              </button>
+
+              <div
+                id="tools-dropdown"
+                class="absolute top-full right-0 z-50 mt-2 hidden w-80 overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl shadow-black/40"
+              >
+                <ul class="max-h-[70vh] overflow-y-auto p-2">
+                  {TOOLS.map((t) => (
+                    <li>
+                      <a
+                        href={t.href}
+                        class:list={[
+                          'flex min-w-0 items-start gap-3 rounded-xl px-3 py-2.5 transition-colors',
+                          path === t.href || path === t.href + '/'
+                            ? 'bg-white/12'
+                            : 'hover:bg-white/8',
+                        ]}
+                      >
+                        <span class="text-lg leading-none" aria-hidden="true">
+                          {t.emoji}
+                        </span>
+                        <span class="min-w-0">
+                          <span class="block text-sm font-bold break-words text-head">
+                            {t.name}
+                          </span>
+                          <span class="block text-[11px] text-muted">{t.time}</span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="/tools"
+                  class="block border-t border-line px-4 py-3 text-sm font-bold text-accent hover:bg-white/8"
+                  >查看所有工具 →</a
+                >
+              </div>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive(item.href)
+                  ? 'bg-white/12 text-head'
+                  : 'text-muted hover:bg-white/8 hover:text-head',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              target={isExternal(item.href) ? '_blank' : undefined}
+              rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
+            >
+              {item.label}
+              {isExternal(item.href) && <span aria-hidden="true"> ↗</span>}
+            </a>
+          )
+        )
       }
     </nav>
 
@@ -71,30 +138,96 @@ const isActive = (href: string) =>
     </button>
   </div>
 
-  <nav id="mobile-nav" class="hidden border-t border-line bg-surface lg:hidden" aria-label="行動版選單">
-    <div class="mx-auto max-w-6xl px-4 py-3 sm:px-5">
+  <!-- 行動版選單 -->
+  <nav id="mobile-nav" class="hidden border-t border-line bg-bg lg:hidden" aria-label="行動版選單">
+    <div class="mx-auto max-h-[75vh] max-w-6xl overflow-y-auto px-4 py-3 sm:px-5">
       {
-        NAV.map((item) => (
-          <a
-            href={item.href}
-            class="block rounded-lg px-3 py-3 text-sm font-medium text-head hover:bg-white/12"
-            target={isExternal(item.href) ? '_blank' : undefined}
-            rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
-          >
-            {item.label}
-            {isExternal(item.href) && <span aria-hidden="true"> ↗</span>}
-          </a>
-        ))
+        NAV.map((item) =>
+          item.href === '/tools' ? (
+            <div>
+              <a
+                href="/tools"
+                class="block rounded-lg px-3 py-3 text-sm font-bold text-head hover:bg-white/12"
+              >
+                {item.label}
+              </a>
+              <ul class="mt-1 mb-2 space-y-0.5 border-l border-line pl-3">
+                {TOOLS.map((t) => (
+                  <li>
+                    <a
+                      href={t.href}
+                      class="flex min-w-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-body hover:bg-white/8"
+                    >
+                      <span aria-hidden="true">{t.emoji}</span>
+                      <span class="min-w-0 break-words">{t.name}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class="block rounded-lg px-3 py-3 text-sm font-medium text-head hover:bg-white/12"
+              target={isExternal(item.href) ? '_blank' : undefined}
+              rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
+            >
+              {item.label}
+              {isExternal(item.href) && <span aria-hidden="true"> ↗</span>}
+            </a>
+          )
+        )
       }
     </div>
   </nav>
 </header>
 
 <script>
+  // 行動版選單
   const toggle = document.getElementById('nav-toggle');
   const menu = document.getElementById('mobile-nav');
   toggle?.addEventListener('click', () => {
     const open = menu?.classList.toggle('hidden') === false;
     toggle.setAttribute('aria-expanded', String(open));
   });
+
+  // 桌機版「工具」下拉選單
+  const trigger = document.getElementById('tools-trigger');
+  const dropdown = document.getElementById('tools-dropdown');
+  const wrapper = document.querySelector('[data-tools-menu]');
+  const chevron = trigger?.querySelector('[data-chevron]');
+
+  if (trigger && dropdown && wrapper) {
+    const setOpen = (open: boolean) => {
+      dropdown.classList.toggle('hidden', !open);
+      trigger.setAttribute('aria-expanded', String(open));
+      chevron?.classList.toggle('rotate-180', open);
+    };
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(dropdown.classList.contains('hidden'));
+    });
+
+    // 滑到選單上就打開，離開就收起 —— 滑鼠使用者不用點兩下
+    let hoverTimer: number | undefined;
+    wrapper.addEventListener('mouseenter', () => {
+      window.clearTimeout(hoverTimer);
+      setOpen(true);
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      hoverTimer = window.setTimeout(() => setOpen(false), 180);
+    });
+
+    // 點外面或按 Esc 都收起來
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target as Node)) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
+        setOpen(false);
+        (trigger as HTMLButtonElement).focus();
+      }
+    });
+  }
 </script>

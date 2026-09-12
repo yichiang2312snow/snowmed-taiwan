@@ -1,0 +1,263 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { RESORTS, PRIORITY_LABELS, LEVEL_LABELS } from '../../data/japanResorts';
+
+const levelKeys = Object.keys(LEVEL_LABELS) as Array<keyof typeof LEVEL_LABELS>;
+const priorityKeys = Object.keys(PRIORITY_LABELS) as Array<keyof typeof PRIORITY_LABELS>;
+
+const gateways = [
+  { v: 'any', label: '都可以' },
+  { v: 'tokyo', label: '從東京進出（本州）' },
+  { v: 'hokkaido', label: '飛北海道' },
+];
+---
+
+<ToolLayout
+  title="日本雪場選擇指引"
+  emoji="🗾"
+  time="約 2 分鐘"
+  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域，並附上官方網站與當地的醫療資訊。"
+  description="日本滑雪雪場怎麼選？依照程度、交通門戶與重視的條件（粉雪、語言服務、家庭、溫泉、預算、交通時間），篩出適合的日本雪場區域。"
+>
+  <form id="jr-form" class="space-y-6">
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <legend class="px-2 text-sm font-bold text-head">你的程度？</legend>
+      <div class="mt-3 grid gap-2">
+        {
+          levelKeys.map((k, i) => (
+            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+              <input
+                type="radio"
+                name="level"
+                value={k}
+                checked={i === 0}
+                class="h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+              />
+              <span class="min-w-0 break-words text-head">{LEVEL_LABELS[k]}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <legend class="px-2 text-sm font-bold text-head">交通偏好？</legend>
+      <div class="mt-3 flex flex-wrap gap-2">
+        {
+          gateways.map((g, i) => (
+            <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-4 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
+              <input type="radio" name="gateway" value={g.v} checked={i === 0} class="sr-only" />
+              <span class="break-words">{g.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <legend class="px-2 text-sm font-bold text-head">最在意什麼？（可複選）</legend>
+      <p class="mt-1 text-xs text-muted">選越多，篩出來的結果會越集中。</p>
+      <div class="mt-3 grid gap-2 sm:grid-cols-2">
+        {
+          priorityKeys.map((k) => (
+            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+              <input
+                type="checkbox"
+                name="priority"
+                value={k}
+                class="h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+              />
+              <span class="min-w-0 break-words text-head">{PRIORITY_LABELS[k]}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <button
+      type="submit"
+      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+    >
+      看適合我的雪場
+    </button>
+  </form>
+
+  <div id="jr-result" class="mt-10 scroll-mt-20" hidden>
+    <p class="text-xs font-black tracking-widest text-accent uppercase">篩選結果</p>
+    <h2 id="jr-heading" class="mt-2 text-xl font-black break-words text-head sm:text-2xl"></h2>
+    <div id="jr-list" class="mt-6 space-y-4"></div>
+
+    <p class="mt-6 text-xs leading-relaxed break-words text-muted">
+      交通時間為概略值，且各雪場的營業日期、票價與設施每年都會調整 ——
+      實際規劃請以官方網站的資訊為準。
+    </p>
+  </div>
+
+  <template id="jr-card">
+    <article class="min-w-0 overflow-hidden rounded-2xl border border-line bg-panel">
+      <div class="border-b border-line bg-surface px-5 py-4">
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h3 class="text-lg font-black break-words text-head" data-name></h3>
+          <span class="text-sm text-muted" data-nameja></span>
+        </div>
+        <p class="mt-1 text-xs text-muted" data-access></p>
+      </div>
+      <div class="px-5 py-4">
+        <p class="text-sm leading-relaxed break-words text-body" data-why></p>
+        <p
+          class="mt-3 rounded-xl border-l-4 border-amber-400 bg-amber-500/15 px-4 py-3 text-sm leading-relaxed break-words text-amber-100"
+          data-caution
+          hidden
+        >
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm">
+          <a
+            data-official
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-bold text-accent hover:underline">官方網站 ↗</a
+          >
+          <a data-medical class="font-bold text-accent hover:underline" hidden
+            >這一區的醫療資訊 →</a
+          >
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具不是排名，是<strong>配對</strong>。它把每個雪場區域的「性格」用幾個穩定的維度描述
+      —— 主要交通門戶、適合的程度、以及它最擅長的那件事（雪質、語言服務、家庭設施、溫泉、預算、交通效率）——
+      再拿你的條件去比對。
+    </p>
+    <p>
+      刻意只放<strong>不太會變的資訊</strong>：地形特性、雪質傾向、交通門戶、適合對象。纜車數量、雪道條數、票價、營業日期這類每年都會調整的數字一律不放，因為那種資料很快就會過期，放了反而害人 ——
+      所以每一筆都直接附上官方網站連結。
+    </p>
+    <p>
+      每個區域如果本站已經查證過當地的醫療機構，結果卡片會直接連到
+      <a href="/emergency#resorts">海外受傷緊急處置中心</a>的對應段落。選雪場的時候順便知道「萬一受傷要去哪」，是這個平台認為該做的事。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這是概略指引，不是完整的雪場資料庫。</strong>
+        日本有數百個雪場，這裡只收錄台灣人較常去、且資訊相對容易查證的區域。沒被列出來不代表不好。
+      </li>
+      <li>
+        <strong>雪況每年都不一樣。</strong>
+        「雪質好」講的是長期的氣候傾向，不保證你去的那一週。出發前請查當地的即時雪報。
+      </li>
+      <li>
+        <strong>沒有考慮預算的絕對金額。</strong>
+        「想控制預算」只是相對比較，實際費用受住宿等級、訂房時間與匯率影響很大。
+      </li>
+      <li>
+        <strong>交通時間是概略值。</strong>
+        會因季節、路況、班次與轉乘方式差很多，請以官方或交通業者的資訊為準。
+      </li>
+      <li>
+        <strong>醫療資訊的完整度因區域而異。</strong>
+        本站目前只查證過四個區域，其他區域請在出發前自行確認最近的醫療機構，並在買雪票時問到雪場巡邏隊電話。
+      </li>
+    </ul>
+  </Fragment>
+</ToolLayout>
+
+<script>
+  import { RESORTS } from '../../data/japanResorts';
+
+  const form = document.getElementById('jr-form') as HTMLFormElement | null;
+  const result = document.getElementById('jr-result');
+  const list = document.getElementById('jr-list');
+  const tpl = document.getElementById('jr-card') as HTMLTemplateElement | null;
+
+  if (form && result && list && tpl) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const level = String(data.get('level') ?? 'beginner');
+      const gateway = String(data.get('gateway') ?? 'any');
+      const priorities = data.getAll('priority').map(String);
+
+      const scored = RESORTS
+        // 程度是硬條件：這個雪場要適合你現在的程度
+        .filter((r) => (r.levels as readonly string[]).includes(level))
+        // 交通門戶也是硬條件（選「都可以」就不篩）
+        .filter((r) => gateway === 'any' || r.gateway === gateway)
+        .map((r) => {
+          const hits = priorities.filter((p) => (r.priorities as readonly string[]).includes(p));
+          return { r, score: hits.length, hits };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      const heading = document.getElementById('jr-heading');
+      if (heading) {
+        heading.textContent = scored.length
+          ? `這 ${scored.length} 個區域比較符合你的條件`
+          : '沒有完全符合的區域';
+      }
+
+      list.textContent = '';
+
+      if (!scored.length) {
+        const p = document.createElement('p');
+        p.className =
+          'rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm text-muted';
+        p.textContent =
+          '把交通偏好改成「都可以」，或減少幾個條件再試一次。條件選太多時，可能沒有雪場能全部滿足。';
+        list.append(p);
+      }
+
+      for (const { r, hits } of scored) {
+        const node = tpl.content.cloneNode(true) as DocumentFragment;
+        const set = (sel: string, text: string) => {
+          const el = node.querySelector(sel);
+          if (el) el.textContent = text;
+        };
+        set('[data-name]', r.name);
+        set('[data-nameja]', `${r.nameJa} · ${r.prefecture}`);
+        set('[data-access]', r.access);
+
+        const whyEl = node.querySelector('[data-why]');
+        if (whyEl) {
+          whyEl.textContent = hits.length
+            ? `${r.why}（符合你在意的 ${hits.length} 項條件）`
+            : r.why;
+        }
+
+        const caution = node.querySelector('[data-caution]') as HTMLElement | null;
+        if (caution) {
+          if (r.caution) {
+            caution.textContent = r.caution;
+            caution.hidden = false;
+          } else {
+            caution.hidden = true;
+          }
+        }
+
+        const official = node.querySelector('[data-official]') as HTMLAnchorElement | null;
+        if (official) official.href = r.officialUrl;
+
+        const medical = node.querySelector('[data-medical]') as HTMLAnchorElement | null;
+        if (medical) {
+          if (r.medicalAnchor) {
+            medical.href = `/emergency#${r.medicalAnchor}`;
+            medical.hidden = false;
+          } else {
+            medical.hidden = true;
+          }
+        }
+
+        list.append(node);
+      }
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>
