@@ -84,13 +84,13 @@ npx wrangler pages dev   # 完整模擬 Cloudflare，含瀏覽計數器
 看待審清單：
 
 ```bash
-curl -H "Authorization: Bearer <你的TOKEN>" https://snowmed-taiwan.pages.dev/api/wishes/admin
+curl -H "Authorization: Bearer <你的TOKEN>" https://snowmed-taiwan.com/api/wishes/admin
 ```
 
 通過、退回或刪除某一則（`id` 從上面的清單取得）：
 
 ```bash
-curl -X POST https://snowmed-taiwan.pages.dev/api/wishes/admin \
+curl -X POST https://snowmed-taiwan.com/api/wishes/admin \
   -H "Authorization: Bearer <你的TOKEN>" \
   -H "content-type: application/json" \
   -d '{"id":"<許願ID>","action":"approve"}'

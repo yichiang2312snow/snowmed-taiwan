@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // 網址之後接上自訂網域時，改這一行就好
 export default defineConfig({
-  site: 'https://snowmed-taiwan.pages.dev',
+  site: 'https://snowmed-taiwan.com',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

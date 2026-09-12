@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://snowmed-taiwan.pages.dev/sitemap-index.xml
+Sitemap: https://snowmed-taiwan.com/sitemap-index.xml
