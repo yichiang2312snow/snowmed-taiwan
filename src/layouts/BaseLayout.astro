@@ -16,7 +16,7 @@ interface Props {
 
 const { title, description = SITE.description, eyebrow, banner = true } = Astro.props;
 
-const pageTitle = title ? `${title}｜${SITE.doctor} · ${SITE.name}` : `${SITE.doctor}｜${SITE.tagline}`;
+const pageTitle = title ? `${title}｜${SITE.name}` : `${SITE.name}｜${SITE.poweredByShort}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
@@ -32,7 +32,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="zh_TW" />
-    <meta property="og:site_name" content={`${SITE.doctor}｜${SITE.name}`} />
+    <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

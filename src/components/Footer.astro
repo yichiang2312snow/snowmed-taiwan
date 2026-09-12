@@ -6,9 +6,11 @@ const year = new Date().getFullYear();
 <footer class="mt-auto border-t border-ice bg-deep text-white">
   <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-3">
     <div class="min-w-0">
-      <p class="text-lg font-black">{SITE.doctor}</p>
-      <p class="mt-1 text-sm tracking-[0.18em] text-brandlight uppercase">{SITE.name}</p>
-      <p class="mt-4 max-w-xs text-sm leading-relaxed break-words text-ice/80">{SITE.tagline}</p>
+      <p class="text-lg font-black break-words">{SITE.name}</p>
+      <p class="mt-2 text-sm leading-relaxed break-words text-brandlight">{SITE.poweredBy}</p>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed break-words text-ice/80">
+        免費、免註冊、不收集個資的滑雪運動醫學工具平台。
+      </p>
     </div>
 
     <nav aria-label="頁尾選單" class="min-w-0">
@@ -23,7 +25,7 @@ const year = new Date().getFullYear();
             </li>
           ))
         }
-        <li><a href="/contact" class="hover:text-white hover:underline">聯絡與預約</a></li>
+        <li><a href="/contact" class="hover:text-white hover:underline">聯絡</a></li>
       </ul>
     </nav>
 
@@ -82,7 +84,7 @@ const year = new Date().getFullYear();
     <div
       class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-ice/60 sm:flex-row sm:items-center sm:justify-between"
     >
-      <p>© {year} {SITE.doctor} · {SITE.name}</p>
+      <p>© {year} {SITE.name}</p>
       <p>Taiwan · Ski &amp; Snowsports Medicine</p>
     </div>
   </div>

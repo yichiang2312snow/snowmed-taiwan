@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TOOLS } from '../consts';
+---
+
+<BaseLayout
+  title="找不到這個頁面"
+  eyebrow="404"
+  description="找不到這個頁面。這裡有平台上所有可用的工具與文章入口。"
+>
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-20">
+      <p class="text-base leading-relaxed break-words text-slate-soft">
+        這個網址不存在，可能是連結打錯或內容已經移動。下面是平台上目前可用的東西。
+      </p>
+
+      <h2 class="mt-10 text-lg font-black text-deep">工具</h2>
+      <ul class="mt-4 space-y-2">
+        {
+          TOOLS.map((t) => (
+            <li>
+              <a
+                href={t.href}
+                class="flex min-w-0 items-center gap-3 rounded-xl border border-ice bg-snow px-4 py-3 text-sm font-medium text-deep transition-colors hover:border-brandlight hover:bg-white"
+              >
+                <span aria-hidden="true">{t.emoji}</span>
+                <span class="min-w-0 break-words">{t.name}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2 class="mt-10 text-lg font-black text-deep">其他</h2>
+      <ul class="mt-4 space-y-2">
+        {
+          [
+            { href: '/', label: '回首頁' },
+            { href: '/articles', label: '知識庫（衛教文章）' },
+            { href: '/ski-medicine', label: '滑雪傷害圖鑑' },
+            { href: '/injury-prevention', label: '傷害預防指南' },
+            { href: '/about', label: '關於這個平台' },
+          ].map((l) => (
+            <li>
+              <a
+                href={l.href}
+                class="block rounded-xl border border-ice bg-snow px-4 py-3 text-sm font-medium break-words text-deep transition-colors hover:border-brandlight hover:bg-white"
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
