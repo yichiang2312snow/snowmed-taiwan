@@ -74,3 +74,42 @@ npx wrangler pages dev   # 完整模擬 Cloudflare，含瀏覽計數器
 
 - `src/pages/about.astro` 的學經歷、專科證照、滑雪資歷
 - `src/consts.ts` 的 email、LINE、社群連結、看診院所與時段
+
+---
+
+## 許願留言區的審核
+
+網友送出的許願**一律進入待審**，不會自動公開。審核用的是一個 Bearer token，存在 Cloudflare Pages 的 Secret 裡（變數名稱 `WISH_ADMIN_TOKEN`）。
+
+看待審清單：
+
+```bash
+curl -H "Authorization: Bearer <你的TOKEN>" https://snowmed-taiwan.pages.dev/api/wishes/admin
+```
+
+通過、退回或刪除某一則（`id` 從上面的清單取得）：
+
+```bash
+curl -X POST https://snowmed-taiwan.pages.dev/api/wishes/admin \
+  -H "Authorization: Bearer <你的TOKEN>" \
+  -H "content-type: application/json" \
+  -d '{"id":"<許願ID>","action":"approve"}'
+```
+
+`action` 可以是 `approve`（公開）、`reject`（不公開但保留）、`delete`（永久刪除）。
+加上 `"reply":"你的回覆"` 可以在公開的許願下面附上平台回覆。
+
+要換 token：
+```bash
+npx wrangler pages secret put WISH_ADMIN_TOKEN --project-name snowmed-taiwan
+```
+
+### 隱私設計
+- 不收集 email，暱稱可留空
+- 送出者的 IP **只存雜湊值**（做防灌水用），不存原文
+- 公開的 API 回應完全不含審核欄位與來源雜湊
+
+## 雪場醫療資料的維護規則
+
+`src/data/resorts.ts` 裡的每一筆地址與電話，**必須附上 `source` 官方來源連結和 `checkedAt` 查證日期**。
+不確定的資訊寧可不放。使用者可能在受傷、著急、語言不通的狀況下依賴這份資料。
