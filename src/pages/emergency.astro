@@ -176,7 +176,7 @@ const claimDocs = [
   </section>
 
   <!-- 分流入口 -->
-  <section class="bg-bg text-white">
+  <section class="bg-band text-white on-dark">
     <div class="mx-auto max-w-3xl px-5 py-10">
       <h2 class="text-xl font-black">不確定嚴不嚴重？</h2>
       <p class="mt-2 text-sm leading-relaxed break-words text-body">
@@ -184,7 +184,7 @@ const claimDocs = [
       </p>
       <a
         href="/tools/injury-triage"
-        class="mt-5 inline-block rounded-xl bg-panel px-6 py-3.5 text-sm font-bold text-head hover:bg-white/12"
+        class="mt-5 inline-block rounded-xl bg-panel px-6 py-3.5 text-sm font-bold text-head hover:bg-tint2"
         >開始判斷 →</a
       >
     </div>
@@ -256,7 +256,7 @@ const claimDocs = [
           }
         </ol>
 
-        <p class="mt-5 rounded-xl bg-white/12 px-4 py-3 text-sm leading-relaxed break-words text-head">
+        <p class="mt-5 rounded-xl bg-tint2 px-4 py-3 text-sm leading-relaxed break-words text-head">
           因此，現代滑雪運動醫學主張：<strong>急性期順應發炎、亞急性期促進血液循環。</strong>
         </p>
       </div>
@@ -284,7 +284,7 @@ const claimDocs = [
                 <span
                   class:list={[
                     'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl font-black',
-                    s.highlight ? 'bg-red-600 text-white' : 'bg-bg text-accent',
+                    s.highlight ? 'bg-red-600 text-white' : 'bg-band text-accent2',
                   ]}
                   aria-hidden="true"
                 >
@@ -328,7 +328,7 @@ const claimDocs = [
             loveSteps.map((s) => (
               <li class="flex min-w-0 gap-4 rounded-2xl border border-line bg-surface p-5">
                 <span
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-xl font-black text-bg"
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cta text-xl font-black text-ctatext"
                   aria-hidden="true"
                 >
                   {s.letter}
@@ -356,7 +356,7 @@ const claimDocs = [
       </div>
 
       <!-- 醫師叮嚀 -->
-      <div class="mt-12 rounded-2xl border-l-4 border-accent bg-white/8 p-6 sm:p-8">
+      <div class="mt-12 rounded-2xl border-l-4 border-accent bg-tint1 p-6 sm:p-8">
         <h3 class="text-lg font-black text-head">復健專科醫師的叮嚀</h3>
         <div class="prose-tc mt-3 text-muted">
           <p>
@@ -416,7 +416,7 @@ const claimDocs = [
           RESORTS.map((r) => (
             <a
               href={`#${r.id}`}
-              class="rounded-full border border-line bg-panel px-4 py-2 text-sm font-bold text-head hover:border-accent hover:bg-white/8"
+              class="rounded-full border border-line bg-panel px-4 py-2 text-sm font-bold text-head hover:border-accent hover:bg-tint1"
             >
               {r.name}
             </a>
@@ -438,7 +438,7 @@ const claimDocs = [
                 涵蓋雪場：{r.resorts.join('、')}
               </p>
 
-              <p class="mt-4 rounded-xl bg-white/8 px-4 py-3 text-sm leading-relaxed break-words text-head">
+              <p class="mt-4 rounded-xl bg-tint1 px-4 py-3 text-sm leading-relaxed break-words text-head">
                 {r.note}
               </p>
 
@@ -450,7 +450,7 @@ const claimDocs = [
                         <span
                           class:list={[
                             'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
-                            f.type === 'hospital' ? 'bg-bg text-white' : 'bg-white/12 text-head',
+                            f.type === 'hospital' ? 'bg-band text-white on-dark' : 'bg-tint2 text-head',
                           ]}
                         >
                           {f.type === 'hospital' ? '綜合醫院' : '診所'}
@@ -555,7 +555,7 @@ const claimDocs = [
                   <span class="block text-sm leading-relaxed font-medium break-words text-head">
                     {d.label}
                     {d.critical && (
-                      <span class="ml-2 rounded-full bg-white/12 px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-head">
+                      <span class="ml-2 rounded-full bg-tint2 px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-head">
                         必備
                       </span>
                     )}
@@ -591,7 +591,7 @@ const claimDocs = [
   </section>
 
   <!-- 導流 -->
-  <section class="bg-white/8">
+  <section class="bg-tint1">
     <div class="mx-auto max-w-3xl px-5 py-10">
       <p class="text-sm leading-relaxed break-words text-muted">
         <strong class="text-head">想了解這些處置背後的醫學原理？</strong>

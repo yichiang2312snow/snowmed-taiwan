@@ -7,6 +7,7 @@ import returnToSnow from '../assets/tools/tool-return-to-snow.jpg';
 import preTripChecklist from '../assets/tools/tool-pre-trip-checklist.jpg';
 import xrayCheck from '../assets/tools/tool-xray-check.jpg';
 import japanResorts from '../assets/tools/tool-japan-resorts.jpg';
+import concussion from '../assets/tools/tool-concussion.jpg';
 
 /**
  * 工具卡片的背景圖，key 是工具的網址。
@@ -40,5 +41,9 @@ export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> 
   '/tools/japan-resorts': {
     image: japanResorts,
     alt: '北海道富良野雪場的冬季景色',
+  },
+  '/tools/concussion': {
+    image: concussion,
+    alt: '戴著安全帽與雪鏡的滑雪者特寫',
   },
 };

@@ -4,12 +4,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
 import { SITE, SITE_A, TOOLS } from '../consts';
 import heroImage from '../assets/hero-ski-slope.jpg';
+import VisitCounter from '../components/VisitCounter.astro';
 
 ---
 
 <BaseLayout>
   <!-- HERO -->
-  <section class="relative isolate overflow-hidden bg-bg text-white">
+  <section class="relative isolate overflow-hidden bg-band text-white on-dark">
+    <VisitCounter threshold={1000} />
+
     <Image
       src={heroImage}
       alt="高山雪場的滑雪道與纜車，遠方是連綿的雪山稜線"
@@ -20,14 +23,14 @@ import heroImage from '../assets/hero-ski-slope.jpg';
       fetchpriority="high"
     />
     <div
-      class="absolute inset-0 -z-10 bg-gradient-to-r from-bg/96 via-bg/90 to-bg/70"
+      class="absolute inset-0 -z-10 bg-gradient-to-r from-band/96 via-band/90 to-band/70"
       aria-hidden="true"
     >
     </div>
 
     <div class="mx-auto max-w-5xl px-5 py-16 sm:py-24 lg:py-28">
       <p
-        class="mb-5 inline-block rounded-full border border-accent/60 bg-bg/50 px-3.5 py-1.5 text-[11px] font-bold tracking-[0.12em] text-accent sm:px-4 sm:text-xs"
+        class="mb-5 inline-block rounded-full border border-accent/60 bg-band/50 px-3.5 py-1.5 text-[11px] font-bold tracking-[0.12em] text-accent sm:px-4 sm:text-xs"
       >
         免費 · 免註冊 · 不收集個資
       </p>
@@ -51,12 +54,12 @@ import heroImage from '../assets/hero-ski-slope.jpg';
       <div class="mt-9 flex flex-wrap gap-3">
         <a
           href="#tools"
-          class="rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
+          class="rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
           >直接開始用工具</a
         >
         <a
           href="/emergency"
-          class="rounded-xl border border-white/40 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
+          class="rounded-xl border border-white/40 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-tint1"
           >人在國外受傷了？</a
         >
       </div>
@@ -117,7 +120,7 @@ import heroImage from '../assets/hero-ski-slope.jpg';
         </p>
         <a
           href="/wishlist"
-          class="mt-7 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
+          class="mt-7 inline-block rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
           >去許願區 →</a
         >
       </div>
@@ -138,7 +141,7 @@ import heroImage from '../assets/hero-ski-slope.jpg';
           href={SITE_A.articlesUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-7 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-accent"
+          class="mt-7 inline-block rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
           >前往衛教文章專區 →</a
         >
       </div>

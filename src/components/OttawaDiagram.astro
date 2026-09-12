@@ -1,0 +1,343 @@
+---
+/**
+ * 渥太華規則的壓痛熱區圖示。
+ * 用 SVG 畫而不是照片：可以無限放大不糊、會跟著深淺色主題變、檔案也小。
+ * 圖上的編號對應工具頁清單裡的項目編號。
+ */
+interface Props {
+  part: 'knee' | 'ankle';
+}
+const { part } = Astro.props;
+---
+
+{
+  part === 'knee' && (
+    <figure class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <figcaption class="mb-1 text-sm font-bold text-head">膝蓋的壓痛位置</figcaption>
+      <p class="mb-4 text-xs leading-relaxed break-words text-muted">
+        右腳、從正面看。編號對應下面清單裡的項目。
+      </p>
+
+      <svg
+        viewBox="0 0 300 280"
+        class="mx-auto block h-auto w-full max-w-[320px]"
+        role="img"
+        aria-label="右膝正面示意圖，標示腓骨頭與髕骨兩個壓痛位置"
+      >
+        {/* 腿部輪廓 */}
+        <path
+          d="M112,8 C109,44 108,72 108,94 C106,108 106,134 108,150 C112,182 118,222 122,272
+             L178,272 C182,222 188,182 192,150 C194,134 194,108 192,94 C192,72 191,44 188,8 Z"
+          fill="currentColor"
+          class="text-tint1"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linejoin="round"
+        />
+
+        {/* 關節線 */}
+        <path
+          d="M108,152 C130,160 170,160 192,152"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-dasharray="4 4"
+          opacity="0.5"
+        />
+
+        {/* 髕骨 */}
+        <ellipse
+          cx="150"
+          cy="122"
+          rx="22"
+          ry="28"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          opacity="0.7"
+        />
+
+        {/* 熱區：髕骨 */}
+        <ellipse
+          cx="150"
+          cy="122"
+          rx="28"
+          ry="34"
+          fill="#ef4444"
+          fill-opacity="0.22"
+          stroke="#ef4444"
+          stroke-width="3"
+        />
+
+        {/* 熱區：腓骨頭（右腳正面看，外側在畫面左邊） */}
+        <circle
+          cx="112"
+          cy="172"
+          r="17"
+          fill="#f59e0b"
+          fill-opacity="0.25"
+          stroke="#f59e0b"
+          stroke-width="3"
+        />
+
+        {/* 編號 */}
+        <g font-size="15" font-weight="700" text-anchor="middle">
+          <circle cx="217" cy="112" r="13" fill="#ef4444" />
+          <text x="217" y="117" fill="#ffffff">
+            3
+          </text>
+          <line
+            x1="204"
+            y1="114"
+            x2="178"
+            y2="120"
+            stroke="#ef4444"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+
+          <circle cx="58" cy="196" r="13" fill="#f59e0b" />
+          <text x="58" y="201" fill="#1a1a1a">
+            2
+          </text>
+          <line
+            x1="71"
+            y1="192"
+            x2="97"
+            y2="180"
+            stroke="#f59e0b"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </g>
+
+        {/* 左右標示 */}
+        <g font-size="13" font-weight="700" fill="currentColor" opacity="0.75">
+          <text x="46" y="36" text-anchor="middle">
+            外側
+          </text>
+          <text x="254" y="36" text-anchor="middle">
+            內側
+          </text>
+        </g>
+      </svg>
+
+      <ul class="mt-4 space-y-1.5 text-xs break-words text-muted">
+        <li>
+          <span class="font-bold text-head">② 腓骨頭</span>
+          ：膝蓋外側、關節線再往下約一個指幅可以摸到的骨頭突起
+        </li>
+        <li>
+          <span class="font-bold text-head">③ 髕骨</span>
+          ：膝蓋正前方可以左右推動的圓骨。重點是「只有這裡痛」
+        </li>
+      </ul>
+    </figure>
+  )
+}
+
+{
+  part === 'ankle' && (
+    <div class="grid min-w-0 gap-4 sm:grid-cols-2">
+      {/* 外側 */}
+      <figure class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+        <figcaption class="mb-1 text-sm font-bold text-head">外側面</figcaption>
+        <p class="mb-4 text-xs leading-relaxed break-words text-muted">
+          右腳，從外側看。腳尖朝右。
+        </p>
+
+        <svg
+          viewBox="0 0 260 190"
+          class="mx-auto block h-auto w-full max-w-[300px]"
+          role="img"
+          aria-label="右腳外側示意圖，標示外踝上方六公分範圍與第五蹠骨基部"
+        >
+          <path
+            d="M78,6 L78,74 C76,92 66,112 54,128 C42,140 46,156 62,158 L214,158
+               C228,158 230,146 220,139 C192,122 148,104 124,88 C118,80 118,72 118,64 L118,6 Z"
+            fill="currentColor"
+            class="text-tint1"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+
+          {/* 熱區：外踝頂端往上 6 公分（沿骨頭後緣） */}
+          <rect
+            x="72"
+            y="42"
+            width="22"
+            height="62"
+            rx="11"
+            fill="#ef4444"
+            fill-opacity="0.22"
+            stroke="#ef4444"
+            stroke-width="3"
+          />
+          {/* 外踝本身 */}
+          <circle
+            cx="93"
+            cy="106"
+            r="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            opacity="0.7"
+          />
+
+          {/* 熱區：第五蹠骨基部 */}
+          <circle
+            cx="160"
+            cy="140"
+            r="16"
+            fill="#f59e0b"
+            fill-opacity="0.25"
+            stroke="#f59e0b"
+            stroke-width="3"
+          />
+
+          <g font-size="14" font-weight="700" text-anchor="middle">
+            <circle cx="30" cy="60" r="13" fill="#ef4444" />
+            <text x="30" y="65" fill="#ffffff">
+              2
+            </text>
+            <line
+              x1="43"
+              y1="62"
+              x2="70"
+              y2="68"
+              stroke="#ef4444"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+
+            <circle cx="176" cy="180" r="13" fill="#f59e0b" />
+            <text x="176" y="185" fill="#1a1a1a">
+              3
+            </text>
+            <line
+              x1="172"
+              y1="167"
+              x2="164"
+              y2="156"
+              stroke="#f59e0b"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </g>
+        </svg>
+
+        <ul class="mt-4 space-y-1.5 text-xs break-words text-muted">
+          <li>
+            <span class="font-bold text-head">② 外踝上方 6 公分</span>
+            ：從外踝最高點往小腿方向約四指寬，沿骨頭後緣按壓
+          </li>
+          <li>
+            <span class="font-bold text-head">③ 第五蹠骨基部</span>
+            ：腳掌外側中段，從小趾往腳跟摸會摸到的突起
+          </li>
+        </ul>
+      </figure>
+
+      {/* 內側 */}
+      <figure class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+        <figcaption class="mb-1 text-sm font-bold text-head">內側面</figcaption>
+        <p class="mb-4 text-xs leading-relaxed break-words text-muted">
+          右腳，從內側看。腳尖朝左。
+        </p>
+
+        <svg
+          viewBox="0 0 260 190"
+          class="mx-auto block h-auto w-full max-w-[300px]"
+          role="img"
+          aria-label="右腳內側示意圖，標示內踝上方六公分範圍與舟狀骨"
+        >
+          <path
+            d="M182,6 L182,74 C184,92 194,112 206,128 C218,140 214,156 198,158 L46,158
+               C32,158 30,146 40,139 C68,122 112,104 136,88 C142,80 142,72 142,64 L142,6 Z"
+            fill="currentColor"
+            class="text-tint1"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+
+          {/* 熱區：內踝頂端往上 6 公分 */}
+          <rect
+            x="166"
+            y="42"
+            width="22"
+            height="62"
+            rx="11"
+            fill="#ef4444"
+            fill-opacity="0.22"
+            stroke="#ef4444"
+            stroke-width="3"
+          />
+          {/* 內踝本身 */}
+          <circle
+            cx="167"
+            cy="106"
+            r="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            opacity="0.7"
+          />
+
+          {/* 熱區：舟狀骨 */}
+          <circle
+            cx="104"
+            cy="134"
+            r="16"
+            fill="#f59e0b"
+            fill-opacity="0.25"
+            stroke="#f59e0b"
+            stroke-width="3"
+          />
+
+          <g font-size="14" font-weight="700" text-anchor="middle">
+            <circle cx="230" cy="60" r="13" fill="#ef4444" />
+            <text x="230" y="65" fill="#ffffff">
+              1
+            </text>
+            <line
+              x1="217"
+              y1="62"
+              x2="190"
+              y2="68"
+              stroke="#ef4444"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+
+            <circle cx="86" cy="180" r="13" fill="#f59e0b" />
+            <text x="86" y="185" fill="#1a1a1a">
+              4
+            </text>
+            <line
+              x1="90"
+              y1="167"
+              x2="100"
+              y2="152"
+              stroke="#f59e0b"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </g>
+        </svg>
+
+        <ul class="mt-4 space-y-1.5 text-xs break-words text-muted">
+          <li>
+            <span class="font-bold text-head">① 內踝上方 6 公分</span>
+            ：從內踝最高點往小腿方向約四指寬，沿骨頭後緣按壓
+          </li>
+          <li>
+            <span class="font-bold text-head">④ 舟狀骨</span>
+            ：腳掌內側中段，足弓最高處前方的骨頭突起
+          </li>
+        </ul>
+      </figure>
+    </div>
+  )
+}

@@ -85,7 +85,7 @@ const questions = [
   summary="受傷或手術後想再滑雪？用時間、症狀、肌力對稱性、功能測試、落地控制與心理準備度六個面向，看看你到哪一個階段了，以及下一步該做什麼。"
   description="傷後回歸滑雪的準備度自評：以肌力對稱性、單腳跳測試、落地控制與心理準備度取代單純的時間表。"
 >
-  <div class="rounded-2xl border-l-4 border-accent bg-white/8 p-5">
+  <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-5">
     <p class="text-sm leading-relaxed break-words text-head">
       <strong>「休息半年就可以了」不是好答案。</strong>
       它用時間取代了能力。同樣術後六個月的兩個人，肌力恢復程度可能差很多，讓後者上雪場的風險完全不同。這個工具問的是：<strong
@@ -107,7 +107,7 @@ const questions = [
 
           <div class="mt-4 grid gap-2">
             {q.options.map((o) => (
-              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
                 <input
                   type="radio"
                   name={q.id}
@@ -122,13 +122,13 @@ const questions = [
       ))
     }
 
-    <p id="rts-error" class="rounded-xl bg-white/12 px-4 py-3 text-sm font-bold text-head" hidden>
+    <p id="rts-error" class="rounded-xl bg-tint2 px-4 py-3 text-sm font-bold text-head" hidden>
       還有題目沒有作答，請全部選完再送出。
     </p>
 
     <button
       type="submit"
-      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+      class="w-full rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
     >
       看我到哪個階段了
     </button>
@@ -140,12 +140,12 @@ const questions = [
       <p id="rts-stage" class="mt-3 text-xl font-black break-words sm:text-2xl"></p>
       <p id="rts-summary" class="mt-3 text-sm leading-relaxed break-words text-head"></p>
 
-      <div class="mt-6 rounded-xl bg-white/10 p-5">
+      <div class="mt-6 rounded-xl bg-tint1 p-5">
         <p class="text-sm font-bold text-head">下一步建議</p>
         <ul id="rts-next" class="mt-2.5 space-y-2 text-sm leading-relaxed break-words text-muted"></ul>
       </div>
 
-      <div id="rts-gap-wrap" class="mt-5 rounded-xl bg-white/10 p-5" hidden>
+      <div id="rts-gap-wrap" class="mt-5 rounded-xl bg-tint1 p-5" hidden>
         <p class="text-sm font-bold text-head">目前最弱的環節</p>
         <p id="rts-gap" class="mt-1.5 text-sm leading-relaxed break-words text-muted"></p>
       </div>
@@ -160,7 +160,7 @@ const questions = [
       <button
       type="button"
       id="rts-reset"
-      class="mt-5 rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-white/8"
+      class="mt-5 rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
       >重新評估</button
     >
   </div>

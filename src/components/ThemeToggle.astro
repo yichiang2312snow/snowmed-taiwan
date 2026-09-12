@@ -1,0 +1,75 @@
+---
+/**
+ * 深色／淺色切換。
+ * 選擇存在瀏覽器的 localStorage，下次回來還記得。
+ * 避免閃爍的關鍵在 BaseLayout <head> 裡那段會先執行的小程式。
+ */
+---
+
+<button
+  type="button"
+  id="theme-toggle"
+  class="shrink-0 rounded-lg border border-line p-2 text-head transition-colors hover:bg-tint1"
+  aria-label="切換深色或淺色背景"
+  title="切換深色／淺色背景"
+>
+  <!-- 深色模式時顯示太陽（代表「切到淺色」） -->
+  <svg
+    viewBox="0 0 24 24"
+    class="h-5 w-5"
+    data-icon-sun
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+      stroke-linecap="round"></path>
+  </svg>
+
+  <!-- 淺色模式時顯示月亮（代表「切到深色」） -->
+  <svg
+    viewBox="0 0 24 24"
+    class="hidden h-5 w-5"
+    data-icon-moon
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    aria-hidden="true"
+  >
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" stroke-linejoin="round"></path>
+  </svg>
+</button>
+
+<script>
+  const KEY = 'snowmed:theme';
+  const btn = document.getElementById('theme-toggle');
+  const sun = btn?.querySelector('[data-icon-sun]');
+  const moon = btn?.querySelector('[data-icon-moon]');
+
+  const syncIcons = () => {
+    const light = document.documentElement.dataset.theme === 'light';
+    sun?.classList.toggle('hidden', light);
+    moon?.classList.toggle('hidden', !light);
+    btn?.setAttribute('aria-pressed', String(light));
+  };
+
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    if (next === 'light') {
+      document.documentElement.dataset.theme = 'light';
+    } else {
+      delete document.documentElement.dataset.theme;
+    }
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      /* 無痕模式讀寫不到就算了，切換在本次瀏覽仍然有效 */
+    }
+    syncIcons();
+  });
+
+  syncIcons();
+</script>

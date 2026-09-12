@@ -57,7 +57,7 @@ const services = [
           services.map((s) => (
             <a
               href={`#${s.id}`}
-              class="rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold text-head hover:border-accent hover:bg-white/8"
+              class="rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold text-head hover:border-accent hover:bg-tint1"
             >
               {s.label}
             </a>
@@ -77,7 +77,7 @@ const services = [
                 0{i + 1} · {s.label}
               </p>
               <h2 class="mt-3 text-2xl font-black text-head">{s.title}</h2>
-              <p class="mt-4 rounded-xl bg-white/12 px-4 py-3 text-sm leading-relaxed text-head">
+              <p class="mt-4 rounded-xl bg-tint2 px-4 py-3 text-sm leading-relaxed text-head">
                 {s.who}
               </p>
             </div>
@@ -102,7 +102,7 @@ const services = [
     ))
   }
 
-  <section class="bg-white/8">
+  <section class="bg-tint1">
     <div class="mx-auto max-w-3xl px-5 py-14">
       <div class="rounded-2xl border border-line bg-panel p-7">
         <h2 class="text-lg font-black text-head">看診地點與時段</h2>
@@ -115,7 +115,7 @@ const services = [
         </p>
         <a
           href="/contact"
-          class="mt-6 inline-block rounded-xl bg-white px-6 py-3 text-sm font-bold text-bg hover:bg-accent"
+          class="mt-6 inline-block rounded-xl bg-cta px-6 py-3 text-sm font-bold text-ctatext hover:bg-accent"
           >聯絡與預約</a
         >
       </div>

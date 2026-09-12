@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import { SITE, SITE_A } from '../../consts';
+import OttawaDiagram from '../../components/OttawaDiagram.astro';
 
 const parts = [
   { v: 'knee', label: '膝蓋' },
@@ -87,7 +88,7 @@ const criteria = [
   summary="膝蓋或腳踝受傷了，到底需不需要照 X 光？用國際通用的「渥太華規則」逐項檢查，判斷是否需要影像檢查來排除骨折。"
   description="滑雪膝蓋或腳踝受傷後需不需要照 X 光？依照渥太華膝關節規則（Ottawa Knee Rules）與渥太華踝關節規則（Ottawa Ankle Rules）逐項自我檢查。"
 >
-  <div class="rounded-2xl border-l-4 border-accent bg-white/8 p-5">
+  <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-5">
     <p class="text-sm leading-relaxed break-words text-body">
       <strong class="text-head">這個規則的目的，是安全地「排除」骨折。</strong>
       它設計成寧可多照、也不要漏掉 —— 所以只要有<strong class="text-head">任何一項</strong
@@ -101,7 +102,7 @@ const criteria = [
       <div class="mt-3 flex flex-wrap gap-2">
         {
           parts.map((p, i) => (
-            <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-5 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
+            <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-5 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-cta has-[:checked]:bg-cta has-[:checked]:font-bold has-[:checked]:text-ctatext">
               <input type="radio" name="part" value={p.v} checked={i === 0} class="sr-only" />
               <span class="break-words">{p.label}</span>
             </label>
@@ -109,6 +110,13 @@ const criteria = [
         }
       </div>
     </fieldset>
+
+    <div data-diagram="knee">
+      <OttawaDiagram part="knee" />
+    </div>
+    <div data-diagram="ankle" hidden>
+      <OttawaDiagram part="ankle" />
+    </div>
 
     <div>
       <p class="text-sm font-bold text-head">符合哪幾項？（沒有就都不要勾）</p>
@@ -118,7 +126,7 @@ const criteria = [
 
       <ul class="mt-4 space-y-2.5">
         {
-          criteria.map((c) => (
+          criteria.map((c, i) => (
             <li
               data-crit
               data-part={c.part}
@@ -134,6 +142,9 @@ const criteria = [
                 />
                 <span class="min-w-0">
                   <span class="block text-sm leading-relaxed font-medium break-words text-head">
+                    <span class="mr-1.5 font-black text-accent">
+                      {(c.part === 'knee' ? i + 1 : i - 5)}.
+                    </span>
                     {c.label}
                   </span>
                   <span class="mt-1.5 block text-xs leading-relaxed break-words text-muted">
@@ -150,14 +161,14 @@ const criteria = [
     <div class="flex flex-wrap gap-3">
       <button
         type="submit"
-        class="flex-1 rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+        class="flex-1 rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
       >
         看判斷結果
       </button>
       <button
         type="reset"
         id="xr-reset"
-        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-white/12"
+        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-tint2"
       >
         清除
       </button>
@@ -173,7 +184,7 @@ const criteria = [
       </p>
       <p id="xr-summary" class="mt-3 text-sm leading-relaxed break-words text-body"></p>
 
-      <div id="xr-flags-wrap" class="mt-6 rounded-xl bg-white/10 p-5" hidden>
+      <div id="xr-flags-wrap" class="mt-6 rounded-xl bg-tint1 p-5" hidden>
         <p class="text-sm font-bold text-head">成立的項目：</p>
         <ul id="xr-flags" class="mt-2 space-y-1.5 text-sm break-words text-body"></ul>
       </div>
@@ -257,6 +268,10 @@ const criteria = [
 
     const applyPart = () => {
       const part = String(new FormData(form).get('part') ?? 'knee');
+      for (const d of document.querySelectorAll<HTMLElement>('[data-diagram]')) {
+        d.hidden = d.dataset.diagram !== part;
+      }
+
       for (const el of items) {
         const show = el.dataset.part === part;
         el.hidden = !show;

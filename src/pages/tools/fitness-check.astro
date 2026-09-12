@@ -89,7 +89,7 @@ const tests = [
 
           <div class="mt-4 grid gap-2">
             {t.options.map((o) => (
-              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+              <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
                 <input
                   type="radio"
                   name={t.id}
@@ -104,13 +104,13 @@ const tests = [
       ))
     }
 
-    <p id="fc-error" class="rounded-xl bg-white/12 px-4 py-3 text-sm font-bold text-head" hidden>
+    <p id="fc-error" class="rounded-xl bg-tint2 px-4 py-3 text-sm font-bold text-head" hidden>
       還有題目沒有作答，請全部選完再送出。
     </p>
 
     <button
       type="submit"
-      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+      class="w-full rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
     >
       看我的結果
     </button>
@@ -125,7 +125,7 @@ const tests = [
         <span class="text-lg text-muted">/ 100 分</span>
       </div>
 
-      <div class="mt-4 h-3 w-full overflow-hidden rounded-full bg-white/12">
+      <div class="mt-4 h-3 w-full overflow-hidden rounded-full bg-tint2">
         <div
           id="fc-bar"
           class="h-full rounded-full bg-accent transition-all duration-700"
@@ -152,13 +152,13 @@ const tests = [
       <div class="mt-6 flex flex-wrap gap-3">
         <a
           href="/tools/training-plan"
-          class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-bg hover:bg-accent"
+          class="rounded-xl bg-cta px-5 py-3 text-sm font-bold text-ctatext hover:bg-accent"
           >產生我的訓練計畫 →</a
         >
         <button
           type="button"
           id="fc-reset"
-          class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-white/8"
+          class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
           >重新測一次</button
         >
       </div>

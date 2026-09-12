@@ -1,33 +1,46 @@
 @import "tailwindcss";
 
+/* 淺色模式：把 [data-theme="light"] 當成變體，可以寫 light:xxx */
+@custom-variant light (&:where([data-theme="light"] *));
+
 @theme {
   --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", ui-sans-serif,
     system-ui, sans-serif;
   --font-serif: "Noto Serif TC", "Songti TC", ui-serif, Georgia, serif;
 
-  /* ── 藍底白框：深藍為底，白色細框描邊 ──────────────────────────── */
+  /* ── 預設：深色（藍底白框）────────────────────────────────── */
 
-  /* 三層藍：頁面底 → 區塊帶 → 卡片。層次靠明度差，不靠邊框 */
+  /* 三層：頁面底 → 區塊帶 → 卡片 */
   --color-bg: #08243c;
   --color-surface: #0c3050;
   --color-panel: #113c62;
 
-  /* 白框 */
+  /* 永遠是深色的橫幅（HERO、頁尾、工具標頭）—— 淺色模式下也維持深色 */
+  --color-band: #08243c;
+
+  /* 框線 */
   --color-line: rgb(255 255 255 / 0.26);
   --color-linestrong: rgb(255 255 255 / 0.45);
+
+  /* 半透明疊加（深色時是白色、淺色時是深藍） */
+  --color-tint1: rgb(255 255 255 / 0.08);
+  --color-tint2: rgb(255 255 255 / 0.13);
+  --color-tint3: rgb(255 255 255 / 0.2);
 
   /* 文字 */
   --color-head: #ffffff;
   --color-body: #dbeaf6;
   --color-muted: #9dbdd6;
 
-  /* 重點色：冰藍 */
+  /* 重點色 */
   --color-accent: #7dd3fc;
   --color-accent2: #38bdf8;
 
-  /* ── 舊代號的相容對應 ────────────────────────────────────────
-     萬一哪裡還留著舊的類別名稱，也會落在深色系裡，
-     不會出現白底白字這種看不見的狀況。 */
+  /* 主要按鈕 */
+  --color-cta: #ffffff;
+  --color-ctatext: #08243c;
+
+  /* 舊代號相容（萬一哪裡沒改到，也會落在正確的色系） */
   --color-ink: #dbeaf6;
   --color-deep: #08243c;
   --color-brand: #7dd3fc;
@@ -35,6 +48,65 @@
   --color-ice: rgb(255 255 255 / 0.12);
   --color-snow: #0c3050;
   --color-slate-soft: #9dbdd6;
+}
+
+/* ── 淺色模式 ──────────────────────────────────────────────── */
+[data-theme='light'] {
+  --color-bg: #eef5fa;
+  --color-surface: #e2edf6;
+  --color-panel: #ffffff;
+
+  /* band 維持深色，不跟著翻 */
+
+  --color-line: rgb(10 42 68 / 0.16);
+  --color-linestrong: rgb(10 42 68 / 0.34);
+
+  --color-tint1: rgb(10 42 68 / 0.05);
+  --color-tint2: rgb(10 42 68 / 0.09);
+  --color-tint3: rgb(10 42 68 / 0.16);
+
+  --color-head: #0a2a44;
+  --color-body: #1d3f5b;
+  --color-muted: #46637d;
+
+  --color-accent: #0d6a9e;
+  --color-accent2: #0a5680;
+
+  --color-cta: #0d6a9e;
+  --color-ctatext: #ffffff;
+
+  --color-ink: #1d3f5b;
+  --color-deep: #0a2a44;
+  --color-brand: #0d6a9e;
+  --color-brandlight: #0a5680;
+  --color-ice: rgb(10 42 68 / 0.09);
+  --color-snow: #e2edf6;
+  --color-slate-soft: #4f6d88;
+
+  color-scheme: light;
+}
+
+/*
+  固定深色的區塊（HERO、頁尾、工具標頭等）。
+  在裡面把 token 復寫回深色版本，所以不管整站是深是淺，
+  這些區塊裡的文字、框線、按鈕都會自動用對的顏色。
+*/
+.on-dark {
+  --color-surface: #0c3050;
+  --color-panel: #113c62;
+  --color-line: rgb(255 255 255 / 0.26);
+  --color-linestrong: rgb(255 255 255 / 0.45);
+  --color-tint1: rgb(255 255 255 / 0.08);
+  --color-tint2: rgb(255 255 255 / 0.13);
+  --color-tint3: rgb(255 255 255 / 0.2);
+  --color-head: #ffffff;
+  --color-body: #dbeaf6;
+  --color-muted: #9dbdd6;
+  --color-accent: #7dd3fc;
+  --color-accent2: #38bdf8;
+  --color-cta: #ffffff;
+  --color-ctatext: #08243c;
+  color-scheme: dark;
 }
 
 html {
@@ -77,11 +149,23 @@ p {
   border-radius: 2px;
 }
 
-/* 表單元件在深色底上的預設外觀 */
 input,
 textarea,
 select {
-  color-scheme: dark;
+  color-scheme: inherit;
+}
+
+/* 主題切換時平順一點，但尊重「減少動態效果」的設定 */
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  header,
+  section,
+  footer {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
 }
 
 /* 文章內文排版 */
@@ -122,11 +206,11 @@ select {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.prose-tc a:hover { color: #ffffff; }
+.prose-tc a:hover { color: var(--color-head); }
 .prose-tc blockquote {
   margin: 1.75rem 0;
   padding: 1rem 1.25rem;
-  background: rgb(255 255 255 / 0.08);
+  background: var(--color-tint1);
   border-left: 4px solid var(--color-accent);
   border-radius: 0.5rem;
   color: var(--color-head);
@@ -136,7 +220,7 @@ select {
   border-color: var(--color-line);
 }
 .prose-tc code {
-  background: rgb(255 255 255 / 0.12);
+  background: var(--color-tint2);
   border-radius: 0.25rem;
   padding: 0.1rem 0.35rem;
   font-size: 0.9em;
@@ -154,7 +238,7 @@ select {
   text-align: left;
 }
 .prose-tc th {
-  background: rgb(255 255 255 / 0.1);
+  background: var(--color-tint2);
   font-weight: 700;
   color: var(--color-head);
 }

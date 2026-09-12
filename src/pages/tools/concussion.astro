@@ -1,0 +1,320 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { SITE, SITE_A } from '../../consts';
+
+const redFlags = [
+  '頸部疼痛或壓痛',
+  '出現癲癇或抽搐',
+  '意識喪失（不管多短）',
+  '意識狀態持續變差，或愈來愈難叫醒',
+  '劇烈或愈來愈嚴重的頭痛',
+  '反覆嘔吐',
+  '躁動、易怒、明顯的攻擊性',
+  '複視（看東西有兩個影子）',
+  '手腳無力、麻木或刺痛',
+];
+
+const grades = [
+  {
+    level: '第一級',
+    title: '意識沒有喪失',
+    body: '僅有頭暈等症狀，人是清醒的。',
+  },
+  {
+    level: '第二級',
+    title: '意識沒有完全喪失',
+    body: '但出現暫時性的意識混亂，以及一時無法回想事發當時的情形。',
+  },
+  {
+    level: '第三級',
+    title: '典型的腦震盪',
+    body: '有一段時間完全喪失意識，而且記不得事發時的情形。',
+  },
+];
+
+const fieldChecks = [
+  {
+    id: 'orientation',
+    title: '人事時地物',
+    how: '問對方：這裡是哪裡？今天星期幾？現在是上半場還是下半場？我們早上做了什麼？剛剛發生什麼事？',
+    watch: '回答遲疑、答錯、或需要想很久，都值得記下來。',
+  },
+  {
+    id: 'digits',
+    title: '數字倒念',
+    how: '請對方把「13579」反過來念（9-7-5-3-1）。也可以用其他 5 個數字。',
+    watch: '念錯順序、中途卡住、或要重來，都值得記下來。',
+  },
+  {
+    id: 'balance',
+    title: '簡易平衡測試',
+    how: '依序做三種站姿，每種雙手插腰、閉眼 20 秒：雙腳站 → 單腳站（非慣用腳）→ 前後腳站（tandem stance，一腳跟貼另一腳尖）。',
+    watch: '手離開腰、睜開眼睛、身體晃到需要跨步、或跌倒，都值得記下來。注意安全，旁邊要有人扶。',
+  },
+];
+
+const recovery = [
+  {
+    title: '減輕大腦負荷，減少用腦',
+    body: '充分睡眠；減少中樞興奮性飲品（過量的茶與咖啡）；減少菸酒。如果精神不濟，強烈建議請假居家休養 —— 勉強工作反而容易造成危險。',
+  },
+  {
+    title: '運動員回場：逐步漸進',
+    body: '症狀穩定後，在一週內以逐步漸進的方式恢復訓練強度，而不是休息到某一天就直接回到原本的量。每加一個階段都要確認症狀沒有再出現。',
+  },
+  {
+    title: '專業評估用的工具',
+    body: 'SCAT6 或 ImPACT testing 是給醫療人員操作的標準化評估工具，不是自己在家做的測驗。',
+  },
+];
+---
+
+<ToolLayout
+  title="腦震盪：看不見的傷"
+  emoji="🧠"
+  time="約 5 分鐘 · 說明頁"
+  summary="腦震盪是滑雪最容易被忽略、卻最不能輕忽的傷害。這一頁說明它怎麼發生、有哪些症狀、嚴重度怎麼分，以及為什麼「短時間內再撞一次」是最危險的事。"
+  description="滑雪腦震盪衛教說明：症狀、嚴重度分級、現場可以做的觀察、為什麼影像檢查常看不出來，以及二次撞擊的危險。附 SCAT6 官方連結。"
+>
+  <!-- 最重要的先講 -->
+  <div class="rounded-2xl border-2 border-red-500 bg-red-500/15 p-5 sm:p-6">
+    <h2 class="text-lg font-black break-words text-head sm:text-xl">
+      有這些狀況，立刻停止活動並就醫
+    </h2>
+    <p class="mt-2 text-sm leading-relaxed break-words text-body">
+      以下任何一項出現，都請立即呼叫雪場巡邏隊或送醫，不要等、不要自己觀察：
+    </p>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      {
+        redFlags.map((f) => (
+          <li class="flex min-w-0 items-start gap-2.5 rounded-xl border border-red-400/50 bg-panel px-4 py-2.5 text-sm leading-relaxed break-words text-body">
+            <span class="shrink-0 text-red-300" aria-hidden="true">
+              ●
+            </span>
+            <span class="min-w-0">{f}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-4 text-sm leading-relaxed break-words text-body">
+      在日本請撥 <a href="tel:119" class="font-black text-accent underline">119</a>。人還在雪道上，先找雪場巡邏隊。
+    </p>
+  </div>
+
+  <!-- 認識 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">腦震盪是什麼</h2>
+    <div class="prose-tc mt-4">
+      <p>
+        腦震盪是一種<strong>常見、相對輕微，但非常容易被忽略</strong>的腦部創傷。它可以由頭頸部的直接撞擊造成，<strong>也可以由身體任何部位受到的衝擊力量傳遞到腦部</strong>而造成
+        —— 換句話說，沒有撞到頭，也可能發生腦震盪。
+      </p>
+      <p>
+        症狀可能<strong>立刻出現，也可能在受傷後六小時內逐步惡化</strong>。常見的是頭痛、頭暈、噁心、嘔吐；比較嚴重的可以出現暫時性失憶、昏迷數小時至數日、躁動、充滿攻擊性。
+      </p>
+      <p>
+        這是為什麼「當下覺得還好」不能當作沒事的理由 ——
+        <strong>受傷後的幾個小時內，症狀還在變化。</strong>
+      </p>
+    </div>
+  </section>
+
+  <!-- 分級 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">嚴重度分級</h2>
+    <ol class="mt-5 space-y-3">
+      {
+        grades.map((g) => (
+          <li class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span class="rounded-full bg-band px-3 py-1 text-xs font-bold text-white">
+                {g.level}
+              </span>
+              <p class="font-bold break-words text-head">{g.title}</p>
+            </div>
+            <p class="mt-2 text-sm leading-relaxed break-words text-muted">{g.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- 影像的限制 + 二次撞擊 -->
+  <section class="mt-10 grid gap-4 sm:grid-cols-2">
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <h3 class="font-black break-words text-head">影像檢查通常看不出來</h3>
+      <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+        在沒有腦出血的情況下，<strong class="text-head"
+          >大部分的影像學檢查無法協助判讀腦震盪</strong
+        >。CT 或 MRI 正常，不代表沒有腦震盪。診斷主要靠臨床評估，不是靠機器。
+      </p>
+    </div>
+    <div class="min-w-0 rounded-2xl border-2 border-red-500 bg-red-500/15 p-5">
+      <h3 class="font-black break-words text-head">⚠️ 最危險的是「再撞一次」</h3>
+      <p class="mt-2 text-sm leading-relaxed break-words text-body">
+        腦震盪還沒恢復的期間如果再受到一次撞擊，<strong class="text-head"
+          >預後會快速惡化，而且可能是不可逆的</strong
+        >。這是為什麼撞到頭之後「當天不要再上山」不是保守，是必要。
+      </p>
+    </div>
+  </section>
+
+  <!-- 現場觀察 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">
+      沒有醫療人員在場時，可以怎麼觀察
+    </h2>
+    <div class="mt-3 rounded-2xl border-l-4 border-amber-400 bg-amber-500/15 p-5">
+      <p class="text-sm leading-relaxed break-words text-body">
+        <strong class="text-head">這些不是診斷，是「觀察紀錄」。</strong>
+        目的是讓你把具體的觀察內容帶去給醫師，而不是讓你自己下判斷。不管結果如何，撞到頭之後當天都不應該再滑。
+      </p>
+    </div>
+
+    <div class="mt-5 space-y-3">
+      {
+        fieldChecks.map((c, i) => (
+          <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <div class="flex items-start gap-3.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-band text-sm font-black text-accent2"
+                aria-hidden="true"
+              >
+                {i + 1}
+              </span>
+              <div class="min-w-0">
+                <h3 class="font-bold break-words text-head">{c.title}</h3>
+                <p class="mt-1.5 text-sm leading-relaxed break-words text-body">{c.how}</p>
+                <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+                  <span class="font-bold text-accent">要注意：</span>
+                  {c.watch}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 確診之後 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">經醫師確診腦震盪之後</h2>
+    <div class="mt-5 space-y-3">
+      {
+        recovery.map((r) => (
+          <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <h3 class="font-bold break-words text-head">{r.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed break-words text-muted">{r.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- SCAT6 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">SCAT6 官方資料</h2>
+    <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+      SCAT6（Sport Concussion Assessment Tool 6）是國際運動腦震盪共識會議發布的標準化評估工具，
+      <strong class="text-head">設計上由醫療人員操作</strong
+      >。放在這裡是為了讓你知道正式的評估長什麼樣子，以及方便醫療人員取用 —— 不是讓你自己照著打分數。
+    </p>
+    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+      <a
+        href="https://sma.org.au/wp-content/uploads/2023/07/SCAT6.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="min-w-0 rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-linestrong"
+      >
+        <p class="font-bold break-words text-head">SCAT6 表單全文（PDF）↗</p>
+        <p class="mt-1.5 text-xs leading-relaxed break-words text-muted">
+          官方原版表單，適用 13 歲以上青少年與成人
+        </p>
+      </a>
+      <a
+        href="https://doi.org/10.1136/bjsports-2023-107036"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="min-w-0 rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-linestrong"
+      >
+        <p class="font-bold break-words text-head">BJSM 原始發表文獻 ↗</p>
+        <p class="mt-1.5 text-xs leading-relaxed break-words text-muted">
+          Introducing the Sport Concussion Assessment Tool 6 (SCAT6). Br J Sports Med.
+          2023;57(11):622–631.
+        </p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 最終聲明 -->
+  <section class="mt-10">
+    <div class="rounded-2xl border-2 border-accent bg-tint1 p-6 sm:p-8">
+      <h2 class="text-lg font-black break-words text-head sm:text-xl">請務必注意</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-body">
+        <strong class="text-head">無法使用本網站進行腦震盪的診斷。</strong>
+        這一頁提供的是一般性的衛教說明與觀察方向，不構成醫療診斷，也不能取代醫師面對面的診察與判斷。
+      </p>
+      <p class="mt-3 text-sm leading-relaxed break-words text-body">
+        腦震盪的診斷與後續處置，<strong class="text-head"
+          >詳情仍然需要專業醫師直接看診判斷</strong
+        >。<strong class="text-head">有任何疑慮，請盡速找醫師就診。</strong>
+      </p>
+      <p class="mt-3 text-sm leading-relaxed break-words text-body">
+        如果症狀在受傷後持續惡化、或出現上方紅色警示區的任何一項，請立即就醫或撥打當地緊急電話。
+      </p>
+    </div>
+  </section>
+
+  <Fragment slot="basis">
+    <p>
+      這一頁的內容整理自 {SITE.doctor}（臺北榮總復健醫學部）的教學投影片，涵蓋腦震盪的成因、症狀時序、嚴重度分級、影像檢查的限制，以及二次撞擊的風險。
+    </p>
+    <p>
+      現場觀察的三個項目（人事時地物、數字倒念、平衡測試），對應的是標準化腦震盪評估工具裡的三個面向：<strong
+        >定向感</strong
+      >、<strong>專注力與工作記憶</strong>、<strong>姿勢穩定度</strong>。這裡把它們簡化成「沒有醫療人員在場時可以怎麼觀察」，<strong
+        >刻意不給分數、也不給結論</strong
+      >，因為判讀需要專業訓練與受傷前的基準值。
+    </p>
+    <p>
+      正式的評估工具請見上方的 SCAT6 官方連結。SCAT6 出自 2022
+      年阿姆斯特丹第六屆國際運動腦震盪共識會議，發表於《英國運動醫學雜誌》（BJSM）。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這一頁不會、也不能給你「有沒有腦震盪」的答案。</strong>
+        腦震盪是臨床診斷，需要醫師綜合病史、神經學檢查與觀察結果判斷。
+      </li>
+      <li>
+        <strong>沒有撞到頭也可能發生腦震盪。</strong>
+        身體其他部位受到的衝擊可以把力量傳遞到腦部。不要因為「頭沒撞到」就排除。
+      </li>
+      <li>
+        <strong>症狀可能延遲出現。</strong>
+        受傷後六小時內都可能逐步惡化，當下沒事不代表之後沒事。撞到頭後的 24
+        小時最好有人陪，並留意症狀變化。
+      </li>
+      <li>
+        <strong>平衡測試本身有跌倒風險。</strong>
+        一定要在平坦、安全的地方進行，旁邊要有人可以扶。人已經站不穩的時候不要測，直接就醫。
+      </li>
+      <li>
+        <strong>兒童與青少年的處置標準不同，而且更嚴格。</strong>
+        SCAT6 適用於 13 歲以上；更年幼的孩子有專屬的版本（Child SCAT6），請直接就醫評估。
+      </li>
+    </ul>
+
+    <p>
+      更多滑雪傷害的說明可以參考
+      <a href="/ski-medicine">滑雪傷害圖鑑</a>
+      與
+      <a href={SITE_A.articlesUrl} target="_blank" rel="noopener noreferrer">{SITE_A.labelLong}</a>。
+      受傷當下的分流判斷請用
+      <a href="/tools/injury-triage">雪場受傷分流判斷</a>。
+    </p>
+  </Fragment>
+</ToolLayout>

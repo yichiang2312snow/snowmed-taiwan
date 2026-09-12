@@ -111,6 +111,17 @@ export const IMAGE_CREDITS = [
     modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
   },
   {
+    file: 'tools/tool-concussion.jpg',
+    where: '工具卡片：腦震盪說明',
+    title: 'Skier wearing goggles and blue jacket',
+    author: 'Félix An',
+    authorUrl: 'https://commons.wikimedia.org/w/index.php?curid=147037565',
+    sourceUrl: 'https://commons.wikimedia.org/w/index.php?curid=147037565',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    modified: '已裁切與縮放尺寸以符合網頁需求',
+  },
+  {
     file: 'tools/tool-japan-resorts.jpg',
     where: '工具卡片：日本雪場選擇指引',
     title: 'Winter in Hokkaido (Furano Ski Resort)',
@@ -188,6 +199,15 @@ export const TOOLS = [
     summary:
       '膝蓋或腳踝受傷了，到底需不需要照 X 光？用國際通用的「渥太華規則」逐項檢查，判斷是否需要影像檢查來排除骨折。',
     who: '膝蓋或腳踝剛受傷、不確定要不要去照影像的人',
+  },
+  {
+    href: '/tools/concussion',
+    name: '腦震盪：看不見的傷',
+    emoji: '🧠',
+    time: '約 5 分鐘',
+    summary:
+      '撞到頭之後該注意什麼？症狀、嚴重度分級、現場可以做的觀察，以及為什麼「短時間內再撞一次」是最危險的事。',
+    who: '撞到頭、或同行者撞到頭的人',
   },
   {
     href: '/tools/japan-resorts',

@@ -1,6 +1,6 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import { CHECKLIST } from '../../data/checklist';
+import { CHECKLIST, PHASES } from '../../data/checklist';
 
 const filters = [
   {
@@ -38,8 +38,8 @@ const filters = [
   title="出發前注意事項互動檢核表"
   emoji="✅"
   time="約 3 分鐘 · 勾選狀態會自動保存"
-  summary="選擇你的板種、程度和舊傷狀況，產生一份專屬於你的行前檢核清單。每一項都寫了「為什麼」，你可以自己決定要不要採納。勾選狀態存在你的瀏覽器裡，關掉再回來還在。"
-  description="滑雪出發前檢核表：依單板／雙板、新手／老手、有無舊傷動態產生個人化清單，涵蓋防護裝備、雪具設定、身體準備、保險文件與雪場原則，可列印或存成 PDF。"
+  summary="選擇你的板種、程度和舊傷狀況，產生一份專屬於你的清單，分成「在台灣出發前」「抵達雪場、滑行前」「滑行期間」三個階段。每一項都寫了「為什麼」，你可以自己決定要不要採納。勾選狀態存在你的瀏覽器裡，關掉再回來還在。"
+  description="滑雪行前檢核表：分成在台灣出發前、抵達雪場滑行前、滑行期間三階段，依單板／雙板、新手／老手、有無舊傷動態產生個人化清單，可列印或存成 PDF。"
 >
   <!-- 篩選 -->
   <form id="cl-filters" class="space-y-5 print:hidden">
@@ -49,7 +49,7 @@ const filters = [
           <legend class="px-2 text-sm font-bold text-head">{f.label}</legend>
           <div class="mt-3 flex flex-wrap gap-2">
             {f.options.map((o, i) => (
-              <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-4 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:font-bold has-[:checked]:text-bg">
+              <label class="min-w-0 cursor-pointer rounded-xl border border-line bg-panel px-4 py-2.5 text-sm text-body transition-colors hover:border-linestrong has-[:checked]:border-cta has-[:checked]:bg-cta has-[:checked]:font-bold has-[:checked]:text-ctatext">
                 <input
                   type="radio"
                   name={f.name}
@@ -67,7 +67,7 @@ const filters = [
   </form>
 
   <!-- 進度 -->
-  <div class="mt-8 rounded-2xl border border-line bg-bg p-5 text-white sm:p-6">
+  <div class="on-dark mt-8 rounded-2xl border border-line bg-band p-5 text-white sm:p-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
       <p class="text-sm font-bold">你的清單完成度</p>
       <p class="text-sm tabular-nums">
@@ -75,7 +75,7 @@ const filters = [
         <span class="text-muted"> / <span id="cl-total">0</span> 項</span>
       </p>
     </div>
-    <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-white/20">
+    <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-tint3">
       <div
         id="cl-bar"
         class="h-full rounded-full bg-accent transition-all duration-500"
@@ -90,26 +90,39 @@ const filters = [
     <button
       type="button"
       id="cl-print"
-      class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-bg hover:bg-accent">列印 / 存成 PDF</button
+      class="rounded-xl bg-cta px-5 py-3 text-sm font-bold text-ctatext hover:bg-accent">列印 / 存成 PDF</button
     >
     <button
       type="button"
       id="cl-clear"
-      class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-white/8"
+      class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
       >清除所有勾選</button
     >
   </div>
 
   <!-- 清單 -->
-  <div class="mt-8 space-y-6">
+  <div class="mt-10 space-y-12">
     {
-      CHECKLIST.map((section) => (
+      PHASES.map((phase) => (
+        <div data-phase={phase.id} class="min-w-0">
+          <div class="rounded-2xl border border-line bg-band px-5 py-4 text-white on-dark sm:px-6">
+            <div class="flex items-baseline gap-2.5">
+              <span class="text-xl leading-none" aria-hidden="true">
+                {phase.emoji}
+              </span>
+              <h2 class="text-lg font-black break-words text-head sm:text-xl">{phase.title}</h2>
+            </div>
+            <p class="mt-1.5 text-sm leading-relaxed break-words text-body/85">{phase.subtitle}</p>
+          </div>
+
+          <div class="mt-5 space-y-6">
+            {CHECKLIST.filter((s) => s.phase === phase.id).map((section) => (
         <section data-section={section.id} class="min-w-0">
           <div class="flex items-baseline gap-2.5">
             <span class="text-xl leading-none" aria-hidden="true">
               {section.emoji}
             </span>
-            <h2 class="text-lg font-black break-words text-head sm:text-xl">{section.title}</h2>
+            <h3 class="text-base font-black break-words text-head sm:text-lg">{section.title}</h3>
           </div>
           <p class="mt-1.5 text-sm break-words text-muted">{section.intro}</p>
 
@@ -133,7 +146,7 @@ const filters = [
                     <span class="block text-sm leading-relaxed font-medium break-words text-head">
                       {item.label}
                       {item.critical && (
-                        <span class="ml-2 rounded-full bg-white/12 px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-head">
+                        <span class="ml-2 rounded-full bg-tint2 px-2 py-0.5 align-middle text-[10px] font-bold whitespace-nowrap text-head">
                           重點
                         </span>
                       )}
@@ -149,6 +162,9 @@ const filters = [
             ))}
           </ul>
         </section>
+            ))}
+          </div>
+        </div>
       ))
     }
   </div>
@@ -256,6 +272,12 @@ const filters = [
       for (const section of document.querySelectorAll<HTMLElement>('[data-section]')) {
         const visible = section.querySelectorAll<HTMLElement>('[data-item]:not([hidden])');
         section.hidden = visible.length === 0;
+      }
+
+      // 整個階段都空了，連階段標題一起收起來
+      for (const phase of document.querySelectorAll<HTMLElement>('[data-phase]')) {
+        const visible = phase.querySelectorAll<HTMLElement>('[data-section]:not([hidden])');
+        phase.hidden = visible.length === 0;
       }
 
       updateProgress();

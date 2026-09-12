@@ -1,0 +1,65 @@
+---
+/**
+ * 造訪人數。
+ *
+ * 計數本身在每一頁都會跑（第一次來的人才 +1，用 localStorage 記住），
+ * 但數字只顯示在首頁，而且要累積到門檻以上才會出現 ——
+ * 人數很少的時候秀出來反而扣分。
+ *
+ * 不放 cookie、不記錄 IP、不串接任何第三方分析服務，KV 裡就只有一個數字。
+ */
+interface Props {
+  /** 累積到多少人才顯示 */
+  threshold?: number;
+}
+const { threshold = 1000 } = Astro.props;
+---
+
+<p
+  id="visit-chip"
+  data-threshold={threshold}
+  class="absolute top-4 right-4 z-10 hidden items-center gap-1.5 rounded-full border border-white/25 bg-band/60 px-3 py-1.5 text-[11px] font-bold text-body backdrop-blur sm:top-6 sm:right-6 sm:px-4 sm:text-xs"
+>
+  <span aria-hidden="true">👣</span>
+  <span>已有 <span id="visit-count" class="tabular-nums">–</span> 位雪友造訪</span>
+</p>
+
+<script>
+  const KEY = 'snowmed:visited';
+
+  (async () => {
+    let seen = false;
+    try {
+      seen = localStorage.getItem(KEY) === '1';
+    } catch {
+      /* 無痕模式讀不到就當作第一次 */
+    }
+
+    try {
+      // 第一次來才 +1，之後回訪只讀數字
+      const res = await fetch('/api/visits', { method: seen ? 'GET' : 'POST' });
+      const data = await res.json();
+
+      if (!seen) {
+        try {
+          localStorage.setItem(KEY, '1');
+        } catch {
+          /* 忽略 */
+        }
+      }
+
+      const chip = document.getElementById('visit-chip');
+      if (!chip || typeof data.count !== 'number') return;
+
+      const threshold = Number(chip.dataset.threshold ?? '1000');
+      if (data.count < threshold) return;
+
+      const el = document.getElementById('visit-count');
+      if (el) el.textContent = data.count.toLocaleString('zh-TW');
+      chip.classList.remove('hidden');
+      chip.classList.add('inline-flex');
+    } catch {
+      /* 讀不到就安靜地不顯示 */
+    }
+  })();
+</script>

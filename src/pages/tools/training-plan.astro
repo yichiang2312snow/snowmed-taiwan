@@ -33,7 +33,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
             { v: 'regular', label: '規律運動，每週 2–3 次' },
             { v: 'active', label: '運動習慣很好，每週 4 次以上' },
           ].map((o) => (
-            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+            <label class="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
               <input
                 type="radio"
                 name="level"
@@ -50,13 +50,13 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 
     <button
       type="submit"
-      class="w-full rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+      class="w-full rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
     >
       產生我的訓練計畫
     </button>
   </form>
 
-  <p id="plan-error" class="mt-4 rounded-xl bg-white/12 px-4 py-3 text-sm font-bold text-head" hidden>
+  <p id="plan-error" class="mt-4 rounded-xl bg-tint2 px-4 py-3 text-sm font-bold text-head" hidden>
   </p>
 
   <div id="plan-result" class="mt-10 scroll-mt-20" hidden>
@@ -68,7 +68,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
       <button
         type="button"
         id="plan-print"
-        class="shrink-0 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm font-bold text-head hover:bg-white/8 print:hidden"
+        class="shrink-0 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm font-bold text-head hover:bg-tint1 print:hidden"
         >列印 / 存成 PDF</button
       >
     </div>

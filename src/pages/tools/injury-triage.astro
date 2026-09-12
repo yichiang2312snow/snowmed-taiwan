@@ -84,7 +84,7 @@ const groups = [
 
           <div class="mt-4 grid gap-2">
             {g.items.map((item) => (
-              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-white/12">
+              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
                 <input
                   type="checkbox"
                   name={g.id}
@@ -102,14 +102,14 @@ const groups = [
     <div class="flex flex-wrap gap-3">
       <button
         type="submit"
-        class="flex-1 rounded-xl bg-white px-6 py-4 text-sm font-bold text-bg transition-colors hover:bg-accent"
+        class="flex-1 rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
       >
         看建議
       </button>
       <button
         type="reset"
         id="tr-reset"
-        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-white/8"
+        class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-tint1"
       >
         清除
       </button>
@@ -126,7 +126,7 @@ const groups = [
 
       <ul id="tr-actions" class="mt-6 space-y-3 text-sm leading-relaxed break-words text-head"></ul>
 
-      <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-white/10 p-5" hidden>
+      <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-tint1 p-5" hidden>
         <p class="text-sm font-bold text-head">你勾選的項目中，觸發判斷的是：</p>
         <ul id="tr-flags" class="mt-2 space-y-1.5 text-sm break-words text-muted"></ul>
       </div>

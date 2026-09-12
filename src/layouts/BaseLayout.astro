@@ -24,6 +24,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/* 在畫面繪製前就套用使用者選過的主題，避免深淺色閃一下 */}
+    <script is:inline>
+      try {
+        if (localStorage.getItem('snowmed:theme') === 'light') {
+          document.documentElement.dataset.theme = 'light';
+        }
+      } catch (e) {
+        /* 讀不到就用預設的深色 */
+      }
+    </script>
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -66,14 +78,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   <body class="flex min-h-screen flex-col">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-bg focus:px-4 focus:py-2 focus:text-white"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-band focus:px-4 focus:py-2 focus:text-white"
       >跳至主要內容</a
     >
     <Header />
     <main id="main" class="flex-1">
       {
         title && banner && (
-          <section class="border-b border-line bg-bg text-white">
+          <section class="border-b border-line bg-band text-white on-dark">
             <div class="mx-auto max-w-5xl px-5 py-14 sm:py-20">
               {eyebrow && (
                 <p class="mb-3 text-sm font-medium tracking-widest text-accent uppercase">
