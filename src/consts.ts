@@ -30,7 +30,7 @@ export const SITE_A = {
 } as const;
 
 export const NAV = [
-  { href: '/tools', label: '工具' },
+  { href: '/tools', label: '實用小工具' },
   { href: '/emergency', label: '海外受傷' },
   // 衛教文章都在楊醫師的個人網站上，這裡直接外連過去
   { href: SITE_A.articlesUrl, label: '知識庫', external: true },
