@@ -1,0 +1,50 @@
+---
+/**
+ * 使用統計的前端回報。
+ *
+ * 只送「發生了什麼類型的事」，不送任何身分資訊：沒有 cookie、沒有訪客編號、
+ * 沒有 referrer、沒有裝置資訊。後端也不記錄 IP。
+ *
+ * 工具頁只要在表單送出時呼叫 window.snowmedTrack('done', '<工具代號>')
+ * 或 ('result', '<工具代號>/<結果>')，就會被計入。
+ */
+---
+
+<script>
+  type Ev = 'view' | 'tool' | 'done' | 'result' | 'wish';
+
+  const send = (e: Ev, l: string) => {
+    const body = JSON.stringify({ e, l });
+    try {
+      // sendBeacon 不會擋住頁面，離開頁面時也送得出去
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/stats', new Blob([body], { type: 'application/json' }));
+        return;
+      }
+    } catch {
+      /* 不支援就用 fetch */
+    }
+    fetch('/api/stats', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      /* 統計失敗不影響使用者 */
+    });
+  };
+
+  // 提供給各個工具頁呼叫
+  (window as unknown as { snowmedTrack: (e: Ev, l: string) => void }).snowmedTrack = send;
+
+  // 頁面瀏覽：把路徑正規化成安全的 label
+  const path = location.pathname.replace(/\/+$/, '') || '/home';
+  const label = path.replace(/^\//, '').toLowerCase() || 'home';
+  if (/^[a-z0-9/_-]{1,60}$/.test(label)) {
+    send('view', label);
+
+    // 如果是工具頁，另外記一筆「打開了這個工具」
+    const m = label.match(/^tools\/([a-z0-9-]+)$/);
+    if (m) send('tool', m[1]);
+  }
+</script>

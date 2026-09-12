@@ -383,6 +383,9 @@ const criteria = [
         }
       }
 
+      (window as any).snowmedTrack?.('done', 'xray-check');
+      (window as any).snowmedTrack?.('result', 'xray-check/' + (needXray ? 'xray' : 'no-xray'));
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });

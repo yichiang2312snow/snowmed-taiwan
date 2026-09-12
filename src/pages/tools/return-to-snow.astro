@@ -356,6 +356,9 @@ const questions = [
         }
       }
 
+      (window as any).snowmedTrack?.('done', 'return-to-snow');
+      (window as any).snowmedTrack?.('result', 'return-to-snow/stage' + (stage + 1));
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });

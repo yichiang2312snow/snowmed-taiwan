@@ -256,6 +256,8 @@ const gateways = [
         list.append(node);
       }
 
+      (window as any).snowmedTrack?.('done', 'japan-resorts');
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });

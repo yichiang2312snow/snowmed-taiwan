@@ -292,6 +292,10 @@ const tests = [
       const bar = document.getElementById('fc-bar');
       if (bar) bar.style.width = pct + '%';
 
+      const band = pct >= 85 ? 'high' : pct >= 65 ? 'good' : pct >= 40 ? 'fair' : 'low';
+      (window as any).snowmedTrack?.('done', 'fitness-check');
+      (window as any).snowmedTrack?.('result', 'fitness-check/' + band);
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });

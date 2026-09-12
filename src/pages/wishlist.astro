@@ -342,6 +342,7 @@ const categories = ['工具許願', '雪場資訊', '傷害問題', '裝備', '�
       const result = await res.json();
 
       if (res.ok && result.ok) {
+        (window as any).snowmedTrack?.('wish', 'submit');
         show('收到了，謝謝你！你的許願已經進入待審佇列，我看過之後會公開出來。', 'ok');
         form.reset();
         if (counter) counter.textContent = '0';

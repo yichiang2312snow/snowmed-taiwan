@@ -298,6 +298,9 @@ const groups = [
         }
       }
 
+      (window as any).snowmedTrack?.('done', 'injury-triage');
+      (window as any).snowmedTrack?.('result', 'injury-triage/' + level);
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });

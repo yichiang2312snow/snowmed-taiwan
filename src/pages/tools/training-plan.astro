@@ -353,6 +353,8 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         wrap.append(card);
       });
 
+      (window as any).snowmedTrack?.('done', 'training-plan');
+
       result.hidden = false;
       result.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
