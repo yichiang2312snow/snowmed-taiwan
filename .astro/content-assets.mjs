@@ -1,7 +1,0 @@
-
-import __ASTRO_IMAGE_IMPORT_Z1e6Gn0 from "../../assets/hero-ski-slope.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260802-why-taiwan-needs-ski-medicine.md";
-import __ASTRO_IMAGE_IMPORT_GMDQ9 from "../../assets/article-rugova.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260910-acl-return-to-snow.md";
-import __ASTRO_IMAGE_IMPORT_En3yx from "../../assets/article-bluemountains.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260820-pre-season-8-week-training.md";
-import __ASTRO_IMAGE_IMPORT_Z1aqjUg from "../../assets/article-downhill.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260903-skiers-thumb.md";
-export default new Map([["../../assets/hero-ski-slope.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260802-why-taiwan-needs-ski-medicine.md", __ASTRO_IMAGE_IMPORT_Z1e6Gn0], ["../../assets/article-rugova.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260910-acl-return-to-snow.md", __ASTRO_IMAGE_IMPORT_GMDQ9], ["../../assets/article-bluemountains.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260820-pre-season-8-week-training.md", __ASTRO_IMAGE_IMPORT_En3yx], ["../../assets/article-downhill.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Farticles%2F20260903-skiers-thumb.md", __ASTRO_IMAGE_IMPORT_Z1aqjUg]]);
-		
