@@ -145,7 +145,7 @@ const claimDocs = [
   <!-- 緊急電話 -->
   <section class="bg-red-500/15">
     <div class="mx-auto max-w-3xl px-5 py-8">
-      <p class="text-xs font-black tracking-widest text-red-200 uppercase">在日本，狀況危急時</p>
+      <p class="text-xs font-black tracking-widest text-red-200 light:text-red-800 uppercase">在日本，狀況危急時</p>
       <div class="mt-3 grid gap-3 sm:grid-cols-2">
         <a
           href={`tel:${EMERGENCY_NUMBER.japan.number}`}
@@ -168,7 +168,7 @@ const claimDocs = [
           </p>
         </a>
       </div>
-      <p class="mt-4 text-sm leading-relaxed break-words text-red-200">
+      <p class="mt-4 text-sm leading-relaxed break-words text-red-200 light:text-red-800">
         <strong>人還在雪道上的話，先找雪場巡邏隊（Ski Patrol）</strong>
         —— 他們比救護車更快到得了現場，而且有把人從雪道運下山的裝備。巡邏隊電話請在買雪票時就先問到並存進手機。
       </p>
@@ -242,7 +242,7 @@ const claimDocs = [
             whyNotIce.map((w) => (
               <li class="flex min-w-0 gap-3.5 rounded-xl border border-line bg-panel p-4">
                 <span
-                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-red-500/25 text-sm font-black text-red-200"
+                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-red-500/25 text-sm font-black text-red-200 light:text-red-800"
                   aria-hidden="true"
                 >
                   {w.n}
@@ -456,7 +456,7 @@ const claimDocs = [
                           {f.type === 'hospital' ? '綜合醫院' : '診所'}
                         </span>
                         {f.languages && (
-                          <span class="rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200">
+                          <span class="rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200 light:text-emerald-800">
                             {f.languages}
                           </span>
                         )}

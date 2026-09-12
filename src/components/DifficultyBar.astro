@@ -1,0 +1,122 @@
+---
+/**
+ * 雪道難易度比例條：綠（初級）／紅（中級）／黑（高級）。
+ *
+ * 刻意做成「沒有資料就明講沒有資料」——
+ * 有些雪場（例如志賀高原、Hakuba Valley）官方根本沒有公布全山比率，
+ * 這種時候硬湊一個數字比留白更糟。
+ */
+interface Props {
+  beginner?: number | null;
+  intermediate?: number | null;
+  advanced?: number | null;
+  /** official = 雪場官網；secondary = 第三方專業站 */
+  sourceLevel?: 'official' | 'secondary';
+  sourceLabel?: string;
+  sourceUrl?: string;
+  checkedAt?: string;
+  /** 沒有數據時要說明原因 */
+  missingNote?: string;
+  /** 比率是代表哪一個雪場（例如白馬只有八方尾根有官方數字） */
+  representing?: string;
+  compact?: boolean;
+}
+
+const {
+  beginner,
+  intermediate,
+  advanced,
+  sourceLevel,
+  sourceLabel,
+  sourceUrl,
+  checkedAt,
+  missingNote,
+  representing,
+  compact = false,
+} = Astro.props;
+
+const hasData =
+  typeof beginner === 'number' && typeof intermediate === 'number' && typeof advanced === 'number';
+
+const segments = hasData
+  ? [
+      { key: 'beginner', label: '初級（綠線）', value: beginner, color: '#15803d' },
+      { key: 'intermediate', label: '中級（紅線）', value: intermediate, color: '#b91c1c' },
+      { key: 'advanced', label: '高級（黑線）', value: advanced, color: '#1f2937' },
+    ]
+  : [];
+
+const total = segments.reduce((s, x) => s + x.value, 0);
+---
+
+{
+  hasData ? (
+    <div class="min-w-0">
+      {representing && (
+        <p class="mb-1.5 text-[11px] break-words text-muted">比率以「{representing}」為代表</p>
+      )}
+
+      <div
+        class="flex h-5 w-full overflow-hidden rounded-full border border-line"
+        role="img"
+        aria-label={`雪道難易度：初級 ${beginner}%、中級 ${intermediate}%、高級 ${advanced}%`}
+      >
+        {segments.map((s) => (
+          <div
+            class="flex items-center justify-center text-[10px] font-black text-white"
+            style={`width:${(s.value / total) * 100}%;background:${s.color}`}
+          >
+            {s.value >= 12 ? `${s.value}%` : ''}
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted">
+        {segments.map((s) => (
+          <span class="inline-flex items-center gap-1.5">
+            <span
+              class="inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-line"
+              style={`background:${s.color}`}
+              aria-hidden="true"
+            />
+            {s.label} {s.value}%
+          </span>
+        ))}
+      </div>
+
+      {!compact && sourceUrl && (
+        <p class="mt-2 text-[11px] leading-relaxed break-words text-muted">
+          <span
+            class:list={[
+              'mr-1.5 rounded px-1.5 py-0.5 text-[10px] font-bold',
+              sourceLevel === 'official' ? 'bg-emerald-500/20 text-emerald-200 light:text-emerald-800' : 'bg-tint2 text-body',
+            ]}
+          >
+            {sourceLevel === 'official' ? '官方數據' : '第三方資料'}
+          </span>
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline underline-offset-2 hover:text-head"
+          >
+            {sourceLabel ?? '資料來源'}
+          </a>
+          {checkedAt && <span> · 查證 {checkedAt}</span>}
+        </p>
+      )}
+
+      {/* 有數字、但數字的來源需要但書時（例如是由雪道表清點換算的），一併講清楚 */}
+      {!compact && missingNote && (
+        <p class="mt-1.5 text-[11px] leading-relaxed break-words text-muted">{missingNote}</p>
+      )}
+    </div>
+  ) : (
+    <div class="min-w-0 rounded-xl border border-dashed border-line px-4 py-3">
+      <p class="text-xs leading-relaxed break-words text-muted">
+        <span class="font-bold text-head">查無官方難易度比率。</span>
+        {missingNote}
+      </p>
+    </div>
+  )
+}

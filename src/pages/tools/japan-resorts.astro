@@ -1,6 +1,14 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import { RESORTS, PRIORITY_LABELS, LEVEL_LABELS } from '../../data/japanResorts';
+import DifficultyBar from '../../components/DifficultyBar.astro';
+import {
+  RESORTS,
+  PRIORITY_LABELS,
+  LEVEL_LABELS,
+  PRICE_TIER_LABELS,
+  FAMILY_RATING_LABELS,
+  REFERENCE_SITES,
+} from '../../data/japanResorts';
 
 const levelKeys = Object.keys(LEVEL_LABELS) as Array<keyof typeof LEVEL_LABELS>;
 const priorityKeys = Object.keys(PRIORITY_LABELS) as Array<keyof typeof PRIORITY_LABELS>;
@@ -10,14 +18,24 @@ const gateways = [
   { v: 'tokyo', label: '從東京進出（本州）' },
   { v: 'hokkaido', label: '飛北海道' },
 ];
+
+// 硬條件：勾了就一定要滿足，不符合的雪場直接不出現
+const musts = [
+  { v: 'family', label: '一定要適合帶小孩', hint: '只留下托兒與兒童設施評價「很適合」的雪場' },
+  { v: 'chinese', label: '一定要有中文服務', hint: '官網有繁體中文版，或官方明文有中文教練' },
+  { v: 'value', label: '票價不要太貴', hint: '排除一日券屬於日本最高價一級的雪場' },
+];
+
+const yen = (n: number | null) =>
+  n === null ? '—' : n === 0 ? '免費' : `¥${n.toLocaleString('en-US')}`;
 ---
 
 <ToolLayout
   title="日本雪場選擇指引"
   emoji="🗾"
   time="約 2 分鐘"
-  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域，並附上官方網站與當地的醫療資訊。"
-  description="日本滑雪雪場怎麼選？依照程度、交通門戶與重視的條件（粉雪、語言服務、家庭、溫泉、預算、交通時間），篩出適合的日本雪場區域。"
+  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域。每個雪場都附上雪道難易度比率、帶小孩的條件、中英文服務、一日券價格，以及當地的醫療資訊 —— 每一筆都標明出處與查證日期。"
+  description="日本滑雪雪場怎麼選？收錄 10 個台灣人常去的日本雪場，比較雪道難易度比率（綠線、紅線、黑線）、是否適合帶小孩、有無中文服務、一日纜車券價格與交通門戶，每筆資料附官方出處。"
 >
   <form id="jr-form" class="space-y-6">
     <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
@@ -55,8 +73,33 @@ const gateways = [
     </fieldset>
 
     <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <legend class="px-2 text-sm font-bold text-head">有沒有非滿足不可的條件？</legend>
+      <p class="mt-1 text-xs leading-relaxed text-muted">
+        這一區是<strong class="text-head">硬條件</strong> —— 勾了之後，不符合的雪場就不會出現。
+      </p>
+      <div class="mt-3 grid gap-2">
+        {
+          musts.map((m) => (
+            <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
+              <input
+                type="checkbox"
+                name="must"
+                value={m.v}
+                class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+              />
+              <span class="min-w-0">
+                <span class="block font-bold break-words text-head">{m.label}</span>
+                <span class="mt-0.5 block text-xs break-words text-muted">{m.hint}</span>
+              </span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
       <legend class="px-2 text-sm font-bold text-head">最在意什麼？（可複選）</legend>
-      <p class="mt-1 text-xs text-muted">選越多，篩出來的結果會越集中。</p>
+      <p class="mt-1 text-xs text-muted">這一區只影響排序，不會把雪場篩掉。</p>
       <div class="mt-3 grid gap-2 sm:grid-cols-2">
         {
           priorityKeys.map((k) => (
@@ -82,10 +125,170 @@ const gateways = [
     </button>
   </form>
 
-  <div id="jr-result" class="mt-10 scroll-mt-20" hidden>
-    <p class="text-xs font-black tracking-widest text-accent uppercase">篩選結果</p>
-    <h2 id="jr-heading" class="mt-2 text-xl font-black break-words text-head sm:text-2xl"></h2>
-    <div id="jr-list" class="mt-6 space-y-4"></div>
+  <div id="jr-result" class="mt-10 scroll-mt-20">
+    <p class="text-xs font-black tracking-widest text-accent uppercase">雪場一覽</p>
+    <h2 id="jr-heading" class="mt-2 text-xl font-black break-words text-head sm:text-2xl">
+      收錄的 {RESORTS.length} 個雪場
+    </h2>
+    <p id="jr-sub" class="mt-2 text-sm leading-relaxed break-words text-muted">
+      還沒篩選，先把全部列出來。填完上面的條件按下按鈕，就會依照你的需求篩選並重新排序。
+    </p>
+
+    <p
+      id="jr-empty"
+      class="mt-6 rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm leading-relaxed break-words text-muted"
+      hidden
+    >
+      沒有雪場同時滿足你勾的硬條件。試著放寬其中一項 ——
+      例如把交通偏好改成「都可以」，或取消一個硬條件。
+    </p>
+
+    <div id="jr-list" class="mt-6 space-y-5">
+      {
+        RESORTS.map((r) => (
+          <article
+            class="jr-card min-w-0 overflow-hidden rounded-2xl border border-line bg-panel"
+            data-levels={r.levels.join(' ')}
+            data-gateway={r.gateway}
+            data-priorities={r.priorities.join(' ')}
+            data-family={r.family.rating}
+            data-chinese={
+              r.language.hasTraditionalChinese || r.language.chineseInstructor ? '1' : '0'
+            }
+            data-tier={r.pricing.tier}
+          >
+            <div class="border-b border-line bg-surface px-5 py-4">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 class="text-lg font-black break-words text-head">{r.name}</h3>
+                <span class="text-sm break-words text-muted">
+                  {r.nameJa} · {r.prefecture}
+                </span>
+              </div>
+              <p class="mt-1 text-xs leading-relaxed break-words text-muted">{r.access}</p>
+            </div>
+
+            <div class="space-y-5 px-5 py-5">
+              <p class="text-sm leading-relaxed break-words text-body">{r.why}</p>
+
+              {r.caution && (
+                <p class="rounded-xl border-l-4 border-amber-400 bg-amber-500/15 px-4 py-3 text-sm leading-relaxed break-words text-amber-100 light:text-amber-900">
+                  {r.caution}
+                </p>
+              )}
+
+              <div class="min-w-0">
+                <p class="mb-2 text-[11px] font-black tracking-widest text-accent uppercase">
+                  雪道難易度比率
+                </p>
+                <DifficultyBar
+                  beginner={r.difficulty.beginner}
+                  intermediate={r.difficulty.intermediate}
+                  advanced={r.difficulty.advanced}
+                  sourceLevel={r.difficulty.level}
+                  sourceLabel={r.difficulty.sourceLabel}
+                  sourceUrl={r.difficulty.source}
+                  checkedAt={r.difficulty.checkedAt}
+                  missingNote={r.difficulty.missingNote}
+                  representing={r.difficulty.representing}
+                />
+              </div>
+
+              <div class="grid gap-3 sm:grid-cols-3">
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">帶小孩</p>
+                  <p class="mt-1 text-sm font-bold break-words text-head">
+                    {FAMILY_RATING_LABELS[r.family.rating]}
+                  </p>
+                  <ul class="mt-2 space-y-1.5 text-xs leading-relaxed break-words text-muted">
+                    <li>
+                      <span class="font-bold text-body">托兒</span>：
+                      {r.family.childcare ?? '官方頁面查無托兒服務'}
+                    </li>
+                    {r.family.kidsFacilities && (
+                      <li>
+                        <span class="font-bold text-body">設施</span>：{r.family.kidsFacilities}
+                      </li>
+                    )}
+                    {r.family.kidsTicket && (
+                      <li>
+                        <span class="font-bold text-body">兒童票</span>：{r.family.kidsTicket}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">
+                    中英文服務
+                  </p>
+                  <p class="mt-1 text-sm font-bold break-words text-head">
+                    {r.language.hasTraditionalChinese ? '官網有繁體中文' : '官網沒有繁體中文'}
+                  </p>
+                  <ul class="mt-2 space-y-1.5 text-xs leading-relaxed break-words text-muted">
+                    <li>
+                      <span class="font-bold text-body">官網語言</span>：
+                      {r.language.siteLanguages.join('、')}
+                    </li>
+                    <li>
+                      <span class="font-bold text-body">中文教練</span>：
+                      {r.language.chineseInstructor ?? '官方頁面查無中文教學'}
+                    </li>
+                    {r.language.englishService && (
+                      <li>
+                        <span class="font-bold text-body">英語</span>：{r.language.englishService}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">
+                    一日纜車券
+                  </p>
+                  <p class="mt-1 text-sm font-bold break-words text-head">
+                    大人 {yen(r.pricing.adultYen)}
+                    <span class="ml-1.5 font-normal text-muted">
+                      · 相對{PRICE_TIER_LABELS[r.pricing.tier]}
+                    </span>
+                  </p>
+                  <ul class="mt-2 space-y-1.5 text-xs leading-relaxed break-words text-muted">
+                    <li>
+                      <span class="font-bold text-body">兒童</span>：{yen(r.pricing.childYen)}
+                    </li>
+                    <li>
+                      <span class="font-bold text-body">適用雪季</span>：{r.pricing.season}
+                    </li>
+                    {r.pricing.note && <li>{r.pricing.note}</li>}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm">
+                <a
+                  href={r.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-bold text-accent hover:underline"
+                >
+                  官方網站 ↗
+                </a>
+                {r.medicalAnchor && (
+                  <a
+                    href={`/emergency#${r.medicalAnchor}`}
+                    class="font-bold text-accent hover:underline"
+                  >
+                    這一區的醫療資訊 →
+                  </a>
+                )}
+                <span class="text-xs text-muted">
+                  票價與家庭資訊查證於 {r.pricing.checkedAt ?? r.family.checkedAt}
+                </span>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
 
     <p class="mt-6 text-xs leading-relaxed break-words text-muted">
       交通時間為概略值，且各雪場的營業日期、票價與設施每年都會調整 ——
@@ -93,37 +296,54 @@ const gateways = [
     </p>
   </div>
 
-  <template id="jr-card">
-    <article class="min-w-0 overflow-hidden rounded-2xl border border-line bg-panel">
-      <div class="border-b border-line bg-surface px-5 py-4">
-        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 class="text-lg font-black break-words text-head" data-name></h3>
-          <span class="text-sm text-muted" data-nameja></span>
-        </div>
-        <p class="mt-1 text-xs text-muted" data-access></p>
-      </div>
-      <div class="px-5 py-4">
-        <p class="text-sm leading-relaxed break-words text-body" data-why></p>
-        <p
-          class="mt-3 rounded-xl border-l-4 border-amber-400 bg-amber-500/15 px-4 py-3 text-sm leading-relaxed break-words text-amber-100"
-          data-caution
-          hidden
-        >
-        </p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm">
-          <a
-            data-official
-            target="_blank"
-            rel="noopener noreferrer"
-            class="font-bold text-accent hover:underline">官方網站 ↗</a
-          >
-          <a data-medical class="font-bold text-accent hover:underline" hidden
-            >這一區的醫療資訊 →</a
-          >
-        </div>
-      </div>
-    </article>
-  </template>
+  <section class="mt-12 min-w-0 rounded-2xl border border-line bg-surface p-6">
+    <h2 class="text-base font-black break-words text-head">這份資料是怎麼來的</h2>
+
+    <p class="mt-3 text-sm leading-relaxed break-words text-body">
+      先掃過台灣人查日本雪場時最常遇到的中文內容站，加上兩個國際通用的雪場資料庫，
+      整理出大家真正在比較的項目 —— 難易度、帶小孩、語言、價格。這一步決定了<strong
+        class="text-head">「該比較什麼」</strong
+      >。
+    </p>
+    <p class="mt-3 text-sm leading-relaxed break-words text-body">
+      但上面卡片裡的<strong class="text-head">每一個數字，都回到雪場官網重新查證過</strong>，沒有一筆直接轉述。
+      原因很實際：這類整理文多半不標查證日期，票價與雪季一變就過期，而看這個網站的人可能正要掏錢買票或評估帶不帶小孩去。
+      查不到的就直接寫「查無官方數據」，不推估。
+    </p>
+
+    <h3 class="mt-6 text-sm font-bold break-words text-head">掃過的來源</h3>
+    <ol class="mt-3 grid gap-2 sm:grid-cols-2">
+      {
+        REFERENCE_SITES.map((s, i) => (
+          <li class="flex min-w-0 gap-2.5 text-xs leading-relaxed">
+            <span class="shrink-0 font-black text-muted tabular-nums">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="min-w-0">
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="break-words text-body underline decoration-line underline-offset-2 hover:text-head"
+              >
+                {s.name}
+              </a>
+              <span class="ml-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-body">
+                {s.kind}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="mt-5 text-xs leading-relaxed break-words text-muted">
+      <strong class="text-body">關於「前 10 個」：</strong>
+      這不是流量排名。台灣沒有公開的旅遊內容流量數據，所以這裡的依據是「用中文關鍵字查日本雪場時反覆出現的結果」——
+      只代表可見度高，不代表內容品質，也不代表本站為它們背書。列出來是為了讓你知道這個工具比較的項目是怎麼定的，
+      以及你可以去哪裡交叉查證。
+    </p>
+  </section>
 
   <Fragment slot="basis">
     <p>
@@ -132,11 +352,21 @@ const gateways = [
       再拿你的條件去比對。
     </p>
     <p>
-      刻意只放<strong>不太會變的資訊</strong>：地形特性、雪質傾向、交通門戶、適合對象。纜車數量、雪道條數、票價、營業日期這類每年都會調整的數字一律不放，因為那種資料很快就會過期，放了反而害人 ——
-      所以每一筆都直接附上官方網站連結。
+      四組資料採用不同的處理原則。<strong>雪道難易度比率</strong>只採信雪場官方；官方沒有彙總、只逐條列出雪道時，由官方雪道表清點換算並標明出來；官方完全沒有資料時（例如志賀高原、Hakuba
+      Valley、留壽都），就直接寫「查無官方難易度比率」並說明原因 ——
+      因為不同資料站的計算基礎根本不同（有的按雪道條數、有的按滑走距離），硬湊一個數字比留白更糟。
     </p>
     <p>
-      每個區域如果本站已經查證過當地的醫療機構，結果卡片會直接連到
+      <strong>中文服務</strong>只記錄官方頁面上找得到的：官網語言版本、以及官方明文掛牌的中文教學。
+      市面上有不少第三方的中文雪校，品質可能很好，但無法在官方頁面驗證，所以這裡一律不列 ——
+      寫「查無官方中文教學」不代表現場沒有中文，只代表本站無法替你保證。
+    </p>
+    <p>
+      <strong>票價</strong>標明適用雪季，因為每年都調。留壽都這種窗口牌價與線上預售差到三千多日圓的，會特別註明該買哪一種。
+      <strong>帶小孩</strong>則看三件事：有沒有托兒（以及收托年齡下限）、兒童設施、兒童票優惠。
+    </p>
+    <p>
+      每個區域如果本站已經查證過當地的醫療機構，卡片會直接連到
       <a href="/emergency#resorts">海外受傷緊急處置中心</a>的對應段落。選雪場的時候順便知道「萬一受傷要去哪」，是這個平台認為該做的事。
     </p>
   </Fragment>
@@ -148,16 +378,20 @@ const gateways = [
         日本有數百個雪場，這裡只收錄台灣人較常去、且資訊相對容易查證的區域。沒被列出來不代表不好。
       </li>
       <li>
+        <strong>難易度比率不等於「好不好滑」。</strong>
+        綠線的坡度各家標準不一，同樣掛綠線，不同雪場之間差很多。比率只能告訴你這個雪場的地形分布，不能取代雪道圖。
+      </li>
+      <li>
+        <strong>多雪區的雪場，比率只代表其中一區。</strong>
+        二世谷、白馬這類由好幾個獨立雪場組成的區域，官方沒有全山統計，卡片上會標明比率是代表哪一個雪場。
+      </li>
+      <li>
+        <strong>票價每年調整，而且只列一日券。</strong>
+        多日券、早鳥、住宿套票的實際單價可能差很多。卡片上標的雪季與查證日期，就是這筆數字的有效範圍。
+      </li>
+      <li>
         <strong>雪況每年都不一樣。</strong>
         「雪質好」講的是長期的氣候傾向，不保證你去的那一週。出發前請查當地的即時雪報。
-      </li>
-      <li>
-        <strong>沒有考慮預算的絕對金額。</strong>
-        「想控制預算」只是相對比較，實際費用受住宿等級、訂房時間與匯率影響很大。
-      </li>
-      <li>
-        <strong>交通時間是概略值。</strong>
-        會因季節、路況、班次與轉乘方式差很多，請以官方或交通業者的資訊為準。
       </li>
       <li>
         <strong>醫療資訊的完整度因區域而異。</strong>
@@ -168,98 +402,62 @@ const gateways = [
 </ToolLayout>
 
 <script>
-  import { RESORTS } from '../../data/japanResorts';
-
   const form = document.getElementById('jr-form') as HTMLFormElement | null;
-  const result = document.getElementById('jr-result');
   const list = document.getElementById('jr-list');
-  const tpl = document.getElementById('jr-card') as HTMLTemplateElement | null;
+  const heading = document.getElementById('jr-heading');
+  const sub = document.getElementById('jr-sub');
+  const empty = document.getElementById('jr-empty') as HTMLElement | null;
 
-  if (form && result && list && tpl) {
+  if (form && list && heading && sub && empty) {
+    // 卡片全部先印在 HTML 裡（沒有 JS 也讀得到、搜尋引擎也抓得到），
+    // 篩選只是把不符合的藏起來再重排順序。
+    const cards = Array.from(list.querySelectorAll<HTMLElement>('.jr-card'));
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const data = new FormData(form);
       const level = String(data.get('level') ?? 'beginner');
       const gateway = String(data.get('gateway') ?? 'any');
+      const musts = data.getAll('must').map(String);
       const priorities = data.getAll('priority').map(String);
 
-      const scored = RESORTS
-        // 程度是硬條件：這個雪場要適合你現在的程度
-        .filter((r) => (r.levels as readonly string[]).includes(level))
-        // 交通門戶也是硬條件（選「都可以」就不篩）
-        .filter((r) => gateway === 'any' || r.gateway === gateway)
-        .map((r) => {
-          const hits = priorities.filter((p) => (r.priorities as readonly string[]).includes(p));
-          return { r, score: hits.length, hits };
-        })
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
+      const matched: { el: HTMLElement; score: number }[] = [];
 
-      const heading = document.getElementById('jr-heading');
-      if (heading) {
-        heading.textContent = scored.length
-          ? `這 ${scored.length} 個區域比較符合你的條件`
-          : '沒有完全符合的區域';
+      for (const el of cards) {
+        const levels = (el.dataset.levels ?? '').split(' ');
+        const prios = (el.dataset.priorities ?? '').split(' ');
+
+        // 硬條件：任何一項不過就直接淘汰
+        const ok =
+          levels.includes(level) &&
+          (gateway === 'any' || el.dataset.gateway === gateway) &&
+          (!musts.includes('family') || el.dataset.family === 'high') &&
+          (!musts.includes('chinese') || el.dataset.chinese === '1') &&
+          (!musts.includes('value') || el.dataset.tier !== 'high');
+
+        el.hidden = !ok;
+        if (ok) {
+          matched.push({ el, score: priorities.filter((p) => prios.includes(p)).length });
+        }
       }
 
-      list.textContent = '';
+      // 在意的條件命中越多排越前面；命中數相同就維持原本順序
+      matched.sort((a, b) => b.score - a.score);
+      for (const m of matched) list.append(m.el);
 
-      if (!scored.length) {
-        const p = document.createElement('p');
-        p.className =
-          'rounded-2xl border-2 border-dashed border-line bg-panel p-8 text-center text-sm text-muted';
-        p.textContent =
-          '把交通偏好改成「都可以」，或減少幾個條件再試一次。條件選太多時，可能沒有雪場能全部滿足。';
-        list.append(p);
-      }
-
-      for (const { r, hits } of scored) {
-        const node = tpl.content.cloneNode(true) as DocumentFragment;
-        const set = (sel: string, text: string) => {
-          const el = node.querySelector(sel);
-          if (el) el.textContent = text;
-        };
-        set('[data-name]', r.name);
-        set('[data-nameja]', `${r.nameJa} · ${r.prefecture}`);
-        set('[data-access]', r.access);
-
-        const whyEl = node.querySelector('[data-why]');
-        if (whyEl) {
-          whyEl.textContent = hits.length
-            ? `${r.why}（符合你在意的 ${hits.length} 項條件）`
-            : r.why;
-        }
-
-        const caution = node.querySelector('[data-caution]') as HTMLElement | null;
-        if (caution) {
-          if (r.caution) {
-            caution.textContent = r.caution;
-            caution.hidden = false;
-          } else {
-            caution.hidden = true;
-          }
-        }
-
-        const official = node.querySelector('[data-official]') as HTMLAnchorElement | null;
-        if (official) official.href = r.officialUrl;
-
-        const medical = node.querySelector('[data-medical]') as HTMLAnchorElement | null;
-        if (medical) {
-          if (r.medicalAnchor) {
-            medical.href = `/emergency#${r.medicalAnchor}`;
-            medical.hidden = false;
-          } else {
-            medical.hidden = true;
-          }
-        }
-
-        list.append(node);
-      }
+      heading.textContent = matched.length
+        ? `這 ${matched.length} 個雪場符合你的條件`
+        : '沒有符合的雪場';
+      sub.textContent = matched.length
+        ? priorities.length
+          ? '已依照你在意的條件排序，最上面的最貼近你的需求。'
+          : '以下都符合你的條件。想再排出優先順序，回上面勾「最在意什麼」。'
+        : '';
+      empty.hidden = matched.length > 0;
 
       (window as any).snowmedTrack?.('done', 'japan-resorts');
 
-      result.hidden = false;
-      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('jr-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 </script>
