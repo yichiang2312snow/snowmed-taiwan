@@ -4,7 +4,7 @@ export const SITE = {
   name: '台灣滑雪運動醫學科學平台',
   nameEn: 'Taiwan Ski Sports Medicine Science Platform',
   /** 副標：第二行小字 */
-  poweredBy: 'powered by 楊怡強醫師｜復健科醫師，專攻滑雪運動醫學',
+  poweredBy: 'powered by 楊怡強醫師｜復健科專科醫師・疼痛醫學與運動醫學次專長・專攻滑雪運動醫學',
   /** 選單列用的短版副標 */
   poweredByShort: 'powered by 楊怡強醫師',
   doctor: '楊怡強 醫師',
