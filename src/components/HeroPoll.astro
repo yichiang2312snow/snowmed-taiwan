@@ -1,0 +1,148 @@
+---
+/**
+ * 首頁 HERO 右側的投票小卡片：一次一題，投完看結果，可以翻到下一題。
+ *
+ * 題目與 /api/polls 共用 functions/api/_polls.js；
+ * 投票邏輯在 src/scripts/polls.ts，跟完整投票區共用同一份紀錄。
+ * 這張卡片永遠在深色的 HERO 上，所以顏色直接用白色系而不是主題 token。
+ */
+import { POLLS } from '../../functions/api/_polls.js';
+---
+
+<div
+  id="hero-poll"
+  class="relative min-w-0 rounded-2xl border border-white/20 bg-band/75 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6"
+  aria-label="雪友快問快答"
+>
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-[11px] font-black tracking-[0.18em] text-accent uppercase">雪友快問快答</p>
+    <p class="text-xs text-body/80 tabular-nums">
+      <span id="hero-poll-index">1</span> / {POLLS.length}
+    </p>
+  </div>
+
+  <div class="relative mt-3">
+    {
+      POLLS.map((p, i) => (
+        <section
+          class="poll min-w-0"
+          data-poll={p.id}
+          data-index={i}
+          hidden={i !== 0}
+          aria-labelledby={`hero-poll-${p.id}-q`}
+        >
+          <h3
+            id={`hero-poll-${p.id}-q`}
+            class="flex items-start gap-2 text-base leading-snug font-black break-words text-white sm:text-lg"
+          >
+            <span class="text-xl leading-none sm:text-2xl" aria-hidden="true">
+              {p.emoji}
+            </span>
+            <span class="min-w-0">{p.question}</span>
+          </h3>
+
+          <div class="poll-options mt-3 grid gap-1.5" role="group" aria-label="選項">
+            {p.options.map((o) => (
+              <button
+                type="button"
+                data-option={o.id}
+                class="min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-left text-sm font-medium break-words text-white transition-colors hover:border-accent hover:bg-white/20 disabled:opacity-60"
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+
+          <ol class="poll-results mt-3 space-y-2" hidden>
+            {p.options.map((o) => (
+              <li data-result={o.id} class="min-w-0">
+                <div class="flex items-baseline justify-between gap-3 text-sm">
+                  <span class="poll-label min-w-0 font-medium break-words text-white">{o.label}</span>
+                  <span class="shrink-0 text-xs text-body/80 tabular-nums">
+                    <span class="poll-pct font-black text-white">0%</span>
+                    <span class="poll-n ml-1">(0)</span>
+                  </span>
+                </div>
+                <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/15">
+                  <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700" style="width:0%" />
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p class="poll-footer mt-2.5 text-xs text-body/80" hidden>
+            共 <span class="poll-total tabular-nums">0</span> 票
+          </p>
+        </section>
+      ))
+    }
+  </div>
+
+  <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/15 pt-3">
+    <div class="flex items-center gap-1.5" aria-hidden="true">
+      {
+        POLLS.map((_, i) => (
+          <span
+            data-dot={i}
+            class:list={[
+              'h-1.5 w-1.5 rounded-full transition-colors',
+              i === 0 ? 'bg-accent' : 'bg-white/30',
+            ]}
+          />
+        ))
+      }
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        id="hero-poll-prev"
+        class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/10 disabled:opacity-30"
+        disabled
+      >
+        ← 上一題
+      </button>
+      <button
+        type="button"
+        id="hero-poll-next"
+        class="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-bg transition-colors hover:bg-accent"
+      >
+        下一題 →
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { fetchCounts, wireCard } from '../scripts/polls';
+
+  const root = document.getElementById('hero-poll');
+  if (root) {
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('.poll'));
+    const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-dot]'));
+    const prev = document.getElementById('hero-poll-prev') as HTMLButtonElement;
+    const next = document.getElementById('hero-poll-next') as HTMLButtonElement;
+    const indexEl = document.getElementById('hero-poll-index');
+    let current = 0;
+
+    const show = (i: number) => {
+      current = Math.max(0, Math.min(cards.length - 1, i));
+      cards.forEach((c, k) => (c.hidden = k !== current));
+      dots.forEach((d, k) => {
+        d.classList.toggle('bg-accent', k === current);
+        d.classList.toggle('bg-white/30', k !== current);
+      });
+      if (indexEl) indexEl.textContent = String(current + 1);
+      prev.disabled = current === 0;
+      next.textContent = current === cards.length - 1 ? '回第一題' : '下一題 →';
+    };
+
+    prev.addEventListener('click', () => show(current - 1));
+    next.addEventListener('click', () => show(current === cards.length - 1 ? 0 : current + 1));
+
+    // 第一次打開就跳到「還沒投過」的那一題，投過的留著隨時可以翻回去看結果
+    fetchCounts().then((counts) => {
+      cards.forEach((card) => wireCard(card, counts));
+      const firstUnvoted = cards.findIndex((c) => !c.dataset.voted);
+      show(firstUnvoted >= 0 ? firstUnvoted : 0);
+    });
+  }
+</script>
