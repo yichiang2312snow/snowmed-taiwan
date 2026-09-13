@@ -5,6 +5,7 @@ import ToolCard from '../components/ToolCard.astro';
 import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
 import heroImage from '../assets/hero-ski-slope.jpg';
 import VisitCounter from '../components/VisitCounter.astro';
+import Polls from '../components/Polls.astro';
 
 ---
 
@@ -90,6 +91,22 @@ import VisitCounter from '../components/VisitCounter.astro';
             </div>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  <!-- 雪友快問快答 -->
+  <section id="polls-section" class="scroll-mt-20 bg-panel">
+    <div class="mx-auto max-w-6xl px-5 py-14 sm:py-20">
+      <div class="max-w-2xl">
+        <p class="mb-2 text-xs font-bold tracking-[0.2em] text-accent uppercase">Quick polls</p>
+        <h2 class="text-2xl font-black text-head sm:text-3xl">雪友快問快答</h2>
+        <p class="mt-3 text-base leading-relaxed break-words text-muted">
+          幾題二選一、三選一，點一下就能看到其他雪友怎麼選。不用登入，也不會記錄你是誰。
+        </p>
+      </div>
+      <div class="mt-10">
+        <Polls />
       </div>
     </div>
   </section>

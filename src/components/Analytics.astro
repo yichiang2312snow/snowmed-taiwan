@@ -11,7 +11,7 @@
 ---
 
 <script>
-  type Ev = 'view' | 'tool' | 'done' | 'result' | 'wish';
+  type Ev = 'view' | 'tool' | 'done' | 'result' | 'wish' | 'vote';
 
   const send = (e: Ev, l: string) => {
     const body = JSON.stringify({ e, l });

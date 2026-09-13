@@ -21,6 +21,7 @@ const EVENTS = new Set([
   'done', // 完成某個工具並看到結果，label = 工具代號
   'result', // 工具的結果類別，label = 工具代號/結果
   'wish', // 送出許願
+  'vote', // 雪友投票，label = 題目/選項
 ]);
 
 /** label 只允許這些字元，長度也限制，避免有人塞垃圾進來 */

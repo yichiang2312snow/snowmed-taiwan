@@ -1,0 +1,159 @@
+---
+/**
+ * 雪友快問快答：幾題二選一、三選一，投完馬上看到大家怎麼選。
+ *
+ * 題目在 functions/api/_polls.js（前後端共用）。
+ * 投過的題目記在 localStorage，回來還是看結果、不能重投；
+ * 換瀏覽器就能再投一次 —— 這是個小玩具，不值得為了防灌票去記錄任何人。
+ */
+import { POLLS } from '../../functions/api/_polls.js';
+---
+
+<div id="polls" class="grid gap-5 sm:grid-cols-2">
+  {
+    POLLS.map((p) => (
+      <section
+        class="poll min-w-0 rounded-2xl border border-line bg-panel p-5 sm:p-6"
+        data-poll={p.id}
+        aria-labelledby={`poll-${p.id}-q`}
+      >
+        <h3 id={`poll-${p.id}-q`} class="flex items-start gap-2.5 text-base font-black break-words text-head">
+          <span class="text-2xl leading-none" aria-hidden="true">
+            {p.emoji}
+          </span>
+          <span class="min-w-0 pt-0.5">{p.question}</span>
+        </h3>
+
+        {/* 還沒投：選項按鈕 */}
+        <div class="poll-options mt-4 grid gap-2" role="group" aria-label="選項">
+          {p.options.map((o) => (
+            <button
+              type="button"
+              data-option={o.id}
+              class="min-w-0 rounded-xl border border-line bg-surface px-4 py-3 text-left text-sm font-medium break-words text-head transition-colors hover:border-accent hover:bg-tint2 disabled:opacity-60"
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 投完：結果長條 */}
+        <ol class="poll-results mt-4 space-y-2.5" hidden>
+          {p.options.map((o) => (
+            <li data-result={o.id} class="min-w-0">
+              <div class="flex items-baseline justify-between gap-3 text-sm">
+                <span class="poll-label min-w-0 font-medium break-words text-head">{o.label}</span>
+                <span class="shrink-0 text-xs text-muted tabular-nums">
+                  <span class="poll-pct font-black text-head">0%</span>
+                  <span class="poll-n ml-1">(0)</span>
+                </span>
+              </div>
+              <div class="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-tint2">
+                <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700" style="width:0%" />
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="poll-footer mt-3 text-xs text-muted" hidden>
+          <span class="poll-mine"></span>共 <span class="poll-total tabular-nums">0</span> 票
+        </p>
+      </section>
+    ))
+  }
+</div>
+
+<script>
+  const KEY = 'snowmed:polls';
+  type Counts = Record<string, number>;
+
+  const read = (): Record<string, string> => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) ?? '{}');
+    } catch {
+      return {};
+    }
+  };
+  const write = (v: Record<string, string>) => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(v));
+    } catch {
+      /* 無痕模式寫不進去就算了，這次瀏覽仍然有效 */
+    }
+  };
+
+  const showResults = (card: HTMLElement, counts: Counts, mine: string | null) => {
+    const total = Object.values(counts).reduce((s, n) => s + n, 0);
+    for (const li of card.querySelectorAll<HTMLElement>('[data-result]')) {
+      const id = li.dataset.result!;
+      const n = counts[id] ?? 0;
+      const pct = total ? Math.round((n / total) * 100) : 0;
+      li.querySelector('.poll-pct')!.textContent = `${pct}%`;
+      li.querySelector('.poll-n')!.textContent = `(${n.toLocaleString('zh-TW')})`;
+      (li.querySelector('.poll-bar') as HTMLElement).style.width = `${pct}%`;
+      li.querySelector('.poll-label')!.classList.toggle('text-accent', id === mine);
+      if (id === mine && !li.querySelector('.poll-you')) {
+        const tag = document.createElement('span');
+        tag.className = 'poll-you ml-1.5 rounded-full bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-head';
+        tag.textContent = '你的選擇';
+        li.querySelector('.poll-label')!.append(tag);
+      }
+    }
+    card.querySelector<HTMLElement>('.poll-total')!.textContent = total.toLocaleString('zh-TW');
+    card.querySelector<HTMLElement>('.poll-mine')!.textContent = mine ? '投票完成。' : '';
+    card.querySelector<HTMLElement>('.poll-options')!.hidden = true;
+    card.querySelector<HTMLElement>('.poll-results')!.hidden = false;
+    card.querySelector<HTMLElement>('.poll-footer')!.hidden = false;
+  };
+
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.poll'));
+  if (cards.length) {
+    const voted = read();
+
+    // 已經投過的題目，一載入就直接秀結果
+    const seen = cards.filter((c) => voted[c.dataset.poll!]);
+    if (seen.length) {
+      fetch('/api/polls')
+        .then((r) => r.json())
+        .then((data) => {
+          for (const c of seen) {
+            const counts = data?.polls?.[c.dataset.poll!];
+            if (counts) showResults(c, counts, voted[c.dataset.poll!]);
+          }
+        })
+        .catch(() => {
+          /* 讀不到就維持可投票的樣子 */
+        });
+    }
+
+    for (const card of cards) {
+      const poll = card.dataset.poll!;
+      const buttons = card.querySelectorAll<HTMLButtonElement>('[data-option]');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (read()[poll]) return;
+          buttons.forEach((b) => (b.disabled = true));
+          const option = btn.dataset.option!;
+          try {
+            const res = await fetch('/api/polls', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ poll, option }),
+            });
+            const data = await res.json();
+            if (!data?.ok) throw new Error('vote failed');
+            const v = read();
+            v[poll] = option;
+            write(v);
+            showResults(card, data.counts, option);
+            (window as any).snowmedTrack?.('vote', `${poll}/${option}`);
+          } catch {
+            buttons.forEach((b) => (b.disabled = false));
+            const note = card.querySelector<HTMLElement>('.poll-footer')!;
+            note.textContent = '暫時投不進去，等一下再試一次。';
+            note.hidden = false;
+          }
+        });
+      });
+    }
+  }
+</script>
