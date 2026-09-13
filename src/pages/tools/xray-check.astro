@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
 import { SITE, SITE_A } from '../../consts';
 import OttawaDiagram from '../../components/OttawaDiagram.astro';
 
@@ -79,10 +80,34 @@ const criteria = [
     how: '四步 = 左右腳各踩兩次。可以跛行，只要能走完四步就不算成立。',
   },
 ];
+// 常見問題：問句就是大家實際會搜的字
+const FAQ = [
+  {
+    q: '滑雪扭到腳踝，一定要照 X 光嗎？',
+    a: '不一定。國際通用的渥太華腳踝規則看四件事：內踝或外踝頂端往上 6 公分範圍內有壓痛、第五蹠骨基部或舟狀骨有壓痛、受傷當下或現在無法連續走四步。只要有一項成立，就建議照 X 光排除骨折。',
+  },
+  {
+    q: '滑雪膝蓋受傷，什麼情況該照 X 光？',
+    a: '渥太華膝規則的五項：年齡大於 55 歲、腓骨頭壓痛、單獨只有髕骨壓痛、膝蓋無法彎到 90 度、無法連續走四步。一項成立就該照。',
+  },
+  {
+    q: '渥太華規則準嗎？',
+    a: '它是用來「排除骨折」的：全部不成立時，漏掉骨折的機率非常低。但 X 光正常不代表沒有受傷——前十字韌帶、內側副韌帶這類軟組織傷害 X 光看不到，要靠醫師的理學檢查或超音波、MRI。',
+  },
+  {
+    q: '還能走路，是不是就沒有骨折？',
+    a: '不一定。規則用「能不能走四步」當其中一項門檻，但也有人骨折仍能跛行。其他項目一樣要檢查，有疑慮就就醫。',
+  },
+  {
+    q: '在日本雪場要去哪裡照 X 光？',
+    a: '雪場醫務室通常沒有 X 光設備，要到鄰近的診所或醫院。湯澤、白馬、二世谷、TOMAMU 附近的醫療機構整理在[[/emergency#resorts|海外受傷緊急處置中心]]，每筆都附官方來源。',
+  },
+];
 ---
 
 <ToolLayout
   title="何時該照 X 光"
+  seoTitle="滑雪膝蓋、腳踝受傷要不要照 X 光？渥太華規則自我檢查"
   emoji="🩻"
   time="約 3 分鐘 · 需要有人幫忙按壓確認"
   summary="膝蓋或腳踝受傷了，到底需不需要照 X 光？用國際通用的「渥太華規則」逐項檢查，判斷是否需要影像檢查來排除骨折。"
@@ -268,6 +293,9 @@ const criteria = [
       與
       <a href={SITE_A.articlesUrl} target="_blank" rel="noopener noreferrer">{SITE_A.labelLong}</a>。
     </p>
+  </Fragment>
+  <Fragment slot="faq">
+    <Faq items={FAQ} />
   </Fragment>
 </ToolLayout>
 

@@ -1,0 +1,61 @@
+---
+/**
+ * 常見問題區塊。
+ *
+ * 兩個用途：
+ * 1. 讀者：把頁面的重點用「問句」再講一次，跳著看的人也能抓到。
+ * 2. 搜尋引擎：問句就是大家實際打進搜尋框的字，並用 FAQPage 結構化資料標記，
+ *    讓 Google 有機會直接在搜尋結果裡顯示問答。
+ *
+ * 答案裡不要放連結以外的 HTML；結構化資料會把 HTML 去掉只留純文字。
+ */
+interface Item {
+  q: string;
+  /** 純文字；可用 [[/path|文字]] 插入站內連結 */
+  a: string;
+}
+interface Props {
+  title?: string;
+  items: Item[];
+}
+const { title = '常見問題', items } = Astro.props;
+
+const LINK = /\[\[([^|\]]+)\|([^\]]+)\]\]/g;
+const toHtml = (a: string) =>
+  a.replace(LINK, (_m, href, text) => `<a href="${href}" class="text-accent underline underline-offset-2 hover:text-head">${text}</a>`);
+const toText = (a: string) => a.replace(LINK, (_m, _href, text) => text);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((it) => ({
+    '@type': 'Question',
+    name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: toText(it.a) },
+  })),
+};
+---
+
+<section class="min-w-0">
+  <h2 class="text-xl font-black break-words text-head">{title}</h2>
+  <div class="mt-4 divide-y divide-line rounded-2xl border border-line bg-surface">
+    {
+      items.map((it) => (
+        <details class="group min-w-0 px-5 py-4">
+          <summary class="flex cursor-pointer list-none items-start justify-between gap-4 text-sm leading-relaxed font-bold break-words text-head [&::-webkit-details-marker]:hidden">
+            <span class="min-w-0">{it.q}</span>
+            <span
+              class="mt-0.5 shrink-0 text-muted transition-transform group-open:rotate-45"
+              aria-hidden="true"
+            >
+              ＋
+            </span>
+          </summary>
+          <p class="mt-3 text-sm leading-relaxed break-words text-muted" set:html={toHtml(it.a)} />
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

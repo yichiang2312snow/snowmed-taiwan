@@ -4,11 +4,13 @@ export const SITE = {
   name: '台灣滑雪運動醫學科學平台',
   nameEn: 'Taiwan Ski Sports Medicine Science Platform',
   /** 副標：第二行小字 */
-  poweredBy: 'powered by 楊怡強醫師－全台第一位滑雪運動醫學專科醫師',
+  poweredBy: 'powered by 楊怡強醫師｜復健科醫師，專攻滑雪運動醫學',
   /** 選單列用的短版副標 */
   poweredByShort: 'powered by 楊怡強醫師',
   doctor: '楊怡強 醫師',
   doctorEn: 'Dr. Yi-Chiang Yang',
+  /** 醫師在其他平台的帳號（schema.org sameAs 用，幫搜尋引擎把同一個人連起來） */
+  threads: 'https://www.threads.com/@snowdoc_ycy',
   author: '楊怡強 醫師',
   description:
     '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、何時該照 X 光、回歸雪場準備度評估、出發前檢核表、日本雪場選擇指引。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
@@ -203,10 +205,22 @@ export type ToolCategory = (typeof TOOL_CATEGORIES)[number]['id'];
  * 新增工具只要在這裡加一筆（記得填 category），首頁、工具箱和選單都會自動出現。
  * 陣列順序就是顯示順序，依「使用時機」排。
  */
+/**
+ * 工具的版本制度
+ *
+ * 每個工具有永久編號（SMT-T-xx，不會改）與版本號（年份.序號）。
+ * 內容有實質更動時把 updated 改成當天、version 進一號；
+ * 頁面上會顯示並提供引用格式，抄襲時一比對編號與版本就知道來源與新舊。
+ */
+export const TOOLS_VERSION = 'v2026.1';
+
 export const TOOLS = [
   // ── 第一類：行前準備與訓練 ──────────────────────────
   {
     href: '/tools/japan-resorts',
+    id: 'SMT-T-01',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'prep',
     name: '日本雪場選擇指引',
     emoji: '🗾',
@@ -217,6 +231,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/fitness-check',
+    id: 'SMT-T-02',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'prep',
     name: '行前體能自我檢測',
     emoji: '🦵',
@@ -226,6 +243,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/training-plan',
+    id: 'SMT-T-03',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'prep',
     name: '行前訓練計畫產生器',
     emoji: '📅',
@@ -235,6 +255,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/pre-trip-checklist',
+    id: 'SMT-T-04',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'prep',
     name: '出發前注意事項互動檢核表',
     emoji: '✅',
@@ -247,6 +270,9 @@ export const TOOLS = [
   // ── 第二類：受傷了才需要看 ──────────────────────────
   {
     href: '/tools/injury-triage',
+    id: 'SMT-T-05',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'injury',
     name: '雪場受傷分流判斷',
     emoji: '🚨',
@@ -256,6 +282,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/xray-check',
+    id: 'SMT-T-06',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'injury',
     name: '何時該照 X 光',
     emoji: '🩻',
@@ -266,6 +295,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/concussion',
+    id: 'SMT-T-07',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'injury',
     name: '腦震盪：看不見的傷',
     emoji: '🧠',
@@ -276,6 +308,9 @@ export const TOOLS = [
   },
   {
     href: '/tools/return-to-snow',
+    id: 'SMT-T-08',
+    version: TOOLS_VERSION,
+    updated: '2026-09-13',
     category: 'injury',
     name: '回歸雪場準備度自評',
     emoji: '↩️',

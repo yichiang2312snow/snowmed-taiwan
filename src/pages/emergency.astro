@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Faq from '../components/Faq.astro';
 import { RESORTS, EMERGENCY_NUMBER } from '../data/resorts';
 import { SITE_A } from '../consts';
 
@@ -135,10 +136,38 @@ const claimDocs = [
     critical: true,
   },
 ];
+// 常見問題：問句就是大家實際會搜的字
+const FAQ = [
+  {
+    q: '在日本滑雪受傷，第一通電話要打給誰？',
+    a: '人還在雪道上，先找雪場巡邏隊（Ski Patrol）——他們比救護車更快到得了現場，而且有把人運下山的裝備。狀況危急撥 119。巡邏隊電話請在買雪票時就先問到並存進手機。',
+  },
+  {
+    q: '日本的救護車要錢嗎？',
+    a: '救護車本身免費，但後續的診察、檢查與治療費用要自付，回台灣後再向保險公司與健保申請核退。打通 119 後先說「救急車をお願いします」，再講地點。',
+  },
+  {
+    q: '滑雪扭傷還要冰敷嗎？',
+    a: '現行的運動醫學指引（2020 年 BJSM 的 PEACE & LOVE）已經不再把冰敷與消炎止痛藥當作常規處置，因為發炎反應是組織修復的第一步。急性期的重點是保護、適度負重、避免過度消炎；亞急性期則要促進血液循環與逐步活動。本頁上方有完整說明。',
+  },
+  {
+    q: '回台灣申請保險理賠需要哪些文件？',
+    a: '診斷證明書、醫療費用收據正本與費用明細，最好是英文或日文版本。最關鍵的一句話：這些全部要在當地、離開醫院前拿到，回台灣之後再跟日本的醫院要，難度會高很多，有些甚至要不到。收據正本只有一份，健保核退與商業保險要分配好。',
+  },
+  {
+    q: '二世谷、白馬、湯澤附近有哪些醫院可以看運動傷害？',
+    a: '本頁整理了湯澤、白馬、二世谷、星野 TOMAMU 四個區域鄰近的醫療機構，每一筆都附官方來源與查證日期。注意 TOMAMU 當地的村立診療所沒有整形外科，骨折韌帶要往富良野方向後送。',
+  },
+  {
+    q: '受傷後回台灣該看哪一科？',
+    a: '運動傷害一般看骨科或復健科；如果想要超音波影像檢查、增生治療與運動處方這類保守治療的完整評估，建議找熟悉滑雪運動的復健科醫師。有明顯變形、無法負重或劇烈麻木，請不要等回國，當地就要就醫。',
+  },
+];
 ---
 
 <BaseLayout
   title="海外受傷緊急處置中心"
+  seoTitle="在日本滑雪受傷怎麼辦？急救電話、雪場附近醫院與保險理賠文件"
   eyebrow="Emergency"
   description="在日本雪場受傷了怎麼辦？急救電話、PEACE & LOVE 急性處置原則（取代舊的 PRICE）、日本主要雪場（湯澤、白馬、二世谷、星野TOMAMU）附近的醫院與診所資訊，以及回國後申請健保核退與保險理賠需要的文件清單。"
 >
@@ -357,7 +386,7 @@ const claimDocs = [
 
       <!-- 醫師叮嚀 -->
       <div class="mt-12 rounded-2xl border-l-4 border-accent bg-tint1 p-6 sm:p-8">
-        <h3 class="text-lg font-black text-head">復健專科醫師的叮嚀</h3>
+        <h3 class="text-lg font-black text-head">復健科醫師的叮嚀</h3>
         <div class="prose-tc mt-3 text-muted">
           <p>
             雪場上的運動傷害不可怕，可怕的是用了<strong>過時的方法處理</strong>，導致組織修復不完全，留下長期的關節隱患。
@@ -591,6 +620,12 @@ const claimDocs = [
   </section>
 
   <!-- 導流 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
   <section class="bg-tint1">
     <div class="mx-auto max-w-3xl px-5 py-10">
       <p class="text-sm leading-relaxed break-words text-muted">
