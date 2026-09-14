@@ -11,6 +11,12 @@ import {
   SKI_IN_OUT_LABELS,
   REFERENCE_SITES,
 } from '../../data/japanResorts';
+import { RESORT_UPDATES, LAST_UPDATED } from '../../data/japanResortUpdates';
+
+const KIND_LABELS = { safety: '安全', price: '票價', facility: '設施', season: '雪季' } as const;
+const recentUpdates = [...RESORT_UPDATES].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 6);
+const updatesFor = (id: string) =>
+  RESORT_UPDATES.filter((u) => u.resortId === id).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 3);
 
 const levelKeys = Object.keys(LEVEL_LABELS) as Array<keyof typeof LEVEL_LABELS>;
 const priorityKeys = Object.keys(PRIORITY_LABELS) as Array<keyof typeof PRIORITY_LABELS>;
@@ -65,9 +71,36 @@ const FAQ = [
   seoTitle="日本滑雪場怎麼選？10 個雪場的難易度比率、帶小孩、中文服務與票價比較"
   emoji="🗾"
   time="約 2 分鐘"
-  summary="第一次去日本滑雪，該選哪個雪場？選擇你的程度、交通偏好與最在意的條件，篩出比較適合的區域。每個雪場都附上雪道難易度比率、帶小孩的條件、中英文服務、是否有 ski-in / ski-out 住宿、一日券價格，以及當地的醫療資訊 —— 每一筆都標明出處與查證日期。"
-  description="日本滑雪雪場怎麼選？收錄 10 個台灣人常去的日本雪場，比較雪道難易度比率（綠線、紅線、黑線）、是否適合帶小孩、有無中文服務、有無 ski-in ski-out 雪道直結住宿、一日纜車券價格與交通門戶，每筆資料附官方出處。"
+  summary="這不是雪場百科，是從安全角度幫你挑雪場的工具：巡邏隊與最近的醫院在哪、交通方不方便、能不能帶小孩、有沒有中文服務、住宿能不能直接滑進滑出。10 座台灣人最常去的雪場，每一筆都回到官方資料查證並標明日期，每週檢查一次官方公告。"
+  description="從安全角度選日本雪場：巡邏隊與最近醫院、交通便利性、是否適合帶小孩、中文服務、ski-in ski-out 住宿、雪道難易度比率與一日券票價。10 個台灣人常去的雪場，每筆附官方出處與查證日期，每週更新。"
 >
+  <!-- 跟其他雪場指南的差別：先講清楚我們在意什麼 -->
+  <div class="mb-8 grid gap-3 sm:grid-cols-2">
+    {
+      [
+        ['🚑', '受傷了去哪', '每座雪場連到查證過的當地醫院與診所，知道巡邏隊之後的下一步。'],
+        ['🚌', '交通方不方便', '從機場或東京出發要多久、要不要轉車 —— 受傷後送也走同一條路。'],
+        ['👶', '帶小孩行不行', '托兒收托的年齡下限、兒童雪校、兒童票，不是一個「親子友善」標籤。'],
+        ['🈶', '聽不聽得懂', '官網有沒有繁體中文、官方有沒有掛牌的中文教練，只採信官方頁面。'],
+      ].map(([emoji, title, body]) => (
+        <div class="flex min-w-0 items-start gap-3 rounded-2xl border border-line bg-surface p-4">
+          <span class="text-2xl leading-none" aria-hidden="true">
+            {emoji}
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-black break-words text-head">{title}</p>
+            <p class="mt-1 text-xs leading-relaxed break-words text-muted">{body}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <p class="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+    <span class="rounded-full bg-tint2 px-2.5 py-1 font-bold text-head">每週更新</span>
+    <span>上次查證：{LAST_UPDATED}</span>
+    <a href="#updates" class="underline underline-offset-2 hover:text-head">看最近更新了什麼 ↓</a>
+  </p>
+
   <form id="jr-form" class="space-y-6">
     <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5">
       <legend class="px-2 text-sm font-bold text-head">你的程度？</legend>
@@ -206,6 +239,33 @@ const FAQ = [
                 <p class="rounded-xl border-l-4 border-amber-400 bg-amber-500/15 px-4 py-3 text-sm leading-relaxed break-words text-amber-100 light:text-amber-900">
                   {r.caution}
                 </p>
+              )}
+
+              {updatesFor(r.id).length > 0 && (
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">近期動態</p>
+                  <ul class="mt-2 space-y-2">
+                    {updatesFor(r.id).map((u) => (
+                      <li class="text-xs leading-relaxed break-words text-muted">
+                        <span class="mr-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-head">
+                          {KIND_LABELS[u.kind]}
+                        </span>
+                        <span class="font-bold text-body">{u.title}</span>
+                        {' — '}
+                        {u.summary}{' '}
+                        <a
+                          href={u.source}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="underline underline-offset-2 hover:text-head"
+                        >
+                          {u.sourceLabel}
+                        </a>
+                        <span> · {u.date}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
 
               <div class="min-w-0">
@@ -361,6 +421,48 @@ const FAQ = [
       實際規劃請以官方網站的資訊為準。
     </p>
   </div>
+
+  <section id="updates" class="mt-12 min-w-0 scroll-mt-20 rounded-2xl border border-line bg-surface p-6">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 class="text-base font-black break-words text-head">最近更新</h2>
+      <p class="text-xs text-muted">每週檢查一次官方公告；上次查證 {LAST_UPDATED}</p>
+    </div>
+    <ol class="mt-4 space-y-3">
+      {
+        recentUpdates.map((u) => {
+          const resort = u.resortId ? RESORTS.find((r) => r.id === u.resortId) : null;
+          return (
+            <li class="flex min-w-0 gap-3 text-sm">
+              <span class="shrink-0 font-mono text-xs text-muted tabular-nums">{u.date}</span>
+              <div class="min-w-0">
+                <p class="break-words text-head">
+                  <span class="mr-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold">
+                    {KIND_LABELS[u.kind]}
+                  </span>
+                  {resort && <span class="font-bold">{resort.name}：</span>}
+                  <span class="font-bold">{u.title}</span>
+                </p>
+                <p class="mt-0.5 text-xs leading-relaxed break-words text-muted">
+                  {u.summary}{' '}
+                  <a
+                    href={u.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline underline-offset-2 hover:text-head"
+                  >
+                    {u.sourceLabel}
+                  </a>
+                  <span class:list={['ml-1.5 rounded px-1.5 py-0.5 text-[10px] font-bold', u.sourceLevel === 'official' ? 'bg-emerald-500/20 text-emerald-200 light:text-emerald-800' : 'bg-tint2 text-body']}>
+                    {u.sourceLevel === 'official' ? '官方' : '第三方'}
+                  </span>
+                </p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </section>
 
   <section class="mt-12 min-w-0 rounded-2xl border border-line bg-surface p-6">
     <h2 class="text-base font-black break-words text-head">這份資料是怎麼來的</h2>
