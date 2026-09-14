@@ -1,0 +1,122 @@
+---
+/**
+ * 近 30 天熱門工具排行。
+ *
+ * 跟造訪人數一樣，數字太小的時候秀出來反而扣分，所以：
+ * - 近 30 天總使用次數 < showAt：整塊不出現
+ * - 總次數 < countsAt：只顯示名次，不顯示次數
+ * 全部 8 個工具都先印在 HTML 裡（隱藏），JS 拿到數字後排序、只留前幾名。
+ * 想預覽長什麼樣子：網址加上 #popular-preview 會把門檻降到 0。
+ */
+import { TOOLS } from '../consts';
+
+interface Props {
+  /** 顯示前幾名 */
+  top?: number;
+  /** 近 30 天總使用次數達到多少才顯示整塊 */
+  showAt?: number;
+  /** 總使用次數達到多少才顯示實際次數 */
+  countsAt?: number;
+  compact?: boolean;
+}
+const { top = 5, showAt = 30, countsAt = 100, compact = false } = Astro.props;
+---
+
+<aside
+  id="popular-tools"
+  class:list={[
+    'min-w-0 rounded-2xl border border-line bg-panel',
+    compact ? 'p-5' : 'p-6 sm:p-7',
+  ]}
+  data-top={top}
+  data-show-at={showAt}
+  data-counts-at={countsAt}
+  hidden
+  aria-label="近 30 天熱門工具"
+>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+    <h3 class="text-base font-black text-head">🔥 近 30 天最多人用</h3>
+    <p class="text-xs text-muted">依本站匿名使用次數統計</p>
+  </div>
+
+  <ol id="popular-list" class="mt-4 space-y-2">
+    {
+      TOOLS.map((t) => (
+        <li data-id={t.href.replace('/tools/', '')} hidden class="min-w-0">
+          <a
+            href={t.href}
+            class="flex min-w-0 items-center gap-3 rounded-xl border border-line bg-surface px-3.5 py-2.5 transition-colors hover:border-accent hover:bg-tint2"
+          >
+            <span
+              class="popular-rank flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-band text-sm font-black text-white tabular-nums"
+              aria-hidden="true"
+            >
+              –
+            </span>
+            <span class="text-xl leading-none" aria-hidden="true">
+              {t.emoji}
+            </span>
+            <span class="min-w-0 flex-1 truncate text-sm font-bold text-head">{t.name}</span>
+            <span class="popular-count shrink-0 text-xs text-muted tabular-nums" hidden />
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</aside>
+
+<script>
+  const root = document.getElementById('popular-tools');
+  if (root) {
+    const preview = location.hash === '#popular-preview';
+    const top = Number(root.dataset.top ?? '5');
+    const showAt = preview ? 0 : Number(root.dataset.showAt ?? '30');
+    const countsAt = preview ? 0 : Number(root.dataset.countsAt ?? '100');
+
+    fetch('/api/popular')
+      .then((r) => r.json())
+      .then((data: { total?: number; tools?: { id: string; opens: number }[] }) => {
+        const tools = data?.tools ?? [];
+        const total = data?.total ?? 0;
+        if (total < showAt || !tools.length) return;
+
+        const list = document.getElementById('popular-list')!;
+        const rows = new Map(
+          Array.from(list.querySelectorAll<HTMLElement>('li[data-id]')).map((li) => [li.dataset.id!, li])
+        );
+
+        let rank = 0;
+        for (const t of tools) {
+          const li = rows.get(t.id);
+          if (!li || t.opens <= 0) continue;
+          rank += 1;
+          if (rank > top) break;
+          li.hidden = false;
+          li.querySelector('.popular-rank')!.textContent = String(rank);
+          const count = li.querySelector<HTMLElement>('.popular-count')!;
+          if (total >= countsAt) {
+            count.textContent = `${t.opens.toLocaleString('zh-TW')} 次`;
+            count.hidden = false;
+          }
+          list.append(li); // 依名次重排
+
+          // 第一名的工具卡片掛上小標籤（同一頁有卡片的話）
+          if (rank === 1) {
+            for (const card of document.querySelectorAll<HTMLElement>(`a[href="/tools/${t.id}"]`)) {
+              if (card.closest('#popular-tools') || card.querySelector('.popular-badge')) continue;
+              const badge = document.createElement('span');
+              badge.className =
+                'popular-badge absolute top-3 left-3 z-10 rounded-full bg-accent px-2.5 py-1 text-[11px] font-black text-bg shadow';
+              badge.textContent = '🔥 最多人用';
+              card.classList.add('relative');
+              card.prepend(badge);
+            }
+          }
+        }
+        if (rank > 0) root.hidden = false;
+      })
+      .catch(() => {
+        /* 讀不到就安靜地不顯示 */
+      });
+  }
+</script>
