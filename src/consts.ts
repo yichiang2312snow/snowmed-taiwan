@@ -25,8 +25,8 @@ export const SITE = {
 
 /** 網站 A：楊醫師個人官網 */
 export const SITE_A = {
-  url: 'https://dr-yang-yi-chiang-website.vercel.app/',
-  articlesUrl: 'https://dr-yang-yi-chiang-website.vercel.app/articles',
+  url: 'https://dr.snowmed-taiwan.com/',
+  articlesUrl: 'https://dr.snowmed-taiwan.com/articles',
   label: '楊怡強醫師衛教專文',
   labelLong: '楊怡強醫師個人網站的衛教專文',
 } as const;
