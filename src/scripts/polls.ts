@@ -77,6 +77,10 @@ export const showResults = (card: HTMLElement, counts: Counts, mine: string | nu
   card.querySelector<HTMLElement>('.poll-options')!.hidden = true;
   card.querySelector<HTMLElement>('.poll-results')!.hidden = false;
   card.querySelector<HTMLElement>('.poll-footer')!.hidden = false;
+  // 依他選的答案，亮出對應的工具推薦
+  for (const rec of card.querySelectorAll<HTMLElement>('[data-rec]')) {
+    rec.hidden = rec.dataset.rec !== mine;
+  }
   card.dataset.voted = '1';
 };
 
