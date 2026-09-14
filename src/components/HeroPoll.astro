@@ -2,8 +2,9 @@
 /**
  * 首頁 HERO 右側的投票小卡片：一次一題，投完看結果，可以翻到下一題。
  *
- * 題目與 /api/polls 共用 functions/api/_polls.js；
- * 投票邏輯在 src/scripts/polls.ts，跟完整投票區共用同一份紀錄。
+ * 題目與 /api/polls 共用 functions/api/_polls.js；投票邏輯在 src/scripts/polls.ts。
+ * 這張卡片「不記得」你投過：每次打開網頁都從第一題開始、可以重投、重新拿推薦
+ * （楊醫師的要求：每個來的人都當新朋友）。
  * 這張卡片永遠在深色的 HERO 上，所以顏色直接用白色系而不是主題 token。
  */
 import { POLLS } from '../../functions/api/_polls.js';
@@ -170,11 +171,10 @@ import { TOOLS } from '../consts';
     prev.addEventListener('click', () => show(current - 1));
     next.addEventListener('click', () => show(current === cards.length - 1 ? 0 : current + 1));
 
-    // 第一次打開就跳到「還沒投過」的那一題，投過的留著隨時可以翻回去看結果
+    // 每次打開都從第一題開始；票數先抓好，投完馬上能顯示比例
     fetchCounts().then((counts) => {
-      cards.forEach((card) => wireCard(card, counts));
-      const firstUnvoted = cards.findIndex((c) => !c.dataset.voted);
-      show(firstUnvoted >= 0 ? firstUnvoted : 0);
+      cards.forEach((card) => wireCard(card, counts, { remember: false }));
+      show(0);
     });
   }
 </script>

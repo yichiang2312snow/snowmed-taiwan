@@ -85,26 +85,34 @@ export const showResults = (card: HTMLElement, counts: Counts, mine: string | nu
   card.dataset.voted = '1';
 };
 
-/** 把一張卡片接上投票行為：已投過就直接秀結果，沒投過就等點選 */
+/**
+ * 把一張卡片接上投票行為。
+ *
+ * remember = true：投過的題目記在 localStorage，回來直接看結果、不能重投。
+ * remember = false：每次打開網頁都是新的一輪——同一次瀏覽裡每題只能投一次，
+ *   重新整理就可以再投、再拿一次推薦。首頁的小卡片用這個模式，
+ *   代價是同一個人重複來會重複計票。
+ */
 export const wireCard = (
   card: HTMLElement,
   counts: Record<string, Counts> | null,
-  onVoted?: (poll: string, option: string) => void
+  opts: { remember?: boolean; onVoted?: (poll: string, option: string) => void } = {}
 ) => {
+  const { remember = true, onVoted } = opts;
   const poll = card.dataset.poll!;
-  const voted = readVotes();
+  const voted = remember ? readVotes() : {};
 
   if (voted[poll] && counts?.[poll]) showResults(card, counts[poll], voted[poll]);
 
   const buttons = card.querySelectorAll<HTMLButtonElement>('[data-option]');
   buttons.forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (readVotes()[poll]) return;
+      if (card.dataset.voted === '1' || (remember && readVotes()[poll])) return;
       buttons.forEach((b) => (b.disabled = true));
       const option = btn.dataset.option!;
       try {
         const next = await sendVote(poll, option);
-        saveVote(poll, option);
+        if (remember) saveVote(poll, option);
         showResults(card, next, option);
         (window as any).snowmedTrack?.('vote', `${poll}/${option}`);
         onVoted?.(poll, option);
