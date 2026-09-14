@@ -12,12 +12,12 @@ import { TOOLS } from '../consts';
 
 <div
   id="hero-poll"
-  class="relative min-w-0 rounded-2xl border border-white/20 bg-band/75 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6"
+  class="relative min-w-0 rounded-2xl border border-white/20 bg-band/75 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6 light:border-sky-200 light:bg-white/95 light:shadow-sky-900/15"
   aria-label="雪友快問快答"
 >
   <div class="flex items-center justify-between gap-3">
-    <p class="text-[11px] font-black tracking-[0.18em] text-accent uppercase">雪友快問快答</p>
-    <p class="text-xs text-body/80 tabular-nums">
+    <p class="text-[11px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">雪友快問快答</p>
+    <p class="text-xs text-body/80 tabular-nums light:text-slate-500">
       <span id="hero-poll-index">1</span> / {POLLS.length}
     </p>
   </div>
@@ -39,7 +39,7 @@ import { TOOLS } from '../consts';
             <span class="text-xl leading-none sm:text-2xl" aria-hidden="true">
               {p.emoji}
             </span>
-            <span class="min-w-0">{p.question}</span>
+            <span class="min-w-0 light:text-sky-950">{p.question}</span>
           </h3>
 
           <div class="poll-options mt-3 grid gap-1.5" role="group" aria-label="選項">
@@ -47,7 +47,7 @@ import { TOOLS } from '../consts';
               <button
                 type="button"
                 data-option={o.id}
-                class="min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-left text-sm font-medium break-words text-white transition-colors hover:border-accent hover:bg-white/20 disabled:opacity-60"
+                class="min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-left text-sm font-medium break-words text-white transition-colors hover:border-accent hover:bg-white/20 disabled:opacity-60 light:border-sky-200 light:bg-sky-50 light:text-sky-950 light:hover:border-sky-500 light:hover:bg-sky-100"
               >
                 {o.label}
               </button>
@@ -58,19 +58,19 @@ import { TOOLS } from '../consts';
             {p.options.map((o) => (
               <li data-result={o.id} class="min-w-0">
                 <div class="flex items-baseline justify-between gap-3 text-sm">
-                  <span class="poll-label min-w-0 font-medium break-words text-white">{o.label}</span>
-                  <span class="shrink-0 text-xs text-body/80 tabular-nums">
-                    <span class="poll-pct font-black text-white">0%</span>
+                  <span class="poll-label min-w-0 font-medium break-words text-white light:text-sky-950">{o.label}</span>
+                  <span class="shrink-0 text-xs text-body/80 tabular-nums light:text-slate-500">
+                    <span class="poll-pct font-black text-white light:text-sky-950">0%</span>
                     <span class="poll-n ml-1">(0)</span>
                   </span>
                 </div>
-                <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/15">
-                  <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700" style="width:0%" />
+                <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/15 light:bg-sky-100">
+                  <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700 light:bg-sky-600" style="width:0%" />
                 </div>
               </li>
             ))}
           </ol>
-          <p class="poll-footer mt-2.5 text-xs text-body/80" hidden>
+          <p class="poll-footer mt-2.5 text-xs text-body/80 light:text-slate-500" hidden>
             共 <span class="poll-total tabular-nums">0</span> 票
           </p>
 
@@ -83,19 +83,19 @@ import { TOOLS } from '../consts';
                 data-rec={o.id}
                 href={o.recommend.href}
                 hidden
-                class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-white/10 p-3 transition-colors hover:bg-white/20"
+                class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-white/10 p-3 transition-colors hover:bg-white/20 light:border-sky-300 light:bg-sky-50 light:hover:bg-sky-100"
               >
                 <span class="text-2xl leading-none" aria-hidden="true">
                   {tool.emoji}
                 </span>
                 <span class="min-w-0">
-                  <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase">
+                  <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
                     給你的建議
                   </span>
-                  <span class="block text-sm font-bold break-words text-white group-hover:underline">
+                  <span class="block text-sm font-bold break-words text-white group-hover:underline light:text-sky-950">
                     {tool.name} →
                   </span>
-                  <span class="mt-0.5 block text-xs leading-relaxed break-words text-body/85">
+                  <span class="mt-0.5 block text-xs leading-relaxed break-words text-body/85 light:text-slate-600">
                     {o.recommend.why}
                   </span>
                 </span>
@@ -107,7 +107,7 @@ import { TOOLS } from '../consts';
     }
   </div>
 
-  <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/15 pt-3">
+  <div class="mt-4 flex items-center justify-between gap-3 border-t border-white/15 pt-3 light:border-sky-100">
     <div class="flex items-center gap-1.5" aria-hidden="true">
       {
         POLLS.map((_, i) => (
@@ -115,7 +115,7 @@ import { TOOLS } from '../consts';
             data-dot={i}
             class:list={[
               'h-1.5 w-1.5 rounded-full transition-colors',
-              i === 0 ? 'bg-accent' : 'bg-white/30',
+              i === 0 ? 'bg-accent light:bg-sky-600' : 'bg-white/30 light:bg-sky-200',
             ]}
           />
         ))
@@ -125,7 +125,7 @@ import { TOOLS } from '../consts';
       <button
         type="button"
         id="hero-poll-prev"
-        class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/10 disabled:opacity-30"
+        class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/10 disabled:opacity-30 light:border-sky-200 light:text-sky-950 light:hover:bg-sky-50"
         disabled
       >
         ← 上一題
@@ -133,7 +133,7 @@ import { TOOLS } from '../consts';
       <button
         type="button"
         id="hero-poll-next"
-        class="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-bg transition-colors hover:bg-accent"
+        class="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-bg transition-colors hover:bg-accent light:bg-sky-700 light:text-white light:hover:bg-sky-600"
       >
         下一題 →
       </button>
@@ -158,7 +158,9 @@ import { TOOLS } from '../consts';
       cards.forEach((c, k) => (c.hidden = k !== current));
       dots.forEach((d, k) => {
         d.classList.toggle('bg-accent', k === current);
+        d.classList.toggle('light:bg-sky-600', k === current);
         d.classList.toggle('bg-white/30', k !== current);
+        d.classList.toggle('light:bg-sky-200', k !== current);
       });
       if (indexEl) indexEl.textContent = String(current + 1);
       prev.disabled = current === 0;

@@ -65,10 +65,11 @@ export const showResults = (card: HTMLElement, counts: Counts, mine: string | nu
     (li.querySelector('.poll-bar') as HTMLElement).style.width = `${pct}%`;
     const label = li.querySelector('.poll-label')!;
     label.classList.toggle('text-accent', id === mine);
+    label.classList.toggle('light:text-sky-700', id === mine);
     if (id === mine && !li.querySelector('.poll-you')) {
       const tag = document.createElement('span');
       tag.className =
-        'poll-you ml-1.5 rounded-full bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-head';
+        'poll-you ml-1.5 rounded-full bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-head light:bg-sky-100 light:text-sky-950';
       tag.textContent = '你的選擇';
       label.append(tag);
     }
