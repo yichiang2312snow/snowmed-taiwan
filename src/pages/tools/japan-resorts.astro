@@ -11,7 +11,7 @@ import {
   SKI_IN_OUT_LABELS,
   REFERENCE_SITES,
 } from '../../data/japanResorts';
-import { RESORT_UPDATES, LAST_UPDATED } from '../../data/japanResortUpdates';
+import { RESORT_UPDATES, LAST_CHECKED } from '../../data/japanResortUpdates';
 
 const KIND_LABELS = { safety: '安全', price: '票價', facility: '設施', season: '雪季' } as const;
 const recentUpdates = [...RESORT_UPDATES].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 6);
@@ -97,7 +97,7 @@ const FAQ = [
   </div>
   <p class="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
     <span class="rounded-full bg-tint2 px-2.5 py-1 font-bold text-head">每週更新</span>
-    <span>上次查證：{LAST_UPDATED}</span>
+    <span>上次查證：{LAST_CHECKED}</span>
     <a href="#updates" class="underline underline-offset-2 hover:text-head">看最近更新了什麼 ↓</a>
   </p>
 
@@ -425,7 +425,7 @@ const FAQ = [
   <section id="updates" class="mt-12 min-w-0 scroll-mt-20 rounded-2xl border border-line bg-surface p-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
       <h2 class="text-base font-black break-words text-head">最近更新</h2>
-      <p class="text-xs text-muted">每週檢查一次官方公告；上次查證 {LAST_UPDATED}</p>
+      <p class="text-xs text-muted">每週檢查一次官方公告；上次查證 {LAST_CHECKED}</p>
     </div>
     <ol class="mt-4 space-y-3">
       {

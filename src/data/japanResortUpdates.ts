@@ -40,5 +40,8 @@ export const RESORT_UPDATES: ResortUpdate[] = [
   },
 ];
 
-/** 最近一次更新的日期，頁面上顯示用 */
-export const LAST_UPDATED = RESORT_UPDATES.map((u) => u.date).sort().at(-1) ?? '';
+/**
+ * 最近一次「檢查」的日期（每週排程跑完就改成當天，就算沒有異動也要改）。
+ * 頁面上的「上次查證」顯示這個，而不是最後一則更新的日期。
+ */
+export const LAST_CHECKED = '2026-09-14';
