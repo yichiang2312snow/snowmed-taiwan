@@ -3,6 +3,7 @@
  *
  * POST /api/stats   前端回報一個事件，對應的計數 +1
  * GET  /api/stats   讀取彙總資料（需要 Bearer token）
+ *                   ?month=YYYY-MM 某月、?day=YYYY-MM-DD 某天、?range=all 全部月份（含逐月明細）
  *
  * ── 這裡「不」做的事 ───────────────────────────────────────
  * 不放 cookie、不記錄 IP（連雜湊都不存）、不產生任何 session 或訪客識別碼。
@@ -97,34 +98,51 @@ export async function onRequestGet({ request, env }) {
   if (!env.VIEWS) return json({ error: 'storage unavailable' }, 503);
 
   const url = new URL(request.url);
-  // ?month=2026-09 取某個月的彙總；?day=2026-09-12 取某一天；預設為本月
+  // ?month=2026-09 取某個月的彙總；?day=2026-09-12 取某一天；?range=all 取全部月份；預設為本月
   const month = url.searchParams.get('month');
   const day = url.searchParams.get('day');
-  const prefix = day ? `st:d:${day}:` : `st:m:${month ?? taipeiParts().month}:`;
+  const all = url.searchParams.get('range') === 'all';
+  const prefix = all ? 'st:m:' : day ? `st:d:${day}:` : `st:m:${month ?? taipeiParts().month}:`;
 
   const counts = {};
+  const byMonth = {};
   let cursor;
   do {
     const list = await env.VIEWS.list({ prefix, cursor });
-    for (const key of list.keys) {
-      const rest = key.name.slice(prefix.length); // event:label
-      const i = rest.indexOf(':');
-      if (i < 0) continue;
-      const event = rest.slice(0, i);
-      const label = rest.slice(i + 1);
-      const n = Number.parseInt((await env.VIEWS.get(key.name)) ?? '0', 10) || 0;
-      counts[event] ??= {};
-      counts[event][label] = n;
-    }
+    await Promise.all(
+      list.keys.map(async (key) => {
+        let rest = key.name.slice(prefix.length); // [YYYY-MM:]event:label
+        let m = null;
+        if (all) {
+          const j = rest.indexOf(':');
+          if (j < 0) return;
+          m = rest.slice(0, j);
+          rest = rest.slice(j + 1);
+        }
+        const i = rest.indexOf(':');
+        if (i < 0) return;
+        const event = rest.slice(0, i);
+        const label = rest.slice(i + 1);
+        const n = Number.parseInt((await env.VIEWS.get(key.name)) ?? '0', 10) || 0;
+        counts[event] ??= {};
+        counts[event][label] = (counts[event][label] ?? 0) + n;
+        if (m) {
+          byMonth[m] ??= {};
+          byMonth[m][event] ??= {};
+          byMonth[m][event][label] = n;
+        }
+      })
+    );
     cursor = list.list_complete ? undefined : list.cursor;
   } while (cursor);
 
   const visits = Number.parseInt((await env.VIEWS.get('visits:total')) ?? '0', 10) || 0;
 
   return json({
-    scope: day ? { day } : { month: month ?? taipeiParts().month },
+    scope: all ? { range: 'all' } : day ? { day } : { month: month ?? taipeiParts().month },
     totalVisitorsAllTime: visits,
     counts,
+    ...(all ? { byMonth } : {}),
     note: '純彙總資料，不含任何個人識別資訊。',
   });
 }
