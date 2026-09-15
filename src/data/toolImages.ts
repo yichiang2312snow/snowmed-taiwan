@@ -8,6 +8,7 @@ import preTripChecklist from '../assets/tools/tool-pre-trip-checklist.jpg';
 import xrayCheck from '../assets/tools/tool-xray-check.jpg';
 import japanResorts from '../assets/tools/tool-japan-resorts.jpg';
 import concussion from '../assets/tools/tool-concussion.jpg';
+import taiwanIndoorSki from '../assets/tools/tool-taiwan-indoor-ski.jpg';
 
 /**
  * 工具卡片的背景圖，key 是工具的網址。
@@ -45,5 +46,9 @@ export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> 
   '/tools/concussion': {
     image: concussion,
     alt: '戴著安全帽與雪鏡的滑雪者特寫',
+  },
+  '/tools/taiwan-indoor-ski': {
+    image: taiwanIndoorSki,
+    alt: '新竹小叮噹科學主題樂園的室內真雪滑雪場',
   },
 };

@@ -147,6 +147,17 @@ export const IMAGE_CREDITS = [
     modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
   },
   {
+    file: 'tools/tool-taiwan-indoor-ski.jpg',
+    where: '工具卡片：台灣室內滑雪場館搜尋',
+    title: '2015-08-22 Indoor ski slope at the Little Ding-Dong Science Theme Park',
+    author: '曾成訓',
+    authorUrl: 'https://commons.wikimedia.org/wiki/File:2015-08-22_Indoor_ski_slope_at_the_Little_Ding-Dong_Science_Theme_Park.jpg',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:2015-08-22_Indoor_ski_slope_at_the_Little_Ding-Dong_Science_Theme_Park.jpg',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+    modified: '已裁切與縮放尺寸以符合網頁需求',
+  },
+  {
     file: 'anatomy/knee-anterior.png',
     where: '何時該照 X 光：膝蓋解剖圖',
     title: 'Blausen 0596 KneeAnatomy Front',
