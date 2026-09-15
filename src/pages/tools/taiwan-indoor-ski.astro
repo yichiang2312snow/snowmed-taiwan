@@ -1,0 +1,474 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import { TAIWAN_COUNTIES, TAIWAN_MAP_VIEWBOX, TAIWAN_INSETS } from '../../data/taiwanCounties';
+import { INDOOR_VENUES, INDOOR_LAST_CHECKED } from '../../data/taiwanIndoorSki';
+
+const open = INDOOR_VENUES.filter((v) => v.status === 'open');
+const countByCounty = new Map<string, number>();
+for (const v of open) countByCounty.set(v.countyId, (countByCounty.get(v.countyId) ?? 0) + 1);
+
+// 跳台／花式：官方資料明確寫到的才算 —— 這在台灣很稀有
+const freestyle = INDOOR_VENUES.filter(
+  (v) => v.status === 'open' && (v.features.jump === true || v.features.freestyle === true)
+);
+const realSnow = INDOOR_VENUES.filter((v) => v.status === 'open' && v.type === 'real-snow');
+
+const STATUS = {
+  open: { label: '營業中', cls: 'bg-emerald-500/20 text-emerald-200 light:text-emerald-800' },
+  unknown: { label: '待確認', cls: 'bg-amber-500/20 text-amber-200 light:text-amber-800' },
+  closed: { label: '已停業', cls: 'bg-red-500/20 text-red-200 light:text-red-800' },
+} as const;
+
+const FAQ = [
+  {
+    q: '台灣有室內真雪的滑雪場嗎？',
+    a: '有，目前查到的是新竹新豐「小叮噹科學主題樂園」的北海道滑雪場：室內真雪、全年零下、滑雪道約 60 公尺，有雙板與單板教練課。其他縣市的「飄雪樂園」多是戲雪用途，滑雪教學仍在滑雪機上進行。',
+  },
+  {
+    q: '滑雪機（無限雪道）練得到什麼？',
+    a: '滾動雪毯式的滑雪機可以練換刃、重心、站姿與節奏，對初學者建立基本動作、以及出發前找回感覺很有用。它練不到的是真實雪況的變化、速度感、地形起伏與長距離滑行後的疲勞控制，所以它是「行前準備」不是「替代雪場」。',
+  },
+  {
+    q: '台灣哪裡可以練跳台或花式技巧？',
+    a: '很稀有。官方資料明確寫有跳台或花式設施的，目前查到新莊 SPK 滑雪公園（氣墊跳台、jibbing 道具、專門的 Freestyle 課程）、內湖日山滑雪（氣墊跳台）、高雄仁武 ERSki（雪道跳台）、高雄鼓山 Easyski（乾坡 Freestyle 訓練場）。跳台訓練的受傷風險比一般滑行高，請一定在教練評估與指導下進行。',
+  },
+  {
+    q: '出發前多久開始去滑雪機練比較好？',
+    a: '如果是為了找回感覺，出發前 2–4 週、每週一次通常就夠；如果是第一次滑雪，建議先上 2–3 堂課學會基本站姿與煞車，到雪場的第一天會輕鬆很多。肌力與平衡的準備請搭配本站的行前體能自我檢測與訓練計畫產生器。',
+  },
+];
+---
+
+<ToolLayout
+  title="台灣室內滑雪場館搜尋"
+  seoTitle="台灣室內滑雪場館總整理：真雪、滑雪機、有跳台的場館在哪裡？依縣市搜尋"
+  emoji="📍"
+  time="約 1 分鐘"
+  summary="出發前想先練一下？這裡把台灣有在營業的室內滑雪訓練場館整理成地圖：含真雪的小叮噹滑雪場，以及各縣市的滑雪機場館。滑鼠移到縣市就會列出那裡的場館，並特別標出全台少數有跳台與花式訓練設施的地方。"
+  description="台灣室內滑雪場館地圖：新竹小叮噹真雪滑雪場、台北新北桃園新竹台中嘉義台南高雄的滑雪機訓練場館，標出有跳台與花式（freestyle）訓練設施的場館。每筆附官方來源與查證日期。"
+>
+  <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-5">
+    <p class="text-sm leading-relaxed break-words text-head">
+      收錄 <strong>{open.length} 家營業中</strong>的場館（另列 {INDOOR_VENUES.length - open.length} 家待確認或已停業，避免白跑一趟）。
+      <strong>把滑鼠移到地圖上的縣市</strong>，或直接點，右邊就會只顯示那裡的場館；手機請點地圖。
+      上次查證 {INDOOR_LAST_CHECKED}。
+    </p>
+  </div>
+
+  <!-- 稀有設施先講 -->
+  <div class="mt-6 grid gap-3 sm:grid-cols-2">
+    <div class="min-w-0 rounded-2xl border border-amber-400/60 bg-amber-500/15 p-4">
+      <p class="text-xs font-black tracking-widest text-amber-200 light:text-amber-800 uppercase">🪂 有跳台或花式訓練設施（很稀有）</p>
+      <ul class="mt-2 space-y-1.5 text-sm">
+        {
+          freestyle.map((v) => (
+            <li class="flex min-w-0 flex-wrap items-baseline gap-x-2">
+              <button type="button" data-jump-to={v.id} class="min-w-0 text-left font-bold text-head hover:underline">
+                {v.name}
+              </button>
+              <span class="text-xs text-muted">{v.city}{v.district}</span>
+              {v.features.jump === true && (
+                <span class="rounded bg-amber-400/30 px-1.5 py-0.5 text-[10px] font-bold text-head">跳台</span>
+              )}
+              {v.features.freestyle === true && (
+                <span class="rounded bg-amber-400/30 px-1.5 py-0.5 text-[10px] font-bold text-head">花式</span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-2 text-xs leading-relaxed break-words text-muted">
+        只列官方資料明確寫到跳台、airbag 或 freestyle 訓練的場館。跳台訓練的受傷風險比一般滑行高，請在教練評估與指導下進行。
+      </p>
+    </div>
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-4">
+      <p class="text-xs font-black tracking-widest text-accent uppercase">❄️ 含真雪的場館</p>
+      <ul class="mt-2 space-y-1.5 text-sm">
+        {
+          realSnow.map((v) => (
+            <li class="flex min-w-0 flex-wrap items-baseline gap-x-2">
+              <button type="button" data-jump-to={v.id} class="min-w-0 text-left font-bold text-head hover:underline">
+                {v.name}
+              </button>
+              <span class="text-xs text-muted">{v.city}{v.district}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-2 text-xs leading-relaxed break-words text-muted">
+        其他縣市的「飄雪樂園」是戲雪用途；滑雪教學仍在滑雪機上進行，卡片會分開標示。
+      </p>
+    </div>
+  </div>
+
+  <!-- 地圖 + 清單 -->
+  <div class="mt-8 grid gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
+    <div class="min-w-0 md:sticky md:top-24 md:self-start">
+      <svg
+        id="tw-map"
+        viewBox={TAIWAN_MAP_VIEWBOX}
+        class="mx-auto h-auto w-full max-w-[260px]"
+        role="img"
+        aria-label="台灣縣市地圖，有場館的縣市會標出數量"
+        style="font-family: inherit"
+      >
+        {/* 離島示意框 */}
+        {
+          TAIWAN_INSETS.map((b) => (
+            <rect
+              x={b.x}
+              y={b.y}
+              width={b.width}
+              height={b.height}
+              rx="6"
+              style="fill:none;stroke:var(--color-line);stroke-width:1;stroke-dasharray:3 3"
+            />
+          ))
+        }
+        {
+          TAIWAN_COUNTIES.map((c) => {
+            const n = countByCounty.get(c.id) ?? 0;
+            return (
+              <path
+                d={c.d}
+                fill-rule="evenodd"
+                class="tw-county"
+                data-county={c.id}
+                data-name={c.name}
+                data-count={n}
+                tabindex={n ? 0 : -1}
+                role={n ? 'button' : undefined}
+                aria-label={n ? `${c.name}，${n} 家場館` : c.name}
+                style={`stroke:var(--color-bg);stroke-width:1;cursor:${n ? 'pointer' : 'default'};fill:${n ? 'var(--color-accent)' : 'var(--color-tint2)'};fill-opacity:${n ? 0.35 + Math.min(n, 6) * 0.1 : 1};transition:fill-opacity .15s`}
+              >
+                <title>{n ? `${c.name}：${n} 家` : `${c.name}：目前沒有收錄的場館`}</title>
+              </path>
+            );
+          })
+        }
+        {/* 有場館的縣市標數量 */}
+        {
+          TAIWAN_COUNTIES.filter((c) => (countByCounty.get(c.id) ?? 0) > 0).map((c) => (
+            <g pointer-events="none">
+              <circle cx={c.labelX} cy={c.labelY} r="11" style="fill:var(--color-band);stroke:var(--color-accent);stroke-width:1.5" />
+              <text
+                x={c.labelX}
+                y={c.labelY}
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="900"
+                style="fill:#ffffff"
+              >
+                {countByCounty.get(c.id)}
+              </text>
+            </g>
+          ))
+        }
+        <text x="12" y="386" font-size="9" style="fill:var(--color-muted)">連江・金門（示意位置）</text>
+      </svg>
+      <p class="mt-2 text-center text-xs text-muted">
+        <span id="tw-hover">移到縣市上看場館</span>
+      </p>
+      <div class="mt-3 flex flex-wrap justify-center gap-2">
+        <button
+          type="button"
+          id="tw-all"
+          class="rounded-full border border-line bg-panel px-3 py-1.5 text-xs font-bold text-head hover:bg-tint1"
+        >
+          顯示全台
+        </button>
+        <label class="flex cursor-pointer items-center gap-1.5 rounded-full border border-line bg-panel px-3 py-1.5 text-xs text-head">
+          <input type="checkbox" id="tw-show-closed" class="h-3.5 w-3.5 accent-[var(--color-accent)]" />
+          也顯示待確認／已停業
+        </label>
+      </div>
+    </div>
+
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 id="tw-heading" class="text-lg font-black break-words text-head">全台場館</h2>
+        <p id="tw-count" class="text-xs text-muted"></p>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="依設施篩選">
+        {
+          [
+            ['jump', '🪂 有跳台'],
+            ['freestyle', '🎯 花式訓練'],
+            ['real-snow', '❄️ 真雪'],
+            ['kids', '👶 兒童課程'],
+          ].map(([k, label]) => (
+            <label class="flex cursor-pointer items-center gap-1.5 rounded-full border border-line bg-panel px-3 py-1.5 text-xs text-head transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
+              <input type="checkbox" name="feat" value={k} class="h-3.5 w-3.5 accent-[var(--color-accent)]" />
+              {label}
+            </label>
+          ))
+        }
+      </div>
+
+      <p id="tw-empty" class="mt-4 rounded-xl bg-tint1 px-4 py-3 text-sm text-muted" hidden>
+        這個縣市目前沒有符合條件的場館。知道有漏掉的？到<a href="/wishlist" class="font-bold text-accent underline underline-offset-2">許願區</a>告訴我。
+      </p>
+
+      <ul id="tw-list" class="mt-4 space-y-3">
+        {
+          INDOOR_VENUES.map((v) => (
+            <li
+              id={`venue-${v.id}`}
+              class="tw-venue min-w-0 scroll-mt-24 overflow-hidden rounded-2xl border border-line bg-surface"
+              data-county={v.countyId}
+              data-status={v.status}
+              data-type={v.type}
+              data-jump={v.features.jump === true ? '1' : '0'}
+              data-freestyle={v.features.freestyle === true ? '1' : '0'}
+              data-kids={v.features.kids === true ? '1' : '0'}
+              hidden={v.status !== 'open'}
+            >
+              <div class="px-5 py-4">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="rounded-full bg-tint2 px-2.5 py-0.5 text-[11px] font-bold text-head">{v.typeLabel}</span>
+                  <span class:list={['rounded-full px-2.5 py-0.5 text-[11px] font-bold', STATUS[v.status].cls]}>
+                    {STATUS[v.status].label}
+                  </span>
+                  {v.features.jump === true && (
+                    <span class="rounded-full bg-amber-400/30 px-2.5 py-0.5 text-[11px] font-black text-head">🪂 跳台</span>
+                  )}
+                  {v.features.freestyle === true && (
+                    <span class="rounded-full bg-amber-400/30 px-2.5 py-0.5 text-[11px] font-black text-head">🎯 花式訓練</span>
+                  )}
+                  {v.features.kids === true && (
+                    <span class="rounded-full bg-tint1 px-2.5 py-0.5 text-[11px] font-bold text-muted">兒童課程</span>
+                  )}
+                </div>
+                <h3 class="mt-2 text-base font-black break-words text-head">{v.name}</h3>
+                <p class="mt-0.5 text-xs text-muted">
+                  {v.city}
+                  {v.district}
+                </p>
+
+                <p class="mt-3 text-sm leading-relaxed break-words text-body">{v.featureDetail}</p>
+                {v.machines && (
+                  <p class="mt-1.5 text-xs break-words text-muted">
+                    <span class="font-bold text-body">設備</span>：{v.machines}
+                  </p>
+                )}
+
+                <dl class="mt-3 divide-y divide-line rounded-xl border border-line text-sm">
+                  <div class="flex min-w-0 gap-3 px-4 py-2.5">
+                    <dt class="w-12 shrink-0 text-xs font-bold text-muted">地址</dt>
+                    <dd class="min-w-0 break-words text-head">{v.address}</dd>
+                  </div>
+                  <div class="flex min-w-0 gap-3 px-4 py-2.5">
+                    <dt class="w-12 shrink-0 text-xs font-bold text-muted">電話</dt>
+                    <dd class="min-w-0">
+                      {v.phone ? (
+                        <a href={`tel:${v.phone.replace(/-/g, '')}`} class="font-bold text-accent underline underline-offset-2">
+                          {v.phone}
+                        </a>
+                      ) : (
+                        <span class="text-muted">官方未公布，請用官網或社群聯繫</span>
+                      )}
+                    </dd>
+                  </div>
+                  {v.note && (
+                    <div class="px-4 py-2.5">
+                      <p class="text-xs leading-relaxed break-words text-muted">{v.note}</p>
+                    </div>
+                  )}
+                </dl>
+
+                <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                  {v.officialUrl && (
+                    <a href={v.officialUrl} target="_blank" rel="noopener noreferrer" class="font-bold text-accent hover:underline">
+                      官方網站 ↗
+                    </a>
+                  )}
+                  {v.social && (
+                    <a href={v.social} target="_blank" rel="noopener noreferrer" class="font-bold text-accent hover:underline">
+                      官方社群 ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div class="border-t border-line bg-panel px-5 py-2">
+                <p class="text-[11px] break-words text-muted">
+                  資料來源：
+                  <a href={v.source} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-head">
+                    {v.sourceLabel}
+                  </a>
+                  <span> · 查證 {v.checkedAt}</span>
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <p class="mt-6 text-xs leading-relaxed break-words text-muted">
+    營業時間、課程與價格常常變動，出發前請以各場館官網或社群的最新公告為準。本頁不收費、不抽成，也沒有任何一家場館的贊助。
+  </p>
+
+  <Fragment slot="basis">
+    <p>
+      台灣的滑雪愛好者幾乎都是「一年去日本幾天」的型態，出發前的身體準備很難在雪上做。室內場館的價值就在這裡：<strong>用滑雪機或真雪把基本動作找回來，減少第一天在雪場上摔的次數</strong>。
+      這個工具做的事很單純：把台灣目前有在營業的室內滑雪訓練場館列出來，依縣市放在地圖上，方便你找離家近的。
+    </p>
+    <p>
+      收錄標準是「有滑雪教學」的場館：真雪場、滾輪式滑雪機（無限雪道）、乾式雪道、螢幕式模擬機都算；只有戲雪功能的「飄雪樂園」不列為訓練場館。
+      每一筆的地址與電話都回到<strong>官網或官方社群</strong>查證並標日期，官方沒公布的就寫「未公布」，不用第三方資料補；第三方（部落格、新聞）提供的機台數量會註明「第三方資料」。
+    </p>
+    <p>
+      <strong>跳台與花式訓練設施</strong>特別標出來，是因為這在台灣很稀有（目前只有幾家），而且它的受傷風險與一般滑行不同 ——
+      想練的人需要知道去哪裡、以及一定要有教練評估；不想碰的人也可以一眼看出哪些場館沒有。
+    </p>
+    <p class="text-xs">
+      地圖資料：npm 套件 taiwan-atlas（MIT License，Daniel Kao），原始資料為內政部「直轄市、縣市界線」（政府資料開放授權條款第 1 版）。金門與連江為示意位置。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這不是推薦排名，也不是教練品質的評價。</strong>
+        列出來只代表「有在營業、有滑雪教學」，教練資格、課程內容請自己向場館確認。
+      </li>
+      <li>
+        <strong>滑雪機不等於雪場。</strong>
+        它練得到動作，練不到真實雪況、速度與地形。出發前的肌力與平衡準備，請搭配<a href="/tools/fitness-check">行前體能自我檢測</a>與<a href="/tools/training-plan">訓練計畫產生器</a>。
+      </li>
+      <li>
+        <strong>跳台訓練的受傷風險比一般滑行高。</strong>
+        氣墊或雪道跳台都一樣，請在教練評估與指導下進行；有膝、踝舊傷或腦震盪病史的人，先問過醫師。
+      </li>
+      <li>
+        <strong>清單一定會過時。</strong>
+        場館開開關關很快（本頁就有 2025 年停業的例子）。看到「待確認」或資料日期太久，請先打電話。知道有新開的或漏掉的，歡迎到<a href="/wishlist">許願區</a>告訴我。
+      </li>
+    </ul>
+  </Fragment>
+  <Fragment slot="faq">
+    <Faq items={FAQ} />
+  </Fragment>
+</ToolLayout>
+
+<style>
+  /* 選中的縣市用自己的粗框表示，不要瀏覽器預設的方形焦點框 */
+  .tw-county:focus {
+    outline: none;
+  }
+  .tw-county:focus-visible {
+    filter: brightness(1.25);
+  }
+</style>
+
+<script>
+  const paths = Array.from(document.querySelectorAll<SVGPathElement>('.tw-county'));
+  const venues = Array.from(document.querySelectorAll<HTMLElement>('.tw-venue'));
+  const heading = document.getElementById('tw-heading');
+  const count = document.getElementById('tw-count');
+  const hover = document.getElementById('tw-hover');
+  const empty = document.getElementById('tw-empty');
+  const showClosed = document.getElementById('tw-show-closed') as HTMLInputElement | null;
+  const feats = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="feat"]'));
+
+  let selected: string | null = null; // 選中的縣市 id；null = 全台
+
+  function paint() {
+    for (const p of paths) {
+      const n = Number(p.dataset.count ?? '0');
+      const isSel = selected === p.dataset.county;
+      p.style.stroke = isSel ? 'var(--color-head)' : 'var(--color-bg)';
+      p.style.strokeWidth = isSel ? '2' : '1';
+      if (n) p.style.fillOpacity = isSel ? '1' : String(0.35 + Math.min(n, 6) * 0.1);
+    }
+  }
+
+  function apply() {
+    const wantClosed = showClosed?.checked ?? false;
+    const need = feats.filter((f) => f.checked).map((f) => f.value);
+    let n = 0;
+    let name = '全台場館';
+    for (const v of venues) {
+      const okCounty = !selected || v.dataset.county === selected;
+      const okStatus = wantClosed || v.dataset.status === 'open';
+      const okFeat = need.every((k) =>
+        k === 'real-snow' ? v.dataset.type === 'real-snow' : v.dataset[k] === '1'
+      );
+      const ok = okCounty && okStatus && okFeat;
+      v.hidden = !ok;
+      if (ok) n++;
+    }
+    if (selected) {
+      const p = paths.find((x) => x.dataset.county === selected);
+      name = p?.dataset.name ?? selected;
+    }
+    if (heading) heading.textContent = name;
+    if (count) count.textContent = `${n} 家`;
+    if (empty) empty.hidden = n > 0;
+    paint();
+  }
+
+  for (const p of paths) {
+    const n = Number(p.dataset.count ?? '0');
+    p.addEventListener('mouseenter', () => {
+      if (hover) hover.textContent = n ? `${p.dataset.name}：${n} 家場館（點一下固定）` : `${p.dataset.name}：目前沒有收錄的場館`;
+      if (!n) return;
+      p.style.fillOpacity = '1';
+      // 滑過就先預覽該縣市的清單（不改變 selected，移開就恢復）
+      if (!selected) {
+        for (const v of venues) {
+          const okStatus = (showClosed?.checked ?? false) || v.dataset.status === 'open';
+          v.hidden = !(v.dataset.county === p.dataset.county && okStatus);
+        }
+        if (heading) heading.textContent = `${p.dataset.name}（預覽）`;
+      }
+    });
+    p.addEventListener('mouseleave', () => {
+      if (hover) hover.textContent = '移到縣市上看場館';
+      apply();
+    });
+    const pick = () => {
+      if (!n) return;
+      selected = selected === p.dataset.county ? null : (p.dataset.county ?? null);
+      apply();
+      (window as any).snowmedTrack?.('result', 'taiwan-indoor-ski/' + (selected ?? 'all'));
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        document.getElementById('tw-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    p.addEventListener('click', pick);
+    p.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        pick();
+      }
+    });
+  }
+
+  document.getElementById('tw-all')?.addEventListener('click', () => {
+    selected = null;
+    apply();
+  });
+  showClosed?.addEventListener('change', apply);
+  for (const f of feats) f.addEventListener('change', apply);
+
+  // 上方「稀有設施」清單：點名稱直接跳到卡片
+  document.querySelectorAll<HTMLElement>('[data-jump-to]').forEach((b) => {
+    b.addEventListener('click', () => {
+      selected = null;
+      for (const f of feats) f.checked = false;
+      apply();
+      const el = document.getElementById('venue-' + b.dataset.jumpTo);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.classList.add('ring-2', 'ring-accent');
+      setTimeout(() => el?.classList.remove('ring-2', 'ring-accent'), 1800);
+    });
+  });
+
+  apply();
+  (window as any).snowmedTrack?.('done', 'taiwan-indoor-ski');
+</script>

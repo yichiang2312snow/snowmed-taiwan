@@ -80,6 +80,38 @@ export interface SkiInOut {
   checkedAt?: string;
 }
 
+/**
+ * 公園設施（terrain park：跳台、rail、box、half-pipe、常設コブ）。
+ * 從醫師的角度這一格很重要：公園地形的受傷風險比一般雪道高，
+ * 想帶小孩或初學者去的家庭，也要知道雪場裡有沒有這一區、跟兒童雪上樂園分不分得開。
+ */
+export interface Park {
+  /** true = 官網明列 terrain park；false = 官網明確沒有；null = 官網查無明確資訊 */
+  has: boolean | null;
+  detail: string;
+  /** 兒童雪上樂園（雪橇、輸送帶那種，跟 terrain park 是兩回事） */
+  kidsPark: string | null;
+  source?: string;
+  sourceLabel?: string;
+  checkedAt?: string;
+}
+
+/**
+ * 公園設施（terrain park：跳台、rail、box、half-pipe、常設コブ）。
+ * 從醫師的角度這一格很重要：公園地形的受傷風險比一般雪道高，
+ * 想帶小孩或初學者去的家庭，也要知道雪場裡有沒有這一區、跟兒童雪上樂園分不分得開。
+ */
+export interface Park {
+  /** true = 官網明列 terrain park；false = 官網明確沒有；null = 官網查無明確資訊 */
+  has: boolean | null;
+  detail: string;
+  /** 兒童雪上樂園（雪橇、輸送帶那種，跟 terrain park 是兩回事） */
+  kidsPark: string | null;
+  source?: string;
+  sourceLabel?: string;
+  checkedAt?: string;
+}
+
 export interface Pricing {
   /** 一日纜車券大人票價（日圓） */
   adultYen: number | null;
@@ -113,4 +145,5 @@ export interface Resort {
   language: Language;
   skiInOut: SkiInOut;
   pricing: Pricing;
+  park: Park;
 }

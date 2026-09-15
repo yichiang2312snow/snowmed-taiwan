@@ -1,50 +1,23 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import Faq from '../../components/Faq.astro';
+import { TRIAGE_REGIONS } from '../../data/triageRegions';
 
-const groups = [
-  {
-    level: 'red',
-    id: 'red',
-    heading: '第一組：緊急狀況',
-    hint: '以下任何一項成立，就不要自己想辦法下山。',
-    items: [
-      '曾經失去意識，或現在意識不清、講話怪怪的',
-      '頸部或背部劇痛，或手腳有麻木、無力感',
-      '肢體明顯變形、角度不對，或有骨頭穿出皮膚',
-      '完全無法用受傷的腳承重，一踩就劇痛',
-      '呼吸困難、劇烈胸痛，或每次深呼吸都很痛',
-      '大量出血，壓迫後仍止不住',
-    ],
-  },
-  {
-    level: 'orange',
-    id: 'orange',
-    heading: '第二組：今天到此為止，並儘快就醫',
-    hint: '不算立即危險，但需要當地醫療評估。',
-    items: [
-      '頭部有撞擊，之後出現頭暈、想吐、反應變慢或記憶空白',
-      '受傷當下聽到或感覺到「啪」的一聲',
-      '關節在一小時內就腫起來',
-      '關節有鬆掉、不穩、會突然軟腳的感覺',
-      '關節無法完全伸直或彎曲，或有卡住感',
-      '肩膀無法抬起，或看起來位置不對',
-    ],
-  },
-  {
-    level: 'yellow',
-    id: 'yellow',
-    heading: '第三組：停止今天的滑行，持續觀察',
-    hint: '可以自己下山，但不要再滑了。',
-    items: [
-      '可以承重，但走路時持續疼痛',
-      '有腫脹，但是慢慢才腫起來的',
-      '拇指根部（虎口內側）壓下去會痛，而且捏東西沒力',
-      '手腕壓痛，轉動或用力時會痛',
-      '休息 48 小時後仍然沒有改善',
-    ],
-  },
+const left = TRIAGE_REGIONS.filter((r) => r.side === 'left');
+const right = TRIAGE_REGIONS.filter((r) => r.side === 'right');
+
+// 人形（以身體中線為 x = 0），跟腦震盪頁用同一套
+const ARMS = [
+  [-66, 160, -84, 262, -92, 352],
+  [66, 160, 84, 262, 92, 352],
 ];
+const LEGS = [
+  [-26, 360, -32, 480, -36, 576],
+  [26, 360, 32, 480, 36, 576],
+];
+const TORSO =
+  'M-58,150 Q0,138 58,150 Q74,156 74,172 Q78,262 50,372 L-50,372 Q-78,262 -74,172 Q-74,156 -58,150 Z';
+const pts = (a: number[]) => a.join(' ');
 
 // 常見問題：問句就是大家實際會搜的字
 const FAQ = [
@@ -66,18 +39,18 @@ const FAQ = [
   },
   {
     q: '在日本雪場受傷，急救電話是幾號？',
-    a: '救護車是 119。人還在雪道上先找巡邏隊，他們比救護車更快到、也有把人運下山的裝備。詳細流程與各雪場附近的醫院在[[/emergency|海外受傷緊急處置中心]]。',
+    a: '救護車是 119。人還在雪道上先找巡邏隊，他們比救護車更快到、也有把人運下山的裝備。各雪場的巡邏隊電話與附近的醫院在[[/emergency|海外受傷緊急處置中心]]。',
   },
 ];
 ---
 
 <ToolLayout
   title="雪場受傷分流判斷"
-  seoTitle="滑雪受傷該叫巡邏隊、當地就醫還是自己觀察？紅旗症狀分流"
+  seoTitle="滑雪受傷該叫巡邏隊、當地就醫還是自己觀察？依身體部位勾選症狀"
   emoji="🚨"
   time="約 2 分鐘"
-  summary="在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？勾選符合的狀況，這個工具會依照紅旗症狀給你建議行動。"
-  description="滑雪受傷當下該怎麼辦？依照紅旗症狀逐步判斷是否需要呼叫雪場巡邏隊、當地就醫，或停止滑行後觀察。"
+  summary="在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？找到你受傷的部位，勾選符合的狀況，這個工具會依照紅旗症狀給你建議行動。"
+  description="滑雪受傷當下該怎麼辦？依身體部位（頭、頸背、肩、手腕拇指、關節、腿）勾選症狀，逐步判斷是否需要呼叫雪場巡邏隊、當地就醫，或停止滑行後觀察。"
 >
   <div class="rounded-2xl border-l-4 border-red-500 bg-red-500/15 p-5">
     <p class="text-sm leading-relaxed break-words text-red-200 light:text-red-800">
@@ -86,45 +59,117 @@ const FAQ = [
     </p>
   </div>
 
-  <form id="triage-form" class="mt-8 space-y-7">
-    {
-      groups.map((g) => (
-        <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
-          <legend class="px-2">
-            <span
-              class:list={[
-                'inline-block h-2.5 w-2.5 rounded-full align-middle',
-                g.level === 'red'
-                  ? 'bg-red-500'
-                  : g.level === 'orange'
-                    ? 'bg-orange-400'
-                    : 'bg-amber-400',
-              ]}
-              aria-hidden="true"
-            />
-            <span class="ml-2 align-middle text-sm font-black text-head">{g.heading}</span>
-          </legend>
+  <p class="mt-6 text-sm leading-relaxed break-words text-muted">
+    人形圖上的每個號碼對應一組症狀。<strong class="text-head">找到你受傷的部位，勾選符合的狀況</strong>；不確定屬於哪個部位的，看「受傷的關節」和「任何部位」。可以複選、可以跨部位。
+  </p>
 
-          <p class="mt-1 text-xs break-words text-muted">{g.hint}</p>
+  <form id="triage-form" class="mt-6">
+    <div id="triage-map" class="relative grid gap-4 md:grid-cols-[minmax(0,1fr)_200px_minmax(0,1fr)] md:gap-x-6">
+      {/* 連線層：寬螢幕時由 JS 畫，把卡片連到人形上的點 */}
+      <svg id="triage-lines" class="pointer-events-none absolute inset-0 hidden h-full w-full md:block" aria-hidden="true"></svg>
 
-          <div class="mt-4 grid gap-2">
-            {g.items.map((item) => (
-              <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
-                <input
-                  type="checkbox"
-                  name={g.id}
-                  value={item}
-                  class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
-                />
-                <span class="min-w-0 leading-relaxed break-words text-head">{item}</span>
-              </label>
+      {/* 人形：手機時在最上面，寬螢幕時在中間 */}
+      <div class="order-first mx-auto w-full max-w-[220px] md:order-none md:col-start-2 md:row-start-1 md:max-w-none md:self-start md:sticky md:top-24">
+        <svg
+          id="triage-figure"
+          viewBox="-125 30 250 590"
+          class="h-auto w-full"
+          role="img"
+          aria-label="人形示意圖，上面標了 8 個號碼，對應各部位的症狀清單"
+          style="font-family: inherit"
+        >
+          <g>
+            {[
+              { color: 'var(--color-linestrong)', grow: 6 },
+              { color: 'var(--color-panel)', grow: 0 },
+            ].map(({ color, grow }) => (
+              <g style={`fill:${color};stroke:${color}`} stroke-linecap="round" stroke-linejoin="round">
+                {LEGS.map((l) => (
+                  <polyline points={pts(l)} style={`fill:none;stroke-width:${36 + grow}`} />
+                ))}
+                {ARMS.map((a) => (
+                  <polyline points={pts(a)} style={`fill:none;stroke-width:${26 + grow}`} />
+                ))}
+                <path d={TORSO} style={`stroke-width:${grow}`} />
+                <rect x="-14" y="118" width="28" height="40" rx="6" style={`stroke-width:${grow}`} />
+                <circle cx="0" cy="85" r="42" style={`stroke-width:${grow}`} />
+                <circle cx="-94" cy="372" r="15" style={`stroke-width:${grow}`} />
+                <circle cx="94" cy="372" r="15" style={`stroke-width:${grow}`} />
+                <ellipse cx="-44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+                <ellipse cx="44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+              </g>
             ))}
-          </div>
-        </fieldset>
-      ))
-    }
+            {/* 脊椎：讓「頸部・背部」指到哪裡一眼看得出來 */}
+            <path d="M0,150 L0,360" style="fill:none;stroke:var(--color-linestrong);stroke-width:2;stroke-dasharray:4 5" />
+          </g>
 
-    <div class="flex flex-wrap gap-3">
+          {/* 標記點：每個部位一個號碼，連線就指到這裡 */}
+          {TRIAGE_REGIONS.map((r) =>
+            r.targets.map(([x, y], i) => (
+              <g class="triage-marker" data-region={r.id} data-primary={i === 0 ? '1' : '0'}>
+                <circle cx={x} cy={y} r="13" style="fill:var(--color-band);stroke:var(--color-accent);stroke-width:2" />
+                <text
+                  x={x}
+                  y={y}
+                  text-anchor="middle"
+                  dominant-baseline="central"
+                  font-size="14"
+                  font-weight="900"
+                  style="fill:#ffffff"
+                >
+                  {r.n}
+                </text>
+              </g>
+            ))
+          )}
+        </svg>
+        <p class="mt-1 text-center text-[11px] text-muted md:hidden">號碼對應下方的症狀清單</p>
+      </div>
+
+      {[
+        { side: 'left', regions: left },
+        { side: 'right', regions: right },
+      ].map(({ side, regions }) => (
+        <div class:list={['space-y-4', side === 'left' ? 'md:col-start-1' : 'md:col-start-3', 'md:row-start-1']}>
+          {regions.map((r) => (
+            <fieldset
+              class="triage-card min-w-0 rounded-2xl border border-line bg-surface p-4 transition-colors has-[:checked]:border-accent sm:p-5"
+              data-region={r.id}
+              data-side={side}
+            >
+              <legend class="flex items-center gap-2 px-1">
+                <span
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-band text-xs font-black text-white ring-2 ring-accent"
+                  aria-hidden="true"
+                >
+                  {r.n}
+                </span>
+                <span class="text-sm font-black text-head">{r.title}</span>
+              </legend>
+              {r.hint && <p class="mt-1 text-xs break-words text-muted">{r.hint}</p>}
+
+              <div class="mt-3 grid gap-2">
+                {r.items.map((item) => (
+                  <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-3.5 py-2.5 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
+                    <input
+                      type="checkbox"
+                      name="symptom"
+                      value={item.text}
+                      data-level={item.level}
+                      data-region={r.id}
+                      class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+                    />
+                    <span class="min-w-0 leading-relaxed break-words text-head">{item.text}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-3">
       <button
         type="submit"
         class="flex-1 rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
@@ -152,8 +197,13 @@ const FAQ = [
       <ul id="tr-actions" class="mt-6 space-y-3 text-sm leading-relaxed break-words text-head"></ul>
 
       <div id="tr-flags-wrap" class="mt-6 rounded-xl bg-tint1 p-5" hidden>
-        <p class="text-sm font-bold text-head">你勾選的項目中，觸發判斷的是：</p>
+        <p class="text-sm font-bold text-head">你勾選的項目中，觸發這個判斷的是：</p>
         <ul id="tr-flags" class="mt-2 space-y-1.5 text-sm break-words text-muted"></ul>
+      </div>
+
+      <div id="tr-others-wrap" class="mt-4 rounded-xl bg-tint1 p-5" hidden>
+        <p class="text-sm font-bold text-head">其他勾選的項目（嚴重度較低，但同樣要處理）：</p>
+        <ul id="tr-others" class="mt-2 space-y-1.5 text-sm break-words text-muted"></ul>
       </div>
     </div>
 
@@ -166,9 +216,13 @@ const FAQ = [
     <p>
       這個工具用的是急診與運動傷害處置常見的<strong>「紅旗症狀」分流邏輯</strong>：先排除會危及生命或肢體的狀況，再往下判斷需不需要當場就醫。
     </p>
-    <p>判斷方式刻意做得很單純 —— <strong>只要符合越嚴重那一組的任何一項，就以那一組的建議為準</strong>，不做加權、不做評分。理由是：在雪場上、在痛的時候、在慌張的時候，複雜的計分沒有意義，而且容易把嚴重的狀況算輕。</p>
     <p>
-      三組紅旗的內容，對應的是雪地運動最常見也最不能漏掉的幾類傷害：頭部外傷與腦震盪、脊椎損傷、關節脫位與骨折、韌帶完全斷裂（受傷當下的「啪」聲與快速腫脹是典型線索），以及容易被當成「扭到」的滑雪者拇指。
+      症狀依<strong>身體部位</strong>排在人形圖旁邊，是為了讓受傷、慌張的人能很快找到自己該看哪一格 ——
+      而不是先看到「緊急」「不緊急」的分類標籤。每一個症狀背後都對應一個嚴重度等級，但頁面上刻意不先標出來，等你按下「看建議」才會告訴你觸發的是哪一級。
+    </p>
+    <p>判斷方式刻意做得很單純 —— <strong>只要有任何一項屬於較嚴重的等級，就以那一級的建議為準</strong>，不做加權、不做評分。理由是：在雪場上、在痛的時候、在慌張的時候，複雜的計分沒有意義，而且容易把嚴重的狀況算輕。</p>
+    <p>
+      收錄的症狀，對應的是雪地運動最常見也最不能漏掉的幾類傷害：頭部外傷與腦震盪、脊椎損傷、關節脫位與骨折、韌帶完全斷裂（受傷當下的「啪」聲與快速腫脹是典型線索），以及容易被當成「扭到」的滑雪者拇指。
     </p>
   </Fragment>
 
@@ -207,8 +261,82 @@ const FAQ = [
   const form = document.getElementById('triage-form') as HTMLFormElement | null;
   const result = document.getElementById('triage-result');
 
+  // ── 連線：把每張卡片連到人形上的號碼點（只在寬螢幕畫） ──
+  const map = document.getElementById('triage-map');
+  const lines = document.getElementById('triage-lines') as SVGSVGElement | null;
+  const wide = window.matchMedia('(min-width: 768px)');
+
+  function drawLines() {
+    if (!map || !lines) return;
+    lines.textContent = '';
+    if (!wide.matches) return;
+    const box = map.getBoundingClientRect();
+    lines.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+
+    const cards = Array.from(map.querySelectorAll<HTMLElement>('.triage-card'));
+    for (const card of cards) {
+      const id = card.dataset.region;
+      const cb = card.getBoundingClientRect();
+      const active = card.querySelector('input:checked') !== null;
+      // 從卡片靠人形那一側、標題那一行的高度出發
+      const ax = card.dataset.side === 'left' ? cb.right - box.left : cb.left - box.left;
+      const ay = cb.top - box.top + 22;
+
+      const markers = map.querySelectorAll<SVGGElement>(`.triage-marker[data-region="${id}"]`);
+      markers.forEach((m) => {
+        const mb = m.getBoundingClientRect();
+        const tx = mb.left + mb.width / 2 - box.left;
+        const ty = mb.top + mb.height / 2 - box.top;
+        // 走一段水平再斜向目標，看起來像圖說的引線
+        const midx = card.dataset.side === 'left' ? ax + 14 : ax - 14;
+        const d = `M${ax},${ay} L${midx},${ay} L${tx},${ty}`;
+        for (const [stroke, width] of [
+          ['var(--color-panel)', '5'],
+          [active ? 'var(--color-accent)' : 'var(--color-muted)', active ? '2.5' : '1.5'],
+        ] as const) {
+          const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          p.setAttribute('d', d);
+          p.setAttribute('fill', 'none');
+          p.setAttribute('stroke', stroke);
+          p.setAttribute('stroke-width', width);
+          p.setAttribute('stroke-linejoin', 'round');
+          p.setAttribute('stroke-linecap', 'round');
+          lines.append(p);
+        }
+        // 勾了的部位，人形上的點也跟著亮
+        const circle = m.querySelector('circle');
+        if (circle) circle.style.fill = active ? 'var(--color-accent)' : 'var(--color-band)';
+        const text = m.querySelector('text');
+        if (text) text.style.fill = active ? 'var(--color-ctatext, #08243c)' : '#ffffff';
+      });
+    }
+  }
+
+  // 手機：點人形上的號碼，捲到對應的卡片
+  map?.querySelectorAll<SVGGElement>('.triage-marker').forEach((m) => {
+    m.style.cursor = 'pointer';
+    m.addEventListener('click', () => {
+      const card = map.querySelector<HTMLElement>(`.triage-card[data-region="${m.dataset.region}"]`);
+      card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card?.classList.add('ring-2', 'ring-accent');
+      setTimeout(() => card?.classList.remove('ring-2', 'ring-accent'), 1600);
+    });
+  });
+
+  let raf = 0;
+  const schedule = () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(drawLines);
+  };
+  window.addEventListener('resize', schedule);
+  window.addEventListener('load', schedule);
+  document.fonts?.ready.then(schedule);
+  map?.addEventListener('change', schedule);
+  schedule();
+
   if (form && result) {
     type Level = 'red' | 'orange' | 'yellow' | 'green';
+    const ORDER: Level[] = ['red', 'orange', 'yellow'];
 
     const RESULTS: Record<Level, { emoji: string; title: string; cls: string; actions: string[] }> =
       {
@@ -231,7 +359,7 @@ const FAQ = [
           actions: [
             '今天不要再上山，即使覺得「好像還可以」。',
             '請雪場巡邏隊或當地診所做初步評估。頭部撞擊後的症狀尤其不能拖。',
-            '冰敷、加壓、抬高；避免熱敷、按摩和飲酒。',
+            '保護患部、適度加壓、抬高；急性期避免熱敷、泡湯、按摩和飲酒。',
             '務必保留所有資料：診斷書、X 光與 MRI 光碟、用藥紀錄 —— 回台灣看診時這些非常關鍵。',
             '回國後仍建議找熟悉運動傷害的醫師再評估一次。',
           ],
@@ -242,7 +370,7 @@ const FAQ = [
           cls: 'border-amber-400 bg-amber-500/15',
           actions: [
             '今天收工。繼續滑會讓原本單純的傷勢變複雜。',
-            '冰敷 15–20 分鐘、每隔幾小時一次，並適度加壓、抬高。',
+            '保護患部、適度加壓、抬高；還在腫的這幾天先不要泡湯或熱敷。',
             '接下來幾天觀察：腫脹有沒有變嚴重、有沒有出現不穩定感。',
             '兩週內沒有明顯改善，或出現「捏東西沒力」「走路會軟腳」，請就醫做理學檢查與影像。',
             '拇指根部壓痛合併捏握無力，是少數「早點看醫師真的會改變結果」的滑雪傷害，不要等。',
@@ -253,7 +381,7 @@ const FAQ = [
           title: '沒有符合需要立即處理的警訊',
           cls: 'border-emerald-400 bg-emerald-500/15',
           actions: [
-            '目前沒有勾到任何一組的紅旗症狀。',
+            '目前沒有勾到任何紅旗症狀。',
             '還是建議降低今天剩下的強度，選擇熟悉的緩坡。',
             '如果只是肌肉酸痛，補充水分、伸展、好好睡一覺。',
             '任何新出現的症狀 —— 腫脹、不穩定、麻木 —— 都請重新評估一次。',
@@ -265,30 +393,34 @@ const FAQ = [
     const box = document.getElementById('tr-box');
     const flagsWrap = document.getElementById('tr-flags-wrap');
     const flagsList = document.getElementById('tr-flags');
+    const othersWrap = document.getElementById('tr-others-wrap');
+    const othersList = document.getElementById('tr-others');
+
+    const fill = (ul: HTMLElement | null, items: string[]) => {
+      if (!ul) return;
+      ul.textContent = '';
+      for (const t of items) {
+        const li = document.createElement('li');
+        li.textContent = '· ' + t;
+        ul.append(li);
+      }
+    };
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const data = new FormData(form);
-
-      const red = data.getAll('red') as string[];
-      const orange = data.getAll('orange') as string[];
-      const yellow = data.getAll('yellow') as string[];
+      const checked = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="symptom"]:checked'));
 
       let level: Level = 'green';
-      let triggered: string[] = [];
-      if (red.length) {
-        level = 'red';
-        triggered = red;
-      } else if (orange.length) {
-        level = 'orange';
-        triggered = orange;
-      } else if (yellow.length) {
-        level = 'yellow';
-        triggered = yellow;
+      for (const l of ORDER) {
+        if (checked.some((c) => c.dataset.level === l)) {
+          level = l;
+          break;
+        }
       }
+      const triggered = checked.filter((c) => c.dataset.level === level).map((c) => c.value);
+      const others = checked.filter((c) => c.dataset.level !== level).map((c) => c.value);
 
       const r = RESULTS[level];
-
       if (box) box.className = `rounded-2xl border-l-4 p-6 sm:p-8 ${r.cls}`;
 
       const emoji = document.getElementById('tr-emoji');
@@ -312,18 +444,13 @@ const FAQ = [
         }
       }
 
-      if (flagsWrap && flagsList) {
-        flagsList.textContent = '';
-        if (triggered.length) {
-          for (const t of triggered) {
-            const li = document.createElement('li');
-            li.textContent = '· ' + t;
-            flagsList.append(li);
-          }
-          flagsWrap.hidden = false;
-        } else {
-          flagsWrap.hidden = true;
-        }
+      if (flagsWrap) {
+        fill(flagsList, triggered);
+        flagsWrap.hidden = triggered.length === 0;
+      }
+      if (othersWrap) {
+        fill(othersList, others);
+        othersWrap.hidden = others.length === 0;
       }
 
       (window as any).snowmedTrack?.('done', 'injury-triage');
@@ -335,6 +462,8 @@ const FAQ = [
 
     document.getElementById('tr-reset')?.addEventListener('click', () => {
       result.hidden = true;
+      // reset 事件在 click 之後才觸發，等一拍再重畫連線
+      setTimeout(schedule, 0);
     });
   }
 </script>

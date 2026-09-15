@@ -13,7 +13,7 @@ export const SITE = {
   threads: 'https://www.threads.com/@snowdoc_ycy',
   author: '楊怡強 醫師',
   description:
-    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、何時該照 X 光、回歸雪場準備度評估、出發前檢核表、日本雪場選擇指引。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
+    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、何時該照 X 光、回歸雪場準備度評估、出發前檢核表、日本雪場選擇指引、台灣室內滑雪場館搜尋。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
   // TODO 待楊醫師確認：以下聯絡資訊目前是預留欄位
   email: '',
   clinicName: '',
@@ -213,7 +213,7 @@ export type ToolCategory = (typeof TOOL_CATEGORIES)[number]['id'];
  * 內容有實質更動時把 updated 改成當天、version 進一號；
  * 頁面上會顯示並提供引用格式，抄襲時一比對編號與版本就知道來源與新舊。
  */
-export const TOOLS_VERSION = 'v2026.1';
+export const TOOLS_VERSION = 'v2026.2';
 
 export const TOOLS = [
   // ── 第一類：行前準備與訓練 ──────────────────────────
@@ -221,20 +221,20 @@ export const TOOLS = [
     href: '/tools/japan-resorts',
     id: 'SMT-T-01',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-15',
     category: 'prep',
     name: '日本雪場選擇指引',
     emoji: '🗾',
     time: '約 2 分鐘',
     summary:
-      '從安全的角度挑雪場：巡邏隊與最近的醫院在哪、交通方不方便、能不能帶小孩、有沒有中文服務。10 座雪場全數以官方資料查證，每週更新。',
+      '從醫師的角度挑雪場：交通與受傷後送、巡邏隊與最近的醫院、能不能帶小孩、有沒有公園設施（跳台、rail）。10 座雪場全數以官方資料查證，另附全日本 482 座雪場索引。',
     who: '還在決定要去哪個雪場，而且在意「萬一受傷怎麼辦」的人',
   },
   {
     href: '/tools/fitness-check',
     id: 'SMT-T-02',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-15',
     category: 'prep',
     name: '行前體能自我檢測',
     emoji: '🦵',
@@ -246,7 +246,7 @@ export const TOOLS = [
     href: '/tools/training-plan',
     id: 'SMT-T-03',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-15',
     category: 'prep',
     name: '行前訓練計畫產生器',
     emoji: '📅',
@@ -268,17 +268,31 @@ export const TOOLS = [
     who: '所有要出發的人，尤其第一次去的',
   },
 
+  {
+    href: '/tools/taiwan-indoor-ski',
+    id: 'SMT-T-09',
+    version: TOOLS_VERSION,
+    updated: '2026-09-15',
+    category: 'prep',
+    name: '台灣室內滑雪場館搜尋',
+    emoji: '📍',
+    time: '約 1 分鐘',
+    summary:
+      '出發前想先練？台灣有在營業的室內滑雪訓練場館地圖：含真雪的小叮噹滑雪場與各縣市的滑雪機場館，並標出全台少數有跳台與花式訓練設施的地方。',
+    who: '想在出發前找回感覺、或第一次滑雪想先上幾堂課的人',
+  },
+
   // ── 第二類：受傷了才需要看 ──────────────────────────
   {
     href: '/tools/injury-triage',
     id: 'SMT-T-05',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-15',
     category: 'injury',
     name: '雪場受傷分流判斷',
     emoji: '🚨',
     time: '約 2 分鐘',
-    summary: '在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？依照紅旗症狀逐步判斷。',
+    summary: '在雪場受傷了，該叫巡邏隊、該當地就醫、還是可以自己觀察？在人形圖上找到受傷的部位、勾選症狀，依紅旗症狀判斷。',
     who: '人還在雪場、或剛受傷不知道該不該就醫的人',
   },
   {
@@ -311,7 +325,7 @@ export const TOOLS = [
     href: '/tools/return-to-snow',
     id: 'SMT-T-08',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-15',
     category: 'injury',
     name: '回歸雪場準備度自評',
     emoji: '↩️',

@@ -86,6 +86,15 @@ export const RESORTS: Resort[] = [
       '沒有雪道旁的住宿（純日歸型雪場），要住越後湯澤站周邊。也沒有托兒服務 —— 山頂的 Kids Room 是付費預約的休息室，現場沒有人員照看。',
     officialUrl: 'https://gala.co.jp/zh-CHT/winter/',
     medicalAnchor: 'yuzawa',
+    park: {
+      has: true,
+      detail:
+        "官網「GALA SNOW PARK」在北エリア，分三區：ステップアップパーク（初學者用的小型跳台與 jib）、地形フリーライドパーク、キッカーゾーン（中上級的高難度跳台）。春季另有コブ（蘑菇）地形。未見 half-pipe。",
+      kidsPark: "「ゆきあそびパーク」：雪橇專用道與自由雪遊區，有雪上電扶梯，與公園分開。",
+      source: "https://gala.co.jp/winter/activities",
+      sourceLabel: "GALA湯沢 官方 アクティビティ頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 35,
       intermediate: 45,
@@ -143,6 +152,15 @@ export const RESORTS: Resort[] = [
     caution:
       '標高差只有 215 公尺、面積 30 公頃，是這份清單裡規模最小的。票價卻是偏高的一級 —— 它的價值在「交通近、晴天多、小孩免費、有 Outlet」，不在雪量和地形。中級以上很快會覺得不夠滑。',
     officialUrl: 'https://www.princehotels.com/zh-hant/ski/karuizawa/',
+    park: {
+      has: true,
+      detail:
+        "官網列出「くりの木パーク」（3 公尺 table top、寬 box、roll）與初學者用的「デビューパーク」。規模小、以入門級道具為主；官網未載明 half-pipe 或コブ。",
+      kidsPark: "「スノーマンパーク」三處：雪橇專用坡、雪胎、旋轉木馬、雪上電扶梯。",
+      source: "https://www.princehotels.co.jp/ski/karuizawa/winter/coursemap/",
+      sourceLabel: "軽井沢プリンス 官方 ゲレンデ・コース頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 58,
       intermediate: 21,
@@ -203,6 +221,15 @@ export const RESORTS: Resort[] = [
       '交通一定要轉 50 分鐘巴士，沒有新幹線直達。中文與英文教練人數有限，官方自己都建議要提前預約。',
     officialUrl: 'https://www.princehotels.com/zh-hant/ski/naeba/',
     medicalAnchor: 'yuzawa',
+    park: {
+      has: true,
+      detail:
+        "官網列「苗場スノーパーク」（第 5 高速リフト旁、初中級，10:00–16:00），FAQ 稱全 24 條雪道加 1 座公園；另有上級的「ワールドカップモーグルバーン」（222 公尺、最大 30.57 度的蘑菇道）。未載明 half-pipe。",
+      kidsPark: "付費的「わくわくファミリースノーランド」：雪上電扶梯、雪胎、充氣遊具、雪橇專用小坡（雪橇禁止在一般雪道使用）。",
+      source: "https://www.princehotels.co.jp/ski/naeba/winter/coursemap/",
+      sourceLabel: "苗場スキー場 官方 ゲレンデ・コース頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 30,
       intermediate: 40,
@@ -265,6 +292,15 @@ export const RESORTS: Resort[] = [
       '2026-27 雪季進入「一日券萬元時代」，是日本最貴的一線。八方尾根官網只有日文與英文，三個主要雪場中只有栂池高原提供繁體中文。',
     officialUrl: 'https://www.hakubavalley.com/en/',
     medicalAnchor: 'hakuba',
+    park: {
+      has: true,
+      detail:
+        "四個主要雪場都有公園：八方尾根「HAPPO PARKS」（以 bank、wave 地形為主，最多 20 個道具）、兎平・黒菱是有名的蘑菇道；五龍「GORYU PARK」（4–9 段 jib）、GORYU WAVES、常設蘑菇道 GORYU BUMPS；Hakuba47「47PARKS」（跳台、jib、cross，10 個以上道具，超初級到上級）；栂池「TG PARKS」（跳台、jib、banked，最多 40 個道具）。",
+      kidsPark: "八方「なきやまスノーランド」（雪橇＋輸送帶）；五龍「そりエリア」與「STEP UP LAND」；栂池「キッズパーク」（70×70 公尺、動く歩道）。",
+      source: "https://www.hakuba47.co.jp/winter/area/snowpark/",
+      sourceLabel: "Hakuba47 官方 スノーパーク頁（另參各雪場官網）",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 30,
       intermediate: 50,
@@ -326,6 +362,15 @@ export const RESORTS: Resort[] = [
     caution:
       '區域非常大而且分散，第一次去容易迷路，建議先查好纜車路線圖。官網只有日文與英文，沒有中文版。',
     officialUrl: 'https://shigakogen-ski.or.jp/english/',
+    park: {
+      has: false,
+      detail:
+        "志賀高原索道協会官網與各雪場頁都沒有 terrain park（沒有跳台、jib、half-pipe 的記述）。有的是自然地形與蘑菇：焼額山 D3 中級道為非壓雪蘑菇斜面、A6 也有蘑菇。對不想碰公園地形的家庭來說，這是優點。",
+      kidsPark: "丸池スノーランド、ヤケビスノーパーク（免費、有輸送帶與雪橇）、奥志賀キッズパーク；熊の湯有雪橇小坡。",
+      source: "https://www.princehotels.co.jp/ski/shiga/winter/coursemap/",
+      sourceLabel: "志賀高原 焼額山 官方 ゲレンデ頁（另參 shigakogen-ski.or.jp）",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: null,
       intermediate: null,
@@ -383,6 +428,15 @@ export const RESORTS: Resort[] = [
     caution:
       '雪道坡度變化大，初學者的活動範圍相對有限。官網沒有中文版，而且官方票務頁明載網路購票只有日文介面 —— 對不懂日文的人是實際障礙。',
     officialUrl: 'https://en.nozawaski.com/',
+    park: {
+      has: true,
+      detail:
+        "官網「上ノ平スノーパーク」全長約 2 公里（標高 1,220–1,410 公尺）：小／中／大跳台、6 公尺 box、8 公尺 flat-down box、連續 wave、油桶，以及 half-pipe（寬 8 公尺、高 3.5 公尺、長 110 公尺）；春季另有春山パーク。初學到上級都有對應。",
+      kidsPark: "日影ゲレンデ「キッズパーク」：免費雪橇區（日影與やまびこ兩處）、充氣遊具、ナスキーウェイ（付費）。",
+      source: "https://nozawaski.com/winter/course/park/",
+      sourceLabel: "野沢温泉スキー場 官方 スノーパーク頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 40,
       intermediate: 30,
@@ -444,6 +498,15 @@ export const RESORTS: Resort[] = [
       '票價是日本最高的一級（旺季全山券 ¥13,500）。另外要注意：官方掛名的五所雪校都沒有標示中文教學，市面上的中文雪校多為第三方業者。',
     officialUrl: 'https://www.niseko.ne.jp/en/',
     medicalAnchor: 'niseko',
+    park: {
+      has: true,
+      detail:
+        "HANAZONO 有三座公園：Gondola Park（3–8 公尺跳台、box、rail）、Hanazono Park（8–12 公尺跳台，中上級）、Hana2 Mini Park（入門 box／rail）。Grand Hirafu 官網只在春季段落提到有跳台與道具的公園，沒有細節；Annupuri 與 Village 官網查無公園。想避開公園地形的家庭可以選 Annupuri 或 Village。",
+      kidsPark: "HANAZONO 有 Tube Park 與室內 Galaxy of Kidz；Hirafu 現行官網沒有獨立的兒童雪上樂園；Annupuri、Village 官網未見雪橇專區（Village 只有 Kids Club 托兒）。",
+      source: "https://hanazononiseko.com/en/winter/resort/terrain-parks",
+      sourceLabel: "HANAZONO 官方 Terrain Parks 頁（另參其他三區官網）",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 41,
       intermediate: 27,
@@ -507,6 +570,15 @@ export const RESORTS: Resort[] = [
     caution:
       '樹林區對中階以下有難度，第一次去建議先待在整理過的雪道上。票價的窗口牌價（¥16,700）是日本最高一級，但線上預售 ¥13,200 才是實際常見價位 —— 一定要先線上買。官網只有簡體中文，沒有繁體版，而且官方明文說雪校課程不提供日語英語以外的語言。',
     officialUrl: 'https://rusutsu.com/en/',
+    park: {
+      has: true,
+      detail:
+        "官網「フリーダムパーク」在イーストMt.，分三線：中上級線（8–12 公尺與 5–8 公尺二連跳台、rail、box，3 月增設 15 公尺大跳台）、easy 線（1–3 公尺 table top、寬 box）、bank 線。營運約 12 月下旬到 3 月中旬，10:00–16:00。未載明 half-pipe。",
+      kidsPark: "ウエストMt.「サムライキッズパーク」：雪胎與雪橇等雪遊設施。",
+      source: "https://rusutsu.com/terrain-parks/freedom-park/",
+      sourceLabel: "ルスツリゾート 官方 フリーダムパーク頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: null,
       intermediate: null,
@@ -561,6 +633,15 @@ export const RESORTS: Resort[] = [
     why: '雪質好、雪道整理得整齊、人潮比二世谷少，價格也親切得多。語言服務是這份清單裡最完整的 —— 官網有完整繁體中文版，而且官方直接掛牌了一所中文／廣東話的雪校。小學生以下纜車全免，帶小孩的實質成本最低。',
     caution: '官方頁面查無托兒服務，帶很小的小孩需要自己安排。',
     officialUrl: 'https://www.princehotels.com/zh-tw/ski/furano/',
+    park: {
+      has: false,
+      detail:
+        "官網雪道頁沒有任何 terrain park（「パーク」分頁的內容是 FURANO スノーランド，屬雪上摩托車與雪上泛舟活動區，不是跳台或 rail）。但官方明列蘑菇道：E1（粉雪＆蘑菇、25 度）、K2（非壓雪蘑菇、34 度）、K3（上級蘑菇）。",
+      kidsPark: "「FURANO スノーランド」為家庭活動區（雪上摩托、雪上泛舟、香蕉船），官網未載明雪橇專用區。",
+      source: "https://www.princehotels.co.jp/ski/furano/winter/coursemap/",
+      sourceLabel: "富良野スキー場 官方 ゲレンデ・コース頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 50,
       intermediate: 36,
@@ -623,6 +704,15 @@ export const RESORTS: Resort[] = [
       '⚠️ 當地的村立診療所只有內科與小兒科，沒有整形外科。骨折、韌帶等運動傷害需要往富良野方向後送，車程不短 —— 在這裡受傷時不要想著「撐到隔天再說」。另外飯店的「木林之湯」官方明言不是溫泉。',
     officialUrl: 'https://www.snowtomamu.jp/winter/cn/',
     medicalAnchor: 'tomamu',
+    park: {
+      has: true,
+      detail:
+        "官網「トマムスロープスタイルパーク」稱北海道最大級：初級／中級／上級三條線，jib 區在トマムエクスプレス山麓，跳台需先 speed check，雪道上還有「シークレットジャンプ」。營運 12 月下旬到 3/31，9:30–15:30。另有初學者蘑菇道與蘑菇線。",
+      kidsPark: "「アドベンチャーマウンテン」是故事主題的家庭滑雪區（要穿雪具），官網未載明雪橇專用的雪遊園。",
+      source: "https://www.snowtomamu.jp/winter/ski/ski-slope/slopestyle/",
+      sourceLabel: "星野リゾート トマム 官方 スロープスタイルパーク頁",
+      checkedAt: '2026-09-15',
+    },
     difficulty: {
       beginner: 38,
       intermediate: 48,

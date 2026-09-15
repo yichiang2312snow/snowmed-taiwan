@@ -1,0 +1,280 @@
+---
+/**
+ * 「你在哪個雪場？」—— 海外受傷頁的第一個區塊。
+ *
+ * 使用者打幾個字（中／英／日都可以），就跳出那個雪場的巡邏隊電話、巡邏隊位置、地址。
+ * 設計前提：人在山上、手在抖、網路可能很慢 —— 所以
+ * - 全部資料都印在 HTML 裡（沒有 JS 也看得到完整清單，搜尋引擎也抓得到）
+ * - 選過的雪場記在瀏覽器裡，下次打開頁面直接顯示，不用再打字
+ * - 電話都是 tel: 連結，一按就撥
+ */
+import { PATROL_RESORTS, PATROL_LAST_CHECKED } from '../data/resortPatrol';
+
+const areas = Array.from(new Set(PATROL_RESORTS.map((r) => r.area)));
+const searchIndex = PATROL_RESORTS.map((r) => ({
+  id: r.id,
+  text: [r.name, r.nameJa, r.nameEn, r.prefecture, r.area, ...r.aliases].join(' ').toLowerCase(),
+}));
+const patrolCount = PATROL_RESORTS.filter((r) => r.patrol.kind === 'patrol').length;
+---
+
+<section id="patrol" class="scroll-mt-20 border-b border-line bg-band text-white on-dark">
+  <div class="mx-auto max-w-3xl px-5 py-10 sm:py-12">
+    <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">Step 1</p>
+    <h2 class="mt-2 text-2xl leading-snug font-black break-words text-head sm:text-3xl">你在哪個雪場？</h2>
+    <p class="mt-2 text-sm leading-relaxed break-words text-body">
+      打幾個字就好（中文、英文、日文都可以），會直接顯示<strong class="text-head">這個雪場的巡邏隊電話與位置</strong>。
+      人還在雪道上，先找巡邏隊 —— 他們比救護車更快到，也有把人運下山的裝備。
+    </p>
+
+    <label for="patrol-q" class="sr-only">輸入雪場名稱</label>
+    <div class="relative mt-5">
+      <input
+        id="patrol-q"
+        type="search"
+        autocomplete="off"
+        enterkeyhint="search"
+        placeholder="例如：二世谷、Hakuba、GALA、苗場、留壽都…"
+        class="w-full rounded-2xl border-2 border-line bg-panel px-5 py-4 text-base text-head placeholder:text-muted focus:border-accent focus:outline-none"
+      />
+      <ul
+        id="patrol-suggest"
+        class="absolute top-full right-0 left-0 z-20 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-line bg-panel shadow-2xl shadow-black/40"
+        hidden
+      >
+      </ul>
+    </div>
+
+    <div class="mt-3 flex flex-wrap gap-2" aria-label="依區域快速選擇">
+      {
+        areas.map((a) => (
+          <details class="group relative">
+            <summary class="cursor-pointer list-none rounded-full border border-line bg-tint1 px-3 py-1.5 text-xs font-bold text-head hover:bg-tint2 [&::-webkit-details-marker]:hidden">
+              {a} <span aria-hidden="true">▾</span>
+            </summary>
+            <div class="absolute top-full left-0 z-10 mt-1 flex min-w-40 flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-xl">
+              {PATROL_RESORTS.filter((r) => r.area === a).map((r) => (
+                <button
+                  type="button"
+                  data-pick={r.id}
+                  class="px-4 py-2 text-left text-sm whitespace-nowrap text-head hover:bg-tint2"
+                >
+                  {r.name}
+                </button>
+              ))}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+
+    <p id="patrol-empty" class="mt-4 rounded-xl bg-tint1 px-4 py-3 text-sm leading-relaxed break-words text-body" hidden>
+      找不到這個雪場。目前收錄 {PATROL_RESORTS.length} 座台灣人常去的雪場（下方有完整清單）。
+      不在清單裡的雪場：<strong class="text-head">請找最近的纜車站員工</strong>，他們都有無線電可以叫巡邏隊；狀況危急直接撥 119。
+      也歡迎到<a href="/wishlist" class="font-bold text-accent underline underline-offset-2">許願區</a>告訴我你要去的雪場，我會優先查證。
+    </p>
+
+    {/* 每個雪場一張卡，全部先印在 HTML 裡、只顯示選到的那張 */}
+    <div id="patrol-cards" class="mt-5">
+      {
+        PATROL_RESORTS.map((r) => (
+          <article
+            class="patrol-card min-w-0 overflow-hidden rounded-2xl border-2 border-accent bg-panel"
+            data-id={r.id}
+            hidden
+          >
+            <div class="border-b border-line bg-surface px-5 py-4">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 class="text-xl font-black break-words text-head">{r.name}</h3>
+                <span class="text-sm break-words text-muted">
+                  {r.nameJa} · {r.prefecture}
+                </span>
+              </div>
+              <p class="mt-1 text-xs break-words text-muted">{r.nameEn}</p>
+            </div>
+
+            <div class="space-y-4 px-5 py-5">
+              {r.patrol.phone ? (
+                <a
+                  href={`tel:${r.patrol.phone.replace(/-/g, '')}`}
+                  class:list={[
+                    'block rounded-2xl border-2 p-5 transition-colors',
+                    r.patrol.kind === 'patrol'
+                      ? 'border-red-500 bg-red-500/15 hover:bg-red-500/25'
+                      : 'border-line bg-surface hover:bg-tint2',
+                  ]}
+                >
+                  <p class="text-xs font-black tracking-widest text-muted uppercase">
+                    {r.patrol.kind === 'patrol' ? '巡邏隊電話 · 按一下撥號' : '雪場電話 · 按一下撥號'}
+                  </p>
+                  <p class="mt-1 text-3xl font-black tracking-wide text-head sm:text-4xl">{r.patrol.phone}</p>
+                  <p class="mt-1 text-sm font-bold break-words text-head">{r.patrol.label}</p>
+                  {r.patrol.kind === 'main' && (
+                    <p class="mt-2 text-xs leading-relaxed break-words text-muted">
+                      這個雪場官網沒有公布巡邏隊專線，這是官方總機。<strong class="text-head">人在雪道上時，直接找最近的纜車站員工更快</strong>——他們有無線電可以叫巡邏隊。
+                    </p>
+                  )}
+                </a>
+              ) : (
+                <p class="rounded-2xl border border-line bg-surface p-5 text-sm leading-relaxed text-muted">
+                  查無官方公布的電話。請找最近的纜車站員工，或撥 119。
+                </p>
+              )}
+
+              <dl class="divide-y divide-line rounded-2xl border border-line text-sm">
+                <div class="flex min-w-0 gap-3 px-4 py-3">
+                  <dt class="w-20 shrink-0 text-xs font-bold text-muted">巡邏隊位置</dt>
+                  <dd class="min-w-0 leading-relaxed break-words text-head">{r.patrol.location}</dd>
+                </div>
+                <div class="flex min-w-0 gap-3 px-4 py-3">
+                  <dt class="w-20 shrink-0 text-xs font-bold text-muted">雪場地址</dt>
+                  <dd class="min-w-0 leading-relaxed break-words text-head">
+                    {r.address}
+                    <span class="block text-xs text-muted">給救護車或計程車看的日文地址</span>
+                  </dd>
+                </div>
+                <div class="px-4 py-3">
+                  <p class="text-xs leading-relaxed break-words text-muted">{r.patrol.note}</p>
+                </div>
+              </dl>
+
+              <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                {r.medicalAnchor && (
+                  <a href={`#${r.medicalAnchor}`} class="font-bold text-accent hover:underline">
+                    這一區的醫院與診所 ↓
+                  </a>
+                )}
+                <a
+                  href={r.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-bold text-accent hover:underline"
+                >
+                  官方網站 ↗
+                </a>
+              </div>
+
+              <p class="border-t border-line pt-3 text-[11px] leading-relaxed break-words text-muted">
+                資料來源：
+                <a
+                  href={r.patrol.source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline underline-offset-2 hover:text-head"
+                >
+                  {r.patrol.sourceLabel}
+                </a>
+                <span> · 查證日期 {r.patrol.checkedAt}</span>
+                <span> · 電話與營業時間每季可能變動，出發前請再確認一次</span>
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <details class="mt-5 text-sm">
+      <summary class="cursor-pointer text-muted hover:text-head">
+        看全部 {PATROL_RESORTS.length} 座雪場的清單（{patrolCount} 座有官方公布的巡邏隊專線；上次查證 {PATROL_LAST_CHECKED}）
+      </summary>
+      <ul class="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+        {
+          PATROL_RESORTS.map((r) => (
+            <li class="flex min-w-0 items-baseline gap-2 text-sm">
+              <button type="button" data-pick={r.id} class="min-w-0 truncate text-left font-bold text-accent hover:underline">
+                {r.name}
+              </button>
+              <span class="shrink-0 text-xs text-muted">{r.prefecture}</span>
+              {r.patrol.kind === 'patrol' && (
+                <span class="shrink-0 rounded bg-red-500/25 px-1.5 py-0.5 text-[10px] font-bold text-red-200 light:text-red-800">巡邏隊專線</span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+  </div>
+</section>
+
+<script define:vars={{ searchIndex }}>
+  const q = document.getElementById('patrol-q');
+  const suggest = document.getElementById('patrol-suggest');
+  const empty = document.getElementById('patrol-empty');
+  const cards = Array.from(document.querySelectorAll('.patrol-card'));
+  const nameOf = (id) => document.querySelector(`.patrol-card[data-id="${id}"] h3`)?.textContent ?? id;
+  const KEY = 'snowmed:patrol-resort';
+
+  function show(id) {
+    for (const c of cards) c.hidden = c.dataset.id !== id;
+    if (empty) empty.hidden = true;
+    if (suggest) suggest.hidden = true;
+    // 收起所有區域下拉
+    document.querySelectorAll('#patrol details[open]').forEach((d) => d.removeAttribute('open'));
+    try {
+      localStorage.setItem(KEY, id);
+    } catch {}
+    if (q) q.value = nameOf(id);
+    window.snowmedTrack?.('result', 'emergency/patrol/' + id);
+  }
+
+  function match(text) {
+    const t = text.trim().toLowerCase();
+    if (!t) return [];
+    return searchIndex.filter((r) => r.text.includes(t)).map((r) => r.id);
+  }
+
+  function render(ids) {
+    if (!suggest) return;
+    suggest.textContent = '';
+    if (!ids.length) {
+      suggest.hidden = true;
+      return;
+    }
+    for (const id of ids.slice(0, 8)) {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'block w-full px-5 py-3 text-left text-sm font-bold text-head hover:bg-tint2';
+      btn.textContent = nameOf(id);
+      btn.addEventListener('click', () => show(id));
+      li.append(btn);
+      suggest.append(li);
+    }
+    suggest.hidden = false;
+  }
+
+  q?.addEventListener('input', () => {
+    const ids = match(q.value);
+    render(ids);
+    if (empty) empty.hidden = !(q.value.trim() && ids.length === 0);
+    if (!q.value.trim()) for (const c of cards) c.hidden = true;
+  });
+  q?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const ids = match(q.value);
+      if (ids.length) show(ids[0]);
+    }
+    if (e.key === 'Escape' && suggest) suggest.hidden = true;
+  });
+  q?.addEventListener('focus', () => {
+    const ids = match(q.value);
+    if (ids.length > 1) render(ids);
+  });
+  document.addEventListener('click', (e) => {
+    if (suggest && !suggest.contains(e.target) && e.target !== q) suggest.hidden = true;
+  });
+
+  document.querySelectorAll('[data-pick]').forEach((b) => {
+    b.addEventListener('click', () => show(b.dataset.pick));
+  });
+
+  // 上次選過的雪場直接顯示 —— 受傷的時候不用再打字
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved && cards.some((c) => c.dataset.id === saved)) {
+      for (const c of cards) c.hidden = c.dataset.id !== saved;
+      if (q) q.value = nameOf(saved);
+    }
+  } catch {}
+</script>

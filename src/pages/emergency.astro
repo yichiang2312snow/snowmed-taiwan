@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Faq from '../components/Faq.astro';
 import { RESORTS, EMERGENCY_NUMBER } from '../data/resorts';
+import ResortPatrolSearch from '../components/ResortPatrolSearch.astro';
 import { SITE_A } from '../consts';
 
 const whyNotIce = [
@@ -140,7 +141,7 @@ const claimDocs = [
 const FAQ = [
   {
     q: '在日本滑雪受傷，第一通電話要打給誰？',
-    a: '人還在雪道上，先找雪場巡邏隊（Ski Patrol）——他們比救護車更快到得了現場，而且有把人運下山的裝備。狀況危急撥 119。巡邏隊電話請在買雪票時就先問到並存進手機。',
+    a: '人還在雪道上，先找雪場巡邏隊（Ski Patrol）——他們比救護車更快到得了現場，而且有把人運下山的裝備。狀況危急撥 119。本頁最上方輸入雪場名稱，就能查到 29 座台灣人常去雪場的巡邏隊電話（每一筆都附官方來源）；不在清單裡的雪場請在買雪票時先問到電話並存進手機。',
   },
   {
     q: '日本的救護車要錢嗎？',
@@ -149,6 +150,10 @@ const FAQ = [
   {
     q: '滑雪扭傷還要冰敷嗎？',
     a: '現行的運動醫學指引（2020 年 BJSM 的 PEACE & LOVE）已經不再把冰敷與消炎止痛藥當作常規處置，因為發炎反應是組織修復的第一步。急性期的重點是保護、適度負重、避免過度消炎；亞急性期則要促進血液循環與逐步活動。本頁上方有完整說明。',
+  },
+  {
+    q: '滑雪受傷後可以泡溫泉嗎？',
+    a: '泡湯就是一種熱敷。急性疼痛、明顯腫脹的時候不建議，因為熱會讓腫脹更嚴重；一般的酸痛或整天滑雪後的肌肉疲勞則可以泡，血液循環加速對修復反而有幫助。本頁上方有整理。',
   },
   {
     q: '回台灣申請保險理賠需要哪些文件？',
@@ -169,12 +174,15 @@ const FAQ = [
   title="海外受傷緊急處置中心"
   seoTitle="在日本滑雪受傷怎麼辦？急救電話、雪場附近醫院與保險理賠文件"
   eyebrow="Emergency"
-  description="在日本雪場受傷了怎麼辦？急救電話、PEACE & LOVE 急性處置原則（取代舊的 PRICE）、日本主要雪場（湯澤、白馬、二世谷、星野TOMAMU）附近的醫院與診所資訊，以及回國後申請健保核退與保險理賠需要的文件清單。"
+  description="在日本雪場受傷了怎麼辦？先查你所在雪場的巡邏隊電話與位置（29 座雪場，官方資料查證），再看急救電話、PEACE & LOVE 急性處置原則（取代舊的 PRICE）、日本主要雪場（湯澤、白馬、二世谷、星野TOMAMU）附近的醫院與診所資訊，以及回國後申請健保核退與保險理賠需要的文件清單。"
 >
+  <!-- 第一步：你在哪個雪場？ -->
+  <ResortPatrolSearch />
+
   <!-- 緊急電話 -->
   <section class="bg-red-500/15">
     <div class="mx-auto max-w-3xl px-5 py-8">
-      <p class="text-xs font-black tracking-widest text-red-200 light:text-red-800 uppercase">在日本，狀況危急時</p>
+      <p class="text-xs font-black tracking-widest text-red-200 light:text-red-800 uppercase">Step 2 · 在日本，狀況危急時</p>
       <div class="mt-3 grid gap-3 sm:grid-cols-2">
         <a
           href={`tel:${EMERGENCY_NUMBER.japan.number}`}
@@ -199,7 +207,7 @@ const FAQ = [
       </div>
       <p class="mt-4 text-sm leading-relaxed break-words text-red-200 light:text-red-800">
         <strong>人還在雪道上的話，先找雪場巡邏隊（Ski Patrol）</strong>
-        —— 他們比救護車更快到得了現場，而且有把人從雪道運下山的裝備。巡邏隊電話請在買雪票時就先問到並存進手機。
+        —— 他們比救護車更快到得了現場，而且有把人從雪道運下山的裝備。<a href="#patrol" class="font-bold underline underline-offset-2">上方輸入雪場名稱</a>就能查到巡邏隊電話；不在清單裡的雪場，請在買雪票時先問到電話並存進手機。
       </p>
     </div>
   </section>
@@ -382,6 +390,41 @@ const FAQ = [
             ))
           }
         </ol>
+      </div>
+
+      <!-- 泡湯 -->
+      <div id="onsen" class="mt-12 scroll-mt-20 rounded-2xl border border-line bg-surface p-6 sm:p-8">
+        <p class="text-xs font-black tracking-[0.2em] text-accent uppercase">♨ Onsen</p>
+        <h3 class="mt-2 text-xl leading-snug font-black break-words text-head sm:text-2xl">
+          滑雪的人常常泡湯 —— 受傷之後還能泡嗎？
+        </h3>
+        <div class="prose-tc mt-4 text-muted">
+          <p>
+            泡湯其實就是<strong>一種熱敷</strong>：熱會讓血管擴張、血流變多。所以能不能泡，要看你的傷正處在哪個階段。
+          </p>
+        </div>
+
+        <div class="mt-5 grid gap-3 sm:grid-cols-2">
+          <div class="min-w-0 rounded-2xl border border-red-300 bg-red-500/15 p-5">
+            <p class="text-sm font-black text-red-200 light:text-red-800">✕ 不建議泡湯</p>
+            <p class="mt-1 text-base font-bold break-words text-head">急性疼痛、明顯腫脹的時候</p>
+            <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+              關節剛扭到、還在痛、看得出腫起來 —— 這時候熱會讓血管更擴張、組織液更多，<strong class="text-head">腫脹會更嚴重</strong>，之後也更難消。這幾天先跳過溫泉，等腫脹明顯退了再說。
+            </p>
+          </div>
+          <div class="min-w-0 rounded-2xl border border-emerald-400/60 bg-emerald-500/15 p-5">
+            <p class="text-sm font-black text-emerald-200 light:text-emerald-800">✓ 可以泡湯</p>
+            <p class="mt-1 text-base font-bold break-words text-head">一般的酸痛、滑了一整天的肌肉疲勞</p>
+            <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+              沒有明顯腫脹的酸痛，泡湯反而會讓<strong class="text-head">血液循環加速</strong>，把氧氣和養分送到組織、帶走代謝廢物，長遠下來對修復是比較好的。
+            </p>
+          </div>
+        </div>
+
+        <p class="mt-5 rounded-xl bg-tint2 px-4 py-3 text-sm leading-relaxed break-words text-head">
+          這和上面「減少抑制發炎」的邏輯是一致的：<strong>急性期不要火上加油，過了急性期就用循環幫身體修復。</strong>
+          分不清楚是「腫」還是「酸」？用最簡單的判斷 —— 兩邊比一比，受傷那側看起來比較大、壓下去比較痛，就先不要泡。
+        </p>
       </div>
 
       <!-- 醫師叮嚀 -->

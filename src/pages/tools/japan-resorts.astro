@@ -12,6 +12,16 @@ import {
   REFERENCE_SITES,
 } from '../../data/japanResorts';
 import { RESORT_UPDATES, LAST_CHECKED } from '../../data/japanResortUpdates';
+import { JAPAN_RESORT_DIRECTORY } from '../../data/japanResortDirectory';
+
+const DIRECTORY_REGIONS = Array.from(new Set(JAPAN_RESORT_DIRECTORY.map((r) => r.region)));
+// 這 10 座有完整卡片的雪場，在總表裡標出來
+const CARDED = new Set(RESORTS.map((r) => r.id));
+const directoryCardId = (name: string) => {
+  const n = name.toLowerCase();
+  const hit = RESORTS.find((r) => n.includes(r.nameJa.toLowerCase()) || r.nameJa.toLowerCase().includes(n));
+  return hit?.id ?? null;
+};
 
 const KIND_LABELS = { safety: '安全', price: '票價', facility: '設施', season: '雪季' } as const;
 const recentUpdates = [...RESORT_UPDATES].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 6);
@@ -37,6 +47,11 @@ const musts = [
     label: '一定要能 ski-in / ski-out',
     hint: '只留下有雪道直結住宿的雪場。「在雪場旁但要走一段或搭接駁」的不算',
   },
+  {
+    v: 'nopark',
+    label: '不要有公園設施（跳台、rail）',
+    hint: '帶初學者或小孩、想避開公園地形的人勾這個。只留下官網明確沒有 terrain park 的雪場',
+  },
 ];
 
 const yen = (n: number | null) =>
@@ -56,6 +71,14 @@ const FAQ = [
     a: '這份清單裡大約在 ¥6,500 到 ¥13,500 之間。二世谷、留壽都屬於最高一級（留壽都窗口牌價 ¥16,700，線上預售 ¥13,200，一定要先線上買）；富良野、TOMAMU 約 ¥8,000。票價每季調整，卡片上標明適用雪季與查證日期。',
   },
   {
+    q: '雪場有公園設施（terrain park）是好還是不好？',
+    a: '看你是誰。跳台、rail、half-pipe 這類公園地形的受傷風險比一般壓雪道高，而且常常和初學者區在同一座山上。帶小孩或初學者的家庭，可以用上面的硬條件「不要有公園設施」直接排除；想練花式的人則相反。每張卡片的「公園設施」一格都附官網來源，也分開寫了兒童雪上樂園（雪橇、輸送帶那種）——這兩件事不一樣。',
+  },
+  {
+    q: '這裡只有 10 個雪場，我要去的不在裡面怎麼辦？',
+    a: '本頁最下方有全日本 482 座營業中雪場的索引（可依地區與關鍵字搜尋，附官網連結），但只有 10 座做過完整的安全面查證（巡邏隊與醫院、交通、帶小孩、語言、公園設施）。不在完整清單裡的雪場，出發前請自己確認最近的醫療機構，並在買雪票時問到巡邏隊電話；也歡迎到許願區告訴我，我會優先查證。',
+  },
+  {
     q: '雪場的黑線、紅線、綠線比率是什麼意思？',
     a: '日本雪場多以初級、中級、上級分類，對應台灣人習慣講的綠線、紅線、黑線。比率代表這個雪場的地形分布，但各家對「初級」的坡度標準不同，而且有些雪場官方根本沒公布比率——這種情況本工具會直接寫「查無官方數據」，不會拿第三方數字硬湊。',
   },
@@ -68,19 +91,27 @@ const FAQ = [
 
 <ToolLayout
   title="日本雪場選擇指引"
-  seoTitle="日本滑雪場怎麼選？10 個雪場的難易度比率、帶小孩、中文服務與票價比較"
+  seoTitle="從醫師角度選日本雪場：交通、受傷去哪、帶小孩、公園設施｜10 座完整查證＋482 座索引"
   emoji="🗾"
   time="約 2 分鐘"
-  summary="這不是雪場百科，是從安全角度幫你挑雪場的工具：巡邏隊與最近的醫院在哪、交通方不方便、能不能帶小孩、有沒有中文服務、住宿能不能直接滑進滑出。10 座台灣人最常去的雪場，每一筆都回到官方資料查證並標明日期，每週檢查一次官方公告。"
-  description="從安全角度選日本雪場：巡邏隊與最近醫院、交通便利性、是否適合帶小孩、中文服務、ski-in ski-out 住宿、雪道難易度比率與一日券票價。10 個台灣人常去的雪場，每筆附官方出處與查證日期，每週更新。"
+  summary="這不是雪場百科，是從醫師的角度幫你挑「比較安全」的雪場：交通方不方便（受傷後送也走同一條路）、受傷了要去哪、能不能帶小孩、有沒有中文服務，以及雪場有沒有公園設施（跳台、rail 這類受傷風險較高的地形）。10 座台灣人最常去的雪場每一筆都回到官方資料查證並標明日期，每週檢查一次；頁尾另附全日本 482 座營業中雪場的索引。"
+  description="從醫師角度選日本雪場：交通與受傷後送、巡邏隊與最近醫院、帶小孩、中文服務、有沒有公園設施（跳台、rail）、ski-in ski-out 住宿、難易度比率與票價。10 座台灣人常去的雪場每筆附官方出處與查證日期並每週更新，另附全日本 482 座營業中雪場索引。"
 >
   <!-- 跟其他雪場指南的差別：先講清楚我們在意什麼 -->
+  <div class="mb-4 rounded-2xl border-l-4 border-accent bg-tint1 p-5">
+    <p class="text-sm leading-relaxed break-words text-head">
+      <strong>這是醫師選雪場會看的五件事。</strong>
+      一般的雪場攻略比的是雪質、票價和景色；這裡比的是<strong>萬一出事，你會不會比較安全</strong>——
+      因為受傷之後，交通、醫院、語言、同行的小孩，每一項都會變成真正的問題。
+    </p>
+  </div>
   <div class="mb-8 grid gap-3 sm:grid-cols-2">
     {
       [
-        ['🚑', '受傷了去哪', '每座雪場連到查證過的當地醫院與診所，知道巡邏隊之後的下一步。'],
-        ['🚌', '交通方不方便', '從機場或東京出發要多久、要不要轉車 —— 受傷後送也走同一條路。'],
+        ['🚌', '交通方不方便', '從機場或東京出發要多久、要不要轉車 —— 受傷後送也走同一條路，越偏遠的雪場離醫院越遠。'],
+        ['🚑', '受傷了去哪', '每座雪場連到查證過的巡邏隊電話與當地醫院、診所，知道巡邏隊之後的下一步。'],
         ['👶', '帶小孩行不行', '托兒收托的年齡下限、兒童雪校、兒童票，不是一個「親子友善」標籤。'],
+        ['🏂', '有沒有公園設施', '跳台、rail、half-pipe 的受傷風險比一般雪道高。想練花式的人需要它，帶小孩的家庭可能想避開它。'],
         ['🈶', '聽不聽得懂', '官網有沒有繁體中文、官方有沒有掛牌的中文教練，只採信官方頁面。'],
       ].map(([emoji, title, body]) => (
         <div class="flex min-w-0 items-start gap-3 rounded-2xl border border-line bg-surface p-4">
@@ -221,6 +252,7 @@ const FAQ = [
             }
             data-tier={r.pricing.tier}
             data-skiinout={r.skiInOut.level}
+            data-park={r.park.has === true ? '1' : r.park.has === false ? '0' : '?'}
           >
             <div class="border-b border-line bg-surface px-5 py-4">
               <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -354,6 +386,47 @@ const FAQ = [
                   </ul>
                 </div>
 
+                <div class="min-w-0 rounded-xl border border-line bg-surface p-4 sm:col-span-2">
+                  <p class="text-[11px] font-black tracking-widest text-accent uppercase">
+                    公園設施（跳台、rail、half-pipe）
+                  </p>
+                  <p class="mt-1 flex items-center gap-2 text-sm font-bold break-words text-head">
+                    <span
+                      class:list={[
+                        'inline-block h-2.5 w-2.5 shrink-0 rounded-full',
+                        r.park.has === true && 'bg-amber-400',
+                        r.park.has === false && 'bg-emerald-500',
+                        r.park.has === null && 'bg-slate-400',
+                      ]}
+                      aria-hidden="true"
+                    />
+                    {r.park.has === true
+                      ? '有公園設施 —— 這一區的受傷風險比一般雪道高'
+                      : r.park.has === false
+                        ? '官網沒有公園設施'
+                        : '官網查無明確資訊'}
+                  </p>
+                  <p class="mt-2 text-xs leading-relaxed break-words text-muted">{r.park.detail}</p>
+                  {r.park.kidsPark && (
+                    <p class="mt-2 text-xs leading-relaxed break-words text-muted">
+                      <span class="font-bold text-body">兒童雪上樂園（跟公園是兩回事）</span>：{r.park.kidsPark}
+                    </p>
+                  )}
+                  {r.park.source && (
+                    <p class="mt-2 text-[11px] leading-relaxed break-words text-muted">
+                      <a
+                        href={r.park.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline underline-offset-2 hover:text-head"
+                      >
+                        {r.park.sourceLabel ?? '資料來源'}
+                      </a>
+                      {r.park.checkedAt && <span> · 查證 {r.park.checkedAt}</span>}
+                    </p>
+                  )}
+                </div>
+
                 <div class="min-w-0 rounded-xl border border-line bg-surface p-4">
                   <p class="text-[11px] font-black tracking-widest text-accent uppercase">
                     Ski-in / Ski-out
@@ -398,6 +471,9 @@ const FAQ = [
                 >
                   官方網站 ↗
                 </a>
+                <a href="/emergency#patrol" class="font-bold text-accent hover:underline">
+                  巡邏隊電話 →
+                </a>
                 {r.medicalAnchor && (
                   <a
                     href={`/emergency#${r.medicalAnchor}`}
@@ -421,6 +497,81 @@ const FAQ = [
       實際規劃請以官方網站的資訊為準。
     </p>
   </div>
+
+  <!-- 全日本雪場索引 -->
+  <section id="directory" class="mt-12 min-w-0 scroll-mt-20 rounded-2xl border border-line bg-surface p-6">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 class="text-xl font-black break-words text-head">全日本雪場索引：{JAPAN_RESORT_DIRECTORY.length} 座營業中的雪場</h2>
+      <p class="text-xs text-muted">你要去的雪場不在上面 10 座裡？先從這裡找到它的官網</p>
+    </div>
+    <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+      上面 10 座是做過完整安全面查證的雪場。日本實際上有幾百座雪場，這份索引把<strong class="text-head">目前營業中的都列出來</strong>（含很多地方性的小雪場），附官網連結，讓你至少能自己去查巡邏隊電話與最近的醫院。
+      有完整卡片的會標「已查證」。
+    </p>
+
+    <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+      <label class="sr-only" for="dir-q">搜尋雪場</label>
+      <input
+        id="dir-q"
+        type="search"
+        placeholder="輸入雪場名稱（日文最準，例如「白馬」「ニセコ」「蔵王」）或都道府県"
+        class="min-w-0 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-head placeholder:text-muted focus:border-accent focus:outline-none"
+      />
+      <select
+        id="dir-region"
+        class="rounded-xl border border-line bg-panel px-4 py-3 text-sm text-head focus:border-accent focus:outline-none"
+        aria-label="依地區篩選"
+      >
+        <option value="">全部地區</option>
+        {DIRECTORY_REGIONS.map((g) => (
+          <option value={g}>{g}（{JAPAN_RESORT_DIRECTORY.filter((r) => r.region === g).length}）</option>
+        ))}
+      </select>
+    </div>
+    <p id="dir-count" class="mt-3 text-xs text-muted">顯示 {JAPAN_RESORT_DIRECTORY.length} 座</p>
+
+    <ul id="dir-list" class="mt-3 max-h-[28rem] divide-y divide-line overflow-y-auto rounded-xl border border-line bg-panel">
+      {
+        JAPAN_RESORT_DIRECTORY.map((r) => {
+          const cardId = directoryCardId(r.name);
+          return (
+            <li
+              class="dir-row flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 text-sm"
+              data-text={`${r.name} ${r.prefecture} ${r.region}`.toLowerCase()}
+              data-region={r.region}
+            >
+              <span class="min-w-0 flex-1 font-bold break-words text-head">{r.name}</span>
+              <span class="shrink-0 text-xs text-muted">{r.prefecture}</span>
+              {cardId && CARDED.has(cardId) && (
+                <a href="#jr-list" class="shrink-0 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200 light:text-emerald-800">
+                  已查證 ↑
+                </a>
+              )}
+              {r.officialUrl ? (
+                <a
+                  href={r.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="shrink-0 text-xs font-bold text-accent hover:underline"
+                >
+                  官網 ↗
+                </a>
+              ) : (
+                <span class="shrink-0 text-xs text-muted">官網待查</span>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+    <p id="dir-empty" class="mt-3 rounded-xl bg-tint1 px-4 py-3 text-sm text-muted" hidden>
+      找不到。試試日文名稱或只打都道府県（例如「長野」）。
+    </p>
+    <p class="mt-3 text-[11px] leading-relaxed break-words text-muted">
+      索引來源：日文維基百科「日本のスキー場一覧」（CC BY-SA 4.0，取得日期 2026-09-15），已排除標示為廃止・休止的雪場；官網連結取自各條目的 Wikidata「公式ウェブサイト」欄位，沒有的就寫「官網待查」而不猜。
+      索引只保證「這座雪場存在且營業中」，不代表本站查證過它的安全資訊。
+    </p>
+  </section>
 
   <section id="updates" class="mt-12 min-w-0 scroll-mt-20 rounded-2xl border border-line bg-surface p-6">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -464,8 +615,13 @@ const FAQ = [
     </ol>
   </section>
 
-  <section class="mt-12 min-w-0 rounded-2xl border border-line bg-surface p-6">
-    <h2 class="text-base font-black break-words text-head">這份資料是怎麼來的</h2>
+  <details class="group mt-12 min-w-0 rounded-2xl border border-line bg-surface p-6">
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+      <h2 class="text-base font-black break-words text-head">這份資料是怎麼來的？</h2>
+      <span class="shrink-0 text-xs text-muted">
+        <span class="group-open:hidden">點開看 ＋</span><span class="hidden group-open:inline">收起 －</span>
+      </span>
+    </summary>
 
     <p class="mt-3 text-sm leading-relaxed break-words text-body">
       先掃過台灣人查日本雪場時最常遇到的中文內容站，加上兩個國際通用的雪場資料庫，
@@ -511,7 +667,7 @@ const FAQ = [
       只代表可見度高，不代表內容品質，也不代表本站為它們背書。列出來是為了讓你知道這個工具比較的項目是怎麼定的，
       以及你可以去哪裡交叉查證。
     </p>
-  </section>
+  </details>
 
   <Fragment slot="basis">
     <p>
@@ -537,6 +693,9 @@ const FAQ = [
       <strong>Ski-in / ski-out</strong> 在中文介紹裡常被寫得很寬鬆 ——「就在雪場旁」可能是穿著雪鞋走出大門就能滑，也可能是還要搭十分鐘接駁車。所以這裡只分三級：官方確認雪道直結、在雪場旁但要走一段或搭接駁、雪場本身沒有住宿，並寫出官方標示的實際距離。對受傷的人來說這差很多：雪道直結代表巡邏隊能把你直接送到飯店門口。
     </p>
     <p>
+      <strong>公園設施</strong>只採信官網明列的 terrain park（跳台、jib、half-pipe、常設蘑菇道）；官網沒寫就標「查無明確資訊」，不用第三方資料補。同一格另外寫出兒童雪上樂園，因為很多家長會把兩者搞混——一個是給小孩玩雪橇的，一個是受傷風險最高的地形。
+    </p>
+    <p>
       每個區域如果本站已經查證過當地的醫療機構，卡片會直接連到
       <a href="/emergency#resorts">海外受傷緊急處置中心</a>的對應段落。選雪場的時候順便知道「萬一受傷要去哪」，是這個平台認為該做的事。
     </p>
@@ -545,8 +704,12 @@ const FAQ = [
   <Fragment slot="limits">
     <ul>
       <li>
-        <strong>這是概略指引，不是完整的雪場資料庫。</strong>
-        日本有數百個雪場，這裡只收錄台灣人較常去、且資訊相對容易查證的區域。沒被列出來不代表不好。
+        <strong>完整查證的只有 10 座。</strong>
+        日本有幾百座雪場，頁尾的索引把營業中的都列出來了（482 座），但只有上面 10 座台灣人較常去的雪場做過安全面的完整查證。沒有完整卡片不代表不好，只代表本站還沒查。
+      </li>
+      <li>
+        <strong>「有公園設施」只是提醒，不是勸退。</strong>
+        公園地形的受傷風險確實比壓雪道高，但風險來自「進去玩」而不是「雪場裡有」。多數雪場的公園是獨立區域，不進去就碰不到；卡片上會寫它在哪一區。
       </li>
       <li>
         <strong>難易度比率不等於「好不好滑」。</strong>
@@ -608,7 +771,8 @@ const FAQ = [
           (!musts.includes('family') || el.dataset.family === 'high') &&
           (!musts.includes('chinese') || el.dataset.chinese === '1') &&
           (!musts.includes('value') || el.dataset.tier !== 'high') &&
-          (!musts.includes('skiinout') || el.dataset.skiinout === 'full');
+          (!musts.includes('skiinout') || el.dataset.skiinout === 'full') &&
+          (!musts.includes('nopark') || el.dataset.park === '0');
 
         el.hidden = !ok;
         if (ok) {
@@ -635,4 +799,25 @@ const FAQ = [
       document.getElementById('jr-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
+
+  // ── 全日本雪場索引的搜尋與地區篩選 ──
+  const dq = document.getElementById('dir-q') as HTMLInputElement | null;
+  const dregion = document.getElementById('dir-region') as HTMLSelectElement | null;
+  const drows = Array.from(document.querySelectorAll<HTMLElement>('.dir-row'));
+  const dcount = document.getElementById('dir-count');
+  const dempty = document.getElementById('dir-empty');
+  const filterDir = () => {
+    const t = (dq?.value ?? '').trim().toLowerCase();
+    const g = dregion?.value ?? '';
+    let n = 0;
+    for (const row of drows) {
+      const ok = (!g || row.dataset.region === g) && (!t || (row.dataset.text ?? '').includes(t));
+      row.hidden = !ok;
+      if (ok) n++;
+    }
+    if (dcount) dcount.textContent = `顯示 ${n} 座`;
+    if (dempty) dempty.hidden = n > 0;
+  };
+  dq?.addEventListener('input', filterDir);
+  dregion?.addEventListener('change', filterDir);
 </script>
