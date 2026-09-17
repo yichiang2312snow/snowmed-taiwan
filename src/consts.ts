@@ -293,6 +293,19 @@ export const TOOLS = [
     who: '想在出發前找回感覺、或第一次滑雪想先上幾堂課的人',
   },
 
+  {
+    href: '/tools/helmet-check',
+    id: 'SMT-T-10',
+    version: TOOLS_VERSION,
+    updated: '2026-09-17',
+    category: 'prep',
+    name: '安全帽觀念快篩',
+    emoji: '⛑️',
+    time: '約 3 分鐘',
+    summary:
+      '有 MIPS 就比較安全嗎？大品牌一定好嗎？七題是非題測你挑安全帽的觀念，解說全部依據維吉尼亞理工 48 頂滑雪安全帽的實測資料，最後帶你到官方評等網站查型號。',
+    who: '正要買安全帽，或想知道手上這頂該不該換的人',
+  },
   // ── 第二類：受傷了才需要看 ──────────────────────────
   {
     href: '/tools/injury-triage',

@@ -1,0 +1,402 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import { SITE_A } from '../../consts';
+
+const VT_URL = 'https://www.helmet.beam.vt.edu/snowsport-helmet-ratings.html';
+const ARTICLE_URL = `${SITE_A.url}articles/snow-helmet-ratings-virginia-tech`;
+
+/**
+ * 七題是非題。
+ *
+ * 每一題的答案與解說都出自楊醫師整理 Nicole Stark 博士（Virginia Tech Helmet Lab）
+ * 於 ISSS 2026 口頭報告的那篇文章 —— 不是網路上找來的說法。
+ * 數字以該場演講當時（2026 年 3 月，48 頂）為準。
+ *
+ * 刻意混入「答案是（是）」的題目：如果每題答案都一樣，一直按同一邊也能全對，
+ * 就測不出來賓到底懂不懂。
+ */
+const QUESTIONS = [
+  {
+    q: '有 MIPS 系統的安全帽，保護力一定比沒有的好。',
+    answer: false,
+    explain:
+      'MIPS 是用來處理旋轉能量的設計，立意很好，但「有沒有這個設計」不能直接當成保護力的高低。維吉尼亞理工實測的 48 頂裡，有 MIPS 標示的 Oakley Mod1 Mips 排在第 37 名、STAR 分數 1.24，只拿到兩星。看實測成績，不要看規格表上有沒有這四個字母。',
+  },
+  {
+    q: '頭部受傷是滑雪致死的主要原因。',
+    answer: true,
+    explain:
+      '全球每年約 2,250 萬人滑雪或滑單板，其中約 13 萬人因受傷住院，住院的傷者當中多達 47% 與頭部受傷有關，而頭部受傷是滑雪致死的主要原因。膝蓋和手腕受傷讓你痛、讓你停滑；頭部受傷可能讓你回不了家。',
+  },
+  {
+    q: '有名的大廠牌、價格比較貴的安全帽，保護力一定比較好。',
+    answer: false,
+    explain:
+      '同一個價位帶裡有五星也有一星，同一個品牌裡也是。48 頂受測的帽子全都是通過認證、合法販售的產品，星等卻從一星到五星都有。要比就比星等 —— 在你的預算內挑星等高的那一頂，才是這份資料最實用的用法。',
+  },
+  {
+    q: '只要通過安全認證的安全帽，保護力就足夠了。',
+    answer: false,
+    explain:
+      '這 48 頂全部都通過安全認證。認證代表達到及格線，但「及格」到「能明顯降低腦震盪風險」之間還有很大的空間 —— 其中有 11 頂只拿到一星。認證是門檻，不是保證。',
+  },
+  {
+    q: '安全帽外殼沒有裂，就代表這次撞得不嚴重，可以繼續戴。',
+    answer: false,
+    explain:
+      '帽子有沒有裂，跟腦部有沒有受傷是兩回事。腦傷的關鍵不是頭皮或外殼破不破，而是頭骨突然加速、減速時腦組織跟不上，在顱內被拉扯。安全帽的內襯是靠被壓縮、壓碎來吸收能量的，外觀看不出來也可能已經用掉了。有過明顯撞擊就換新的。',
+  },
+  {
+    q: '台灣買不到評測清單上的型號時，可以找同品牌、同系列中有評等的型號當參考。',
+    answer: true,
+    explain:
+      '可以，這是務實的做法。那份評等以美國市場為主，日本或台灣通路常見的型號不一定在上面；找同品牌同系列有評等的型號參考，或直接問廠商有沒有送測資料，都比完全憑感覺好。但要記得：貼合度同樣重要，再高分的帽子如果戴起來會晃、會露出額頭，保護力一樣打折。',
+  },
+  {
+    q: '買到五星的安全帽，就不會腦震盪了。',
+    answer: false,
+    explain:
+      'STAR 星等反映的是腦震盪風險的相對高低，不是護身符。帽子撞裂不代表它不好，而是它已經替你的頭吸收了那一次的能量。不管你挑的是幾星，戴著它，才是所有數據成立的前提。',
+  },
+];
+
+const FAQ = [
+  {
+    q: '滑雪安全帽要怎麼挑？看什麼最準？',
+    a: '看獨立實驗室的實測星等，不要看價格、品牌或規格表上有沒有 MIPS。維吉尼亞理工大學頭盔實驗室（Virginia Tech Helmet Lab）的評等網站免費公開、不接受廠商資助，上面有每一頂的星等、STAR 分數與測試時的售價。買之前先查一下你看中的那一頂。',
+  },
+  {
+    q: 'MIPS 到底有沒有用？',
+    a: 'MIPS 是處理旋轉能量的設計，方向是對的，但它不能代替實測結果。維吉尼亞理工測的 48 頂裡，有 MIPS 標示卻只拿到兩星的型號是存在的。把它當成「加分項目」而不是「保證」比較接近事實。',
+  },
+  {
+    q: 'STAR 分數是什麼？分數高比較好還是低比較好？',
+    a: 'STAR（Summation of Tests for the Analysis of Risk）把「某種撞擊情境在真實世界多常發生」乘上「帽子在那種撞擊下對應的腦震盪風險」再加總。分數越低代表保護力越好，再依分數換算成一到五顆星。',
+  },
+  {
+    q: '安全帽撞過一次還能繼續用嗎？',
+    a: '有明顯撞擊過就該換。安全帽的內襯是靠發泡材料被壓縮、壓碎來吸收能量，這個過程是不可逆的，而且從外觀常常看不出來。外殼沒裂不代表內襯還有保護力。',
+  },
+  {
+    q: '撞到頭之後什麼情況一定要就醫？',
+    a: '頭痛愈來愈厲害、反覆嘔吐、意識變差、記憶有空白、手腳無力或麻木 —— 不論安全帽看起來如何，當天都不要再上雪道，並盡快就醫。腦震盪不一定會昏迷，症狀也可能延遲數小時才出現。受傷當下的分流判斷可以用[[/tools/injury-triage|雪場受傷分流判斷]]。',
+  },
+];
+---
+
+<ToolLayout
+  title="安全帽觀念快篩"
+  seoTitle="滑雪安全帽怎麼選？七題是非題破解 MIPS、大品牌、貴就安全的迷思"
+  emoji="⛑️"
+  time="約 3 分鐘"
+  summary="有 MIPS 就比較安全嗎？大品牌一定好嗎？七題是非題，測測看你挑安全帽的觀念對不對。每一題都附上維吉尼亞理工大學頭盔實驗室 48 頂滑雪安全帽實測資料的解說，最後直接帶你到官方評等網站查你看中的那一頂。"
+  description="滑雪安全帽選購觀念測驗：用七題是非題破解 MIPS 一定安全、大品牌一定好、通過認證就夠了、外殼沒裂就沒事等常見迷思，依據維吉尼亞理工大學頭盔實驗室的 STAR 評等實測資料，附官方評等網站連結。"
+>
+  <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-5">
+    <p class="text-sm leading-relaxed break-words text-head">
+      這個工具<strong>不會告訴你該買哪一頂</strong> —— 那要查官方的評等清單，而且清單一直在更新。
+      它要做的是先確認你<strong>看得懂那份清單</strong>，以及釐清幾個很常見、但實測資料並不支持的說法。
+      七題答完，最後會直接給你官方網站的連結。
+    </p>
+  </div>
+
+  <div id="quiz" class="mt-8 space-y-4">
+    {QUESTIONS.map((item, i) => (
+      <fieldset
+        class="quiz-q min-w-0 rounded-2xl border border-line bg-surface p-5 transition-colors sm:p-6"
+        data-answer={String(item.answer)}
+      >
+        <legend class="flex items-start gap-3 px-1">
+          <span
+            class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-band text-xs font-black text-white ring-2 ring-accent"
+            aria-hidden="true"
+          >
+            {i + 1}
+          </span>
+          <span class="min-w-0 text-sm leading-relaxed font-black break-words text-head sm:text-base">
+            {item.q}
+          </span>
+        </legend>
+
+        <div class="mt-4 flex gap-3">
+          {[
+            { v: 'true', label: '是' },
+            { v: 'false', label: '否' },
+          ].map((opt) => (
+            <button
+              type="button"
+              class="quiz-btn flex-1 rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head transition-colors hover:border-accent hover:bg-tint1"
+              data-choice={opt.v}
+              aria-pressed="false"
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="quiz-explain mt-4" hidden>
+          <p class="quiz-verdict text-sm font-black"></p>
+          <p class="mt-2 text-sm leading-relaxed break-words text-body">{item.explain}</p>
+        </div>
+      </fieldset>
+    ))}
+  </div>
+
+  <p id="quiz-progress" class="mt-6 text-center text-sm text-muted">
+    已回答 <span id="quiz-done">0</span> / {QUESTIONS.length} 題
+  </p>
+
+  <div id="quiz-result" class="mt-8 scroll-mt-20" hidden>
+    <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-muted uppercase">你的結果</p>
+      <p class="mt-3 flex flex-wrap items-center gap-3">
+        <span id="quiz-emoji" class="text-4xl leading-none" aria-hidden="true"></span>
+        <span id="quiz-title" class="text-xl font-black break-words text-head sm:text-2xl"></span>
+      </p>
+      <p class="mt-2 text-sm font-bold text-accent">
+        答對 <span id="quiz-score"></span> / {QUESTIONS.length} 題
+      </p>
+      <p id="quiz-note" class="mt-4 text-sm leading-relaxed break-words text-body"></p>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-line bg-surface p-6 sm:p-8">
+      <h2 class="text-lg font-black break-words text-head">下一步：去查你看中的那一頂</h2>
+      <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+        維吉尼亞理工大學頭盔實驗室的滑雪安全帽評等頁面<strong class="text-head">免費公開、不需註冊，也不接受任何廠商資助</strong>。
+        上面可以查到每一頂的星等、STAR 分數與測試時的售價；清單會持續增加，2022 年剛開始時是 35 頂，到 2026 年 3 月的報告已經是 48 頂。
+      </p>
+      <a
+        href={VT_URL}
+        target="_blank"
+        rel="noopener"
+        class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
+      >
+        前往 Virginia Tech 滑雪安全帽評等（英文）↗
+      </a>
+      <a
+        href={ARTICLE_URL}
+        target="_blank"
+        rel="noopener"
+        class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head transition-colors hover:bg-tint1"
+      >
+        看楊醫師的完整中文整理 ↗
+      </a>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-line bg-surface p-6 sm:p-8">
+      <h2 class="text-lg font-black break-words text-head">挑安全帽，記住三件事</h2>
+      <ol class="mt-4 space-y-3">
+        {[
+          ['買之前先查。', '評等網站免費公開，花兩分鐘查一下你看中的那一頂，比看規格表有用得多。'],
+          ['用星等比較，不要用價格或品牌比較。', '同一個價位、同一個品牌裡，一星到五星都有。在預算內挑星等高的那一頂。'],
+          ['戴著它，而且戴好它。', '再高分的帽子，會晃、會露出額頭就打折；撞裂或明顯撞擊過的帽子，請換一頂。'],
+        ].map(([strong, rest], i) => (
+          <li class="flex min-w-0 items-start gap-3 text-sm leading-relaxed break-words text-body">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-tint2 text-xs font-black text-head" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span class="min-w-0"><strong class="text-head">{strong}</strong>{rest}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <button
+      type="button"
+      id="quiz-reset"
+      class="mt-6 w-full rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-tint1"
+    >
+      再測一次
+    </button>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      題目與解說全部出自 <strong>Nicole Stark 博士（Virginia Tech Helmet Lab）於 2026 年 3 月韓國平昌國際滑雪安全學會（ISSS 2026）年會的口頭報告</strong>，
+      以及該實驗室公開的評等網站。楊醫師在現場聽講後整理成中文，
+      本工具再把其中最容易被誤解的幾點做成是非題。
+    </p>
+    <p>
+      實驗室的測試方法值得一提：他們與美國滑雪協會（US Ski &amp; Snowboard）合作，用 3D 電腦視覺與 2D 影像分析大量<strong>真實摔倒錄影</strong>，
+      量化頭部撞擊的速度與位置，測試條件就是從這些真實案例來的。又因為雪和冰都是低摩擦表面，頭撞到雪面時會同時有「撞進去」和「滑過去」兩個方向的速度，
+      所以他們用光滑鋼製斜面模擬雪面（摩擦係數約 0.27，一般測試用的砂紙約 0.78），並用兩種斜面角度代表陡坡與緩坡。每頂帽子在前、側、後三個位置各以兩種角度撞擊，共 12 次。
+    </p>
+    <p>
+      <strong>STAR 分數</strong>（Summation of Tests for the Analysis of Risk）的邏輯是「受傷發生率＝暴露 × 風險」：
+      把每一種撞擊情境在真實世界的發生頻率，乘上帽子在該情境下量到的加速度所對應的腦震盪機率，再加總起來。分數越低越好，再換算成一到五顆星。
+    </p>
+    <p>
+      2026 年 3 月報告時的 48 頂分布為：五星 4 頂、四星 11 頂、三星 14 頂、二星 8 頂、一星 11 頂 ——
+      也就是每 10 頂裡大約只有 3 頂拿到四星以上，卻有 4 頂落在一到二星。這些全部都是通過認證、合法販售的產品。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>這個工具不提供型號查詢。</strong>
+        評等清單會持續更新，任何抄過來的副本都會過期，所以這裡不複製資料，只把你送到官方網站當下的版本。
+      </li>
+      <li>
+        <strong>星等是相對風險，不是保證。</strong>
+        五星代表在同一套測試下腦震盪風險相對較低，不代表戴上就不會腦震盪。撞到頭之後該不該就醫，要看症狀不是看星等。
+      </li>
+      <li>
+        <strong>評等以美國市場為主。</strong>
+        日本、台灣通路常見的型號不一定在清單上。查不到不等於不安全，只代表沒有被送測。
+      </li>
+      <li>
+        <strong>數字以 2026 年 3 月的報告為準。</strong>
+        受測數量與各頂的成績都會變動，購買前請以官網當下的資料為主。
+      </li>
+      <li>
+        <strong>貼合度沒有辦法被評等取代。</strong>
+        帽子會晃、會露出額頭、扣帶沒調好，撞擊時位置跑掉，再高的星等都打折。買帽子請務必試戴。
+      </li>
+    </ul>
+  </Fragment>
+
+  <Fragment slot="faq">
+    <Faq items={FAQ} />
+  </Fragment>
+</ToolLayout>
+
+<style>
+  /*
+    作答後的狀態全部用 data 屬性上色，不用動態加 Tailwind 類別 ——
+    Tailwind 只掃得到靜態出現在標記裡的類別名稱，在 <script> 裡組出來的不會被產生。
+  */
+  .quiz-btn[data-state] {
+    cursor: default;
+  }
+  .quiz-btn[data-state='correct'] {
+    border-color: #10b981;
+    background-color: rgb(16 185 129 / 0.18);
+  }
+  .quiz-btn[data-state='wrong'] {
+    border-color: #ef4444;
+    background-color: rgb(239 68 68 / 0.18);
+  }
+  .quiz-btn[data-state='dim'] {
+    opacity: 0.45;
+  }
+
+  .quiz-q[data-result='correct'] {
+    border-color: rgb(16 185 129 / 0.55);
+  }
+  .quiz-q[data-result='wrong'] {
+    border-color: rgb(239 68 68 / 0.55);
+  }
+
+  .quiz-verdict[data-result='correct'] {
+    color: #34d399;
+  }
+  .quiz-verdict[data-result='wrong'] {
+    color: #f87171;
+  }
+  [data-theme='light'] .quiz-verdict[data-result='correct'] {
+    color: #047857;
+  }
+  [data-theme='light'] .quiz-verdict[data-result='wrong'] {
+    color: #b91c1c;
+  }
+</style>
+
+<script>
+  const quiz = document.getElementById('quiz');
+  const result = document.getElementById('quiz-result');
+  const doneEl = document.getElementById('quiz-done');
+  const progress = document.getElementById('quiz-progress');
+  const resetBtn = document.getElementById('quiz-reset');
+
+  if (quiz && result && doneEl && progress) {
+    const questions = Array.from(quiz.querySelectorAll<HTMLFieldSetElement>('.quiz-q'));
+    const TIERS = [
+      { min: 7, emoji: '🏔️', title: '觀念很完整', note: '這七題都是門診裡最常聽到的說法，你全部都答對了。剩下的就是實際去查一下你看中的那一頂。' },
+      { min: 5, emoji: '🎿', title: '基本觀念正確，有幾個誤解要修正', note: '大方向沒問題，但答錯的那幾題正好是最容易讓人買錯帽子的地方，回頭看一下解說。' },
+      { min: 3, emoji: '🧢', title: '有一半的觀念需要更新', note: '這些說法在雪友之間流傳很廣，但實測資料的結論不是這樣。建議把每一題的解說都看完。' },
+      { min: 0, emoji: '⚠️', title: '這幾題正是最常見的誤解', note: '不用覺得挫折 —— 會答錯，代表這些說法真的很普遍。把解說看完，你挑帽子的方式就會跟多數人不一樣。' },
+    ];
+
+    function render() {
+      const answered = questions.filter((q) => q.dataset.chosen);
+      doneEl.textContent = String(answered.length);
+
+      if (answered.length < questions.length) {
+        result.hidden = true;
+        return;
+      }
+
+      const score = answered.filter((q) => q.dataset.chosen === q.dataset.answer).length;
+      const tier = TIERS.find((t) => score >= t.min) ?? TIERS[TIERS.length - 1];
+
+      const set = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      set('quiz-score', String(score));
+      set('quiz-emoji', tier.emoji);
+      set('quiz-title', tier.title);
+      set('quiz-note', tier.note);
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    for (const q of questions) {
+      const buttons = Array.from(q.querySelectorAll<HTMLButtonElement>('.quiz-btn'));
+      const explain = q.querySelector<HTMLElement>('.quiz-explain');
+      const verdict = q.querySelector<HTMLElement>('.quiz-verdict');
+
+      for (const btn of buttons) {
+        btn.addEventListener('click', () => {
+          if (q.dataset.chosen) return; // 一題只能答一次，避免改到分數
+          const choice = btn.dataset.choice ?? '';
+          const correct = choice === q.dataset.answer;
+          q.dataset.chosen = choice;
+
+          for (const b of buttons) {
+            b.disabled = true;
+            b.setAttribute('aria-pressed', String(b === btn));
+            b.classList.remove('hover:border-accent', 'hover:bg-tint1');
+            // 不論選哪一邊，都把正確答案標出來 —— 答錯的人才知道該記哪一個
+            b.dataset.state =
+              b.dataset.choice === q.dataset.answer ? 'correct' : b === btn ? 'wrong' : 'dim';
+          }
+
+          q.dataset.result = correct ? 'correct' : 'wrong';
+          if (verdict) {
+            verdict.textContent = correct ? '✓ 答對了' : '✕ 答錯了';
+            verdict.dataset.result = correct ? 'correct' : 'wrong';
+          }
+          if (explain) explain.hidden = false;
+
+          render();
+        });
+      }
+    }
+
+    resetBtn?.addEventListener('click', () => {
+      for (const q of questions) {
+        delete q.dataset.chosen;
+        delete q.dataset.result;
+        const explain = q.querySelector<HTMLElement>('.quiz-explain');
+        const verdict = q.querySelector<HTMLElement>('.quiz-verdict');
+        if (explain) explain.hidden = true;
+        if (verdict) {
+          verdict.textContent = '';
+          delete verdict.dataset.result;
+        }
+        for (const b of q.querySelectorAll<HTMLButtonElement>('.quiz-btn')) {
+          b.disabled = false;
+          b.setAttribute('aria-pressed', 'false');
+          delete b.dataset.state;
+          b.classList.add('hover:border-accent', 'hover:bg-tint1');
+        }
+      }
+      render();
+      quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>
