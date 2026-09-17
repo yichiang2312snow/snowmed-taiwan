@@ -19,6 +19,79 @@ const TORSO =
   'M-58,150 Q0,138 58,150 Q74,156 74,172 Q78,262 50,372 L-50,372 Q-78,262 -74,172 Q-74,156 -58,150 Z';
 const pts = (a: number[]) => a.join(' ');
 
+// 內文的 **粗體**（這些字串都是本檔寫死的，沒有使用者輸入）
+const bold = (t: string) =>
+  t.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-black text-head">$1</strong>');
+
+// 旁觀者急救：倒下的是別人時的第一時間處置
+// 順序刻意是「先看上坡 → 再看傷者」，因為在雪道上，第二個傷患幾乎都是救人的人。
+const BYSTANDER = [
+  {
+    n: 1,
+    title: '先看上坡，再看傷者',
+    lead: '你停下來的那一刻，自己就站在別人的滑行路線上。',
+    items: [
+      '停在傷者的**上坡側**，用你的身體與裝備當第一道屏障。',
+      '把一支雪杖或一片雪板**直立插在傷者上方幾公尺處** —— 這是雪場通用的「下面有人」信號。',
+      '抬頭確認上方有沒有人正衝下來、會不會有落石、雪崩地形或纜車正下方的墜落物。',
+      '現場只要還有會傷到你的東西，先處理它，再蹲下去看人。',
+    ],
+  },
+  {
+    n: 2,
+    title: '叫人：要指名，不要喊「有人幫忙嗎」',
+    lead: '沒有指定對象時，每個人都會以為別人已經去了。',
+    items: [
+      '拍傷者肩膀、在耳邊大聲叫，看有沒有反應。',
+      '求救要**指定人、指定任務、要求回報**：「穿紅外套的先生，你去纜車站叫巡邏隊，叫到了回來跟我說。」',
+      '記住你的位置：雪道名稱、最近的纜車塔號或標示牌號碼，巡邏隊第一句就會問這個。',
+    ],
+  },
+  {
+    n: 3,
+    title: '看呼吸：只花 10 秒',
+    lead: '這一步判斷錯，後面全錯。',
+    items: [
+      '把下巴稍微抬起打開呼吸道，看胸口起伏、靠近聽、感覺有沒有氣流。',
+      '**偶爾抽一口氣、像打呼或嘆氣的「瀕死呼吸」不算有呼吸。** 這是最常見的誤判，很多人因此遲遲沒有開始壓胸。',
+      '判斷不出來就當作沒有呼吸，直接進入下一步 —— 對有呼吸的人壓胸造成的傷害，遠小於該壓卻沒壓。',
+    ],
+  },
+  {
+    n: 4,
+    title: '沒有呼吸 → 立刻 CPR',
+    lead: '用力壓、快快壓、不要停。',
+    items: [
+      '位置在**胸部正中央、兩乳頭連線的中點**，兩手交疊、手臂打直，用上半身的重量往下壓。',
+      '速度**每分鐘 100–120 下**，深度約 **5–6 公分**，每一下都讓胸廓完全回彈。',
+      '**不會人工呼吸就只壓胸**，不要因為猶豫而什麼都不做。',
+      '**不要為了壓胸去拆安全帽**，除非它擋住呼吸道。拆安全帽的過程本身就可能傷到頸椎。',
+      '鬆雪壓不下去 → 移到壓實的雪面、雪道邊硬地或巡邏隊的雪橇板上。若同時懷疑頸椎受傷，要讓頭、頸、軀幹**像一整塊木頭一起移動**。',
+      '同時請人去問 AED 在哪 —— 雪場通常放在纜車站、山上餐廳或巡邏隊站。',
+    ],
+  },
+  {
+    n: 5,
+    title: '有呼吸但叫不醒：不要移動他',
+    lead: '從高處摔落、撞樹、撞到頭的人，一律先當作有頸椎受傷。',
+    items: [
+      '雙手扶住頭部兩側，維持頭頸與身體成一直線，等巡邏隊帶頸圈和背板來。',
+      '只有在快嗆到（嘔吐、口鼻有血）或無法維持呼吸道時才翻身，而且要**整個身體一起翻**，不能只轉頭。',
+      '持續盯著呼吸。昏迷的人隨時可能停止呼吸，一停就回到上一步。',
+    ],
+  },
+  {
+    n: 6,
+    title: '保暖與止血',
+    lead: '雪地抽走體溫的速度比你想的快，低體溫會讓出血更難止、意識更差。',
+    items: [
+      '在傷者**身體下方**墊隔絕物（外套、背包、備用雪板），只蓋上面沒有用 —— 熱量是從地面流失的。',
+      '大量出血時，用最乾淨的布**直接、持續、用力壓住**傷口，壓著不要一直放開檢查，直到巡邏隊接手。',
+      '不要餵食、不要給水、不要給酒 —— 可能嗆到，也可能影響後續麻醉與手術。',
+    ],
+  },
+];
+
 // 常見問題：問句就是大家實際會搜的字
 const FAQ = [
   {
@@ -28,6 +101,14 @@ const FAQ = [
   {
     q: '受傷之後還可以自己滑下山嗎？',
     a: '有上面那些紅旗症狀就不行。即使看起來輕微，只要無法正常負重、關節不穩或愈來愈痛，也應該讓巡邏隊用雪橇運下山——很多傷在硬撐滑下山的過程中變得更嚴重。',
+  },
+  {
+    q: '看到有人昏倒在雪道上，第一件事要做什麼？',
+    a: '不是衝過去，是先確認上坡方向安全、並在傷者上方插雪杖或雪板做出「下面有人」的標記。你被撞倒，現場就從一個傷患變成兩個，而且沒有人能求救。安全之後才依序做：叫喚看有無反應、10 秒內確認呼吸、沒有呼吸就立刻壓胸。完整步驟看[[/tools/injury-triage#bystander|倒下的是別人時怎麼辦]]。',
+  },
+  {
+    q: '在雪地上可以做 CPR 嗎？雪很軟壓不下去怎麼辦？',
+    a: '可以，而且必須做。鬆雪會吸收掉壓胸的力量，所以要盡快把人移到壓實的雪面、雪道邊的硬地，或巡邏隊的雪橇板上。如果同時懷疑頸椎受傷，移動時要讓頭、頸、軀幹像一整塊木頭一起走。另外不要為了壓胸去拆安全帽，除非它擋住呼吸道。',
   },
   {
     q: '滑雪最常受傷的部位是哪裡？',
@@ -56,6 +137,10 @@ const FAQ = [
     <p class="text-sm leading-relaxed break-words text-red-200 light:text-red-800">
       <strong>如果情況危急，先打電話，不要先填這個表。</strong>
       意識不清、大量出血、呼吸困難、懷疑頸椎或脊椎受傷 —— 立刻聯絡雪場巡邏隊或當地緊急醫療系統。
+    </p>
+    <p class="mt-3 text-sm leading-relaxed break-words text-red-200 light:text-red-800">
+      倒下的是<strong>別人</strong>？這個表是給傷者自己用的 ——
+      <a href="#bystander" class="font-black underline underline-offset-2">跳到「倒下的是別人時怎麼辦」</a>。
     </p>
   </div>
 
@@ -211,6 +296,102 @@ const FAQ = [
       這個工具在「可能沒事」和「該找人看」之間，一律選擇後者。如果你的感覺比結果更嚴重，請以你的感覺為準。
     </p>
   </div>
+
+  <!-- ── 旁觀者急救：倒下的是別人 ── -->
+  <section id="bystander" class="mt-14 scroll-mt-20">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">倒下的是別人 —— 雪道上的第一時間</h2>
+    <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+      上面的分流表是給傷者自己用的。如果是你發現有人倒在雪道上，順序完全不一樣：
+      <strong class="text-head">第一件事不是衝過去看他，是先確認你自己不會被撞。</strong>
+    </p>
+
+    <div class="mt-6 rounded-2xl border-l-4 border-red-500 bg-red-500/15 p-5 sm:p-6">
+      <p class="text-sm font-black text-red-200 light:text-red-800">先保護好自己，再去救別人。</p>
+      <p class="mt-2 text-sm leading-relaxed break-words text-red-200 light:text-red-800">
+        雪道上的第二個傷患，幾乎都是蹲下來救人、背對上坡的那個人。你一倒，現場就從一個傷患變成兩個，
+        而且原本能求救、能壓胸的那雙手也沒了。<strong>任何時候都不要為了救人把自己搭進去</strong> ——
+        這不是冷血，是急救的第一條規則。
+      </p>
+    </div>
+
+    <ol class="mt-6 space-y-4">
+      {BYSTANDER.map((st) => (
+        <>
+          <li class="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+            <div class="flex items-start gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-band text-xs font-black text-white ring-2 ring-accent"
+                aria-hidden="true"
+              >
+                {st.n}
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-base font-black break-words text-head">{st.title}</h3>
+                <p class="mt-1 text-sm leading-relaxed break-words text-muted">{st.lead}</p>
+              </div>
+            </div>
+            <ul class="mt-4 space-y-2 pl-1">
+              {st.items.map((it) => (
+                <li class="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed break-words text-body">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                  <span class="min-w-0" set:html={bold(it)} />
+                </li>
+              ))}
+            </ul>
+          </li>
+
+          {st.n === 1 && (
+            <li class="rounded-2xl border-l-4 border-amber-500 bg-amber-500/15 p-5 sm:p-6">
+              <p class="text-sm font-black text-amber-200 light:text-amber-800">
+                地形公園／跳台下方：這一步絕對不能省
+              </p>
+              <p class="mt-2 text-sm leading-relaxed break-words text-amber-200 light:text-amber-800">
+                跳台的起跳者<strong>看不到落地區</strong>。你蹲在落地區救人，對正要起跳的人來說是完全的盲區，
+                他不是不閃你，是根本不知道你在。
+              </p>
+              <ul class="mt-3 space-y-2 pl-1">
+                {[
+                  '**立刻指派一個人**（同伴，或直接點名路過的雪友）**跑到跳台上方、起跳點前面**。',
+                  '站在那裡**大動作揮手攔停**，或把雪板交叉插在雪上當路障。',
+                  '位置要選在**後面的人還來得及煞停**的地方，不是站在跳台邊緣 —— 站太近，攔的人自己會被撞。',
+                  '這個人在**巡邏隊到場接手之前不能離開**。',
+                  '真的一個人都找不到：大聲喊、脫下亮色外套揮舞，但**你自己不要停留在落地區正下方**。',
+                ].map((it) => (
+                  <li class="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed break-words text-amber-200 light:text-amber-800">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
+                    <span class="min-w-0" set:html={bold(it)} />
+                  </li>
+                ))}
+              </ul>
+            </li>
+          )}
+        </>
+      ))}
+    </ol>
+
+    <div class="mt-6 rounded-2xl border border-line bg-tint1 p-5 sm:p-6">
+      <p class="text-sm font-black text-head">這些事不要做</p>
+      <ul class="mt-3 space-y-2 pl-1">
+        {[
+          '不要搖晃傷者、不要拍打叫醒。',
+          '不要拆安全帽，除非它擋住呼吸道。',
+          '不要自己把人背下山或拖到雪道邊 —— 除非原地有立即的致命危險。',
+          '不要餵食物、水或酒。',
+          '不要因為「他等一下應該會醒」而離開現場。',
+        ].map((it) => (
+          <li class="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed break-words text-body">
+            <span class="mt-1.5 shrink-0 text-red-400" aria-hidden="true">✕</span>
+            <span class="min-w-0">{it}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <p class="mt-5 text-xs leading-relaxed break-words text-muted">
+      這一段讀十遍，不如實際上一次課。壓胸的深度與速度、翻身的手法，都要用手練過才記得住。
+      台灣各縣市消防局都有免費的 CPR＋AED 民眾訓練，雪季前花半天上一次，是對同行夥伴最實際的準備。
+    </p>
+  </section>
 
   <Fragment slot="basis">
     <p>

@@ -298,7 +298,7 @@ export const TOOLS = [
     href: '/tools/injury-triage',
     id: 'SMT-T-05',
     version: TOOLS_VERSION,
-    updated: '2026-09-15',
+    updated: '2026-09-17',
     category: 'injury',
     name: '雪場受傷分流判斷',
     emoji: '🚨',
