@@ -374,6 +374,19 @@ export const TOOLS = [
     who: '傷後復健中、想知道「什麼時候能再滑」的人',
   },
   {
+    href: '/tools/fatigue-check',
+    id: 'SMT-T-12',
+    version: TOOLS_VERSION,
+    updated: '2026-09-18',
+    category: 'injury',
+    name: '疲勞指數監測',
+    emoji: '🔋',
+    time: '約 2 分鐘',
+    summary:
+      '受傷不一定是技術問題，很多時候是身體已經沒電了。勾選最近一週的狀況，超過三個代表可能練過頭；再依你有沒有在量靜態心率或 HRV，給你每天十秒的自我監控方式。',
+    who: '出發前在猛練、或覺得自己愈練愈差的人',
+  },
+  {
     href: '/tools/snow-report',
     id: 'SMT-T-11',
     version: TOOLS_VERSION,
