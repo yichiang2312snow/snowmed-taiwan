@@ -12,6 +12,8 @@ export default defineConfig({
   site: 'https://snowmed-taiwan.com',
   integrations: [
     sitemap({
+      // 後台頁面不進 sitemap（頁面本身也有 noindex，robots.txt 另外擋一層）
+      filter: (page) => !new URL(page).pathname.startsWith('/admin'),
       serialize(item) {
         const path = new URL(item.url).pathname.replace(/\/$/, '');
         const date = lastmod.get(path);

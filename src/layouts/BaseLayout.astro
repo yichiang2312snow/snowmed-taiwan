@@ -19,6 +19,8 @@ interface Props {
   banner?: boolean;
   /** 社群分享預覽圖（絕對網址或站內路徑），沒給就用預設圖 */
   ogImage?: string;
+  /** 不要被搜尋引擎收錄（後台那種頁面用） */
+  noindex?: boolean;
 }
 
 const {
@@ -28,6 +30,7 @@ const {
   eyebrow,
   banner = true,
   ogImage = '/og-default.jpg',
+  noindex = false,
 } = Astro.props;
 
 const headTitle = seoTitle ?? title;
@@ -106,6 +109,7 @@ const jsonLd = {
     <meta name="google-site-verification" content="V-uVFPiV6kkXil1WbZ_AN-dLmdfMrIJJw8wJnHYYFIg" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 

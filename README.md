@@ -118,20 +118,35 @@ npx wrangler pages secret put WISH_ADMIN_TOKEN --project-name snowmed-taiwan
 今天結冰的跳台如果等到審完才出現就沒有意義了。擋灌水靠蜜罐欄位、每小時上限（同一來源 5 則）與字數限制，
 不實或不當的內容則是事後刪除。
 
-看目前公開的回報：
+### 照片審核
+
+有附照片的回報，**文字立刻公開，照片要核准才會出現**。文字有時效、要快；照片是最容易出事的地方
+（拍到當事人、血腥畫面、廣告），值得先看過。
+
+審核有畫面：**<https://snowmed-taiwan.com/admin/reports>**
+貼上管理 token 按「載入」，就會看到待審照片、可以直接核准、退回照片（文字留著）或刪掉整則，
+下面另外列出目前公開的全部回報，也可以從那裡刪。
+這一頁 noindex、不進 sitemap，robots.txt 也擋掉 `/admin/`；token 只存在你當下那個分頁。
+
+照片在使用者的瀏覽器就先縮到長邊 1600 px 的 JPEG 再上傳（順便把含 GPS 的 EXIF 丟掉），
+存在 KV 的 `rptimg:<回報ID>`，保留 180 天。
+
+看目前公開的回報（以及待審清單）：
 
 ```bash
 curl -H "Authorization: Bearer <你的TOKEN>" https://snowmed-taiwan.com/api/reports/admin
 ```
 
-刪掉某一則（`id` 從上面的清單取得）：
+核准照片、退回照片或刪掉整則（`id` 從上面的清單取得）：
 
 ```bash
 curl -X POST https://snowmed-taiwan.com/api/reports/admin \
   -H "Authorization: Bearer <你的TOKEN>" \
   -H "content-type: application/json" \
-  -d '{"id":"<回報ID>","action":"delete"}'
+  -d '{"id":"<回報ID>","action":"approve-photo"}'
 ```
+
+`action` 可以是 `approve-photo`（公開照片）、`reject-photo`（只刪照片，文字留著）、`delete`（整則刪除）。
 
 Token 用 `REPORT_ADMIN_TOKEN`；沒設定的話會沿用許願區的 `WISH_ADMIN_TOKEN`，兩個都沒有就回 503（不會有預設密碼）。
 

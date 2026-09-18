@@ -10,6 +10,7 @@ import japanResorts from '../assets/tools/tool-japan-resorts.jpg';
 import concussion from '../assets/tools/tool-concussion.jpg';
 import taiwanIndoorSki from '../assets/tools/tool-taiwan-indoor-ski.jpg';
 import helmetCheck from '../assets/tools/tool-helmet-check.jpg';
+import snowReport from '../assets/tools/tool-snow-report.jpg';
 
 /**
  * 工具卡片的背景圖，key 是工具的網址。
@@ -57,5 +58,9 @@ export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> 
   '/tools/helmet-check': {
     image: helmetCheck,
     alt: '一頂戴著雪鏡的滑雪安全帽，背景是雪山',
+  },
+  '/tools/snow-report': {
+    image: snowReport,
+    alt: '雪山稜線與纜車的夜色雪場插圖',
   },
 };

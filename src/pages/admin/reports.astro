@@ -1,0 +1,323 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+/**
+ * 後台：雪場即時狀況回饋單的照片審核
+ *
+ * 這一頁本身沒有任何秘密 —— 它只是個畫面，真正的權限在 API：
+ * 每一次請求都帶 Authorization: Bearer <REPORT_ADMIN_TOKEN>，
+ * token 只存在你這台瀏覽器的 sessionStorage（關掉分頁就沒了），不會送到別的地方。
+ *
+ * 不希望被搜尋到，所以 noindex + 不進 sitemap + robots.txt 擋掉 /admin/。
+ */
+---
+
+<BaseLayout
+  title="後台：回報照片審核"
+  eyebrow="Admin"
+  description="雪場即時狀況回饋單的照片審核。"
+  noindex
+>
+  <section class="bg-panel">
+    <div class="mx-auto max-w-4xl px-5 py-10 sm:py-14">
+      <p class="text-sm leading-relaxed break-words text-muted">
+        有附照片的回報，<strong class="text-head">文字會立刻公開，照片要在這裡按核准才會出現</strong>。
+        核准之後照片就跟著那則回報一起顯示在
+        <a href="/tools/snow-report" class="font-bold text-accent hover:underline">雪場即時狀況回饋單</a>。
+      </p>
+
+      <!-- 管理 token -->
+      <div class="mt-6 rounded-2xl border border-line bg-surface p-5">
+        <label for="admin-token" class="block text-sm font-bold text-head">管理 token</label>
+        <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+          Cloudflare Pages 的 <code class="font-mono">REPORT_ADMIN_TOKEN</code>（沒設定的話是
+          <code class="font-mono">WISH_ADMIN_TOKEN</code>）。只存在這個分頁，關掉就要重打。
+        </p>
+        <div class="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            type="password"
+            id="admin-token"
+            autocomplete="off"
+            placeholder="貼上 token"
+            class="min-w-0 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
+          />
+          <button
+            type="button"
+            id="admin-load"
+            class="shrink-0 rounded-xl bg-cta px-6 py-3 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
+          >
+            載入
+          </button>
+        </div>
+        <p id="admin-msg" class="mt-3 text-sm font-bold break-words" hidden></p>
+      </div>
+
+      <!-- 待審照片 -->
+      <div class="mt-10">
+        <div class="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-3">
+          <h2 class="text-xl font-black text-head">待審照片</h2>
+          <p id="admin-pending-count" class="text-xs text-muted"></p>
+        </div>
+        <div id="admin-pending" class="mt-5 space-y-5">
+          <p class="rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm text-muted">
+            先貼上 token 並按「載入」。
+          </p>
+        </div>
+      </div>
+
+      <!-- 已公開的回報 -->
+      <div class="mt-12">
+        <div class="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-3">
+          <h2 class="text-xl font-black text-head">目前公開的回報</h2>
+          <p id="admin-total" class="text-xs text-muted"></p>
+        </div>
+        <div id="admin-list" class="mt-5 space-y-4"></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const KEY = 'snowmed:admin-token';
+
+  const tokenInput = document.getElementById('admin-token') as HTMLInputElement | null;
+  const loadBtn = document.getElementById('admin-load') as HTMLButtonElement | null;
+  const msg = document.getElementById('admin-msg');
+  const pendingBox = document.getElementById('admin-pending');
+  const pendingCount = document.getElementById('admin-pending-count');
+  const listBox = document.getElementById('admin-list');
+  const totalEl = document.getElementById('admin-total');
+
+  interface Report {
+    id: string;
+    resort: string;
+    occurredAt: string;
+    nickname: string;
+    text: string;
+    createdAt: string;
+    photo?: 'pending' | 'approved' | null;
+  }
+
+  const token = () => tokenInput?.value.trim() ?? '';
+
+  try {
+    const saved = sessionStorage.getItem(KEY);
+    if (saved && tokenInput) tokenInput.value = saved;
+  } catch {
+    /* 無痕模式讀不到就重打一次 */
+  }
+
+  let lastKind: 'ok' | 'err' | null = null;
+
+  const say = (text: string, kind: 'ok' | 'err') => {
+    if (!msg) return;
+    lastKind = kind;
+    msg.textContent = text;
+    msg.className =
+      'mt-3 text-sm font-bold break-words ' +
+      (kind === 'ok' ? 'text-emerald-300 light:text-emerald-700' : 'text-red-300 light:text-red-700');
+    msg.hidden = false;
+  };
+
+  const fmtWhen = (value: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value ?? '');
+    return m ? `${m[1]}/${m[2]}/${m[3]} ${m[4]}:${m[5]}` : (value ?? '');
+  };
+
+  /** 待審照片要帶 token 才拿得到，所以用 fetch 取回再變成 blob 網址 */
+  const loadPhoto = async (id: string, img: HTMLImageElement) => {
+    try {
+      const res = await fetch(`/api/reports/photo?id=${encodeURIComponent(id)}`, {
+        headers: { authorization: `Bearer ${token()}` },
+      });
+      if (!res.ok) throw new Error('photo failed');
+      img.src = URL.createObjectURL(await res.blob());
+    } catch {
+      img.alt = '照片讀不到（可能已經被刪掉了）';
+    }
+  };
+
+  const act = async (id: string, action: string) => {
+    const res = await fetch('/api/reports/admin', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token()}` },
+      body: JSON.stringify({ id, action }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error ?? 'failed');
+  };
+
+  const button = (label: string, kind: 'ok' | 'warn' | 'danger') => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className =
+      'rounded-xl px-4 py-2 text-xs font-bold transition-colors ' +
+      (kind === 'ok'
+        ? 'bg-cta text-ctatext hover:bg-accent'
+        : kind === 'warn'
+          ? 'border border-line text-head hover:bg-tint1'
+          : 'border border-red-500 text-red-300 hover:bg-red-500/15 light:text-red-700');
+    b.textContent = label;
+    return b;
+  };
+
+  const meta = (r: Report) => {
+    const head = document.createElement('div');
+    head.className = 'flex flex-wrap items-center gap-x-3 gap-y-1';
+
+    const resort = document.createElement('h3');
+    resort.className = 'min-w-0 text-base font-black break-words text-head';
+    resort.textContent = `📍 ${r.resort}`;
+
+    const id = document.createElement('span');
+    id.className = 'font-mono text-[11px] text-muted';
+    id.textContent = r.id;
+
+    head.append(resort, id);
+
+    const when = document.createElement('p');
+    when.className = 'mt-1.5 text-xs text-muted';
+    when.textContent = `發生時間：${fmtWhen(r.occurredAt)}（當地）・送出：${new Date(r.createdAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })}・${r.nickname}`;
+
+    const body = document.createElement('p');
+    body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-body';
+    body.textContent = r.text;
+
+    return [head, when, body];
+  };
+
+  function renderPending(reports: Report[]) {
+    if (!pendingBox) return;
+    pendingBox.textContent = '';
+    if (pendingCount) pendingCount.textContent = reports.length ? `${reports.length} 則等你看` : '';
+
+    if (reports.length === 0) {
+      const empty = document.createElement('p');
+      empty.className =
+        'rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm text-muted';
+      empty.textContent = '沒有待審的照片。';
+      pendingBox.append(empty);
+      return;
+    }
+
+    for (const r of reports) {
+      const card = document.createElement('article');
+      card.className = 'min-w-0 rounded-2xl border border-accent/60 bg-surface p-5 sm:p-6';
+      card.append(...meta(r));
+
+      const img = document.createElement('img');
+      img.alt = '待審核的現場照片';
+      img.className = 'mt-4 max-h-96 w-auto rounded-xl border border-line';
+      card.append(img);
+      loadPhoto(r.id, img);
+
+      const row = document.createElement('div');
+      row.className = 'mt-4 flex flex-wrap gap-2';
+
+      const approve = button('核准照片', 'ok');
+      const reject = button('退回照片（文字留著）', 'warn');
+      const del = button('刪除整則', 'danger');
+
+      const run = async (action: string, confirmText?: string) => {
+        if (confirmText && !confirm(confirmText)) return;
+        for (const b of [approve, reject, del]) b.disabled = true;
+        try {
+          await act(r.id, action);
+          say('好了。', 'ok');
+          await load();
+        } catch (e) {
+          say(`失敗：${(e as Error).message}`, 'err');
+          for (const b of [approve, reject, del]) b.disabled = false;
+        }
+      };
+
+      approve.addEventListener('click', () => run('approve-photo'));
+      reject.addEventListener('click', () => run('reject-photo', '退回這張照片？照片會被刪掉，文字會留在前台。'));
+      del.addEventListener('click', () => run('delete', '整則刪掉？文字和照片都會消失，救不回來。'));
+
+      row.append(approve, reject, del);
+      card.append(row);
+      pendingBox.append(card);
+    }
+  }
+
+  function renderList(reports: Report[]) {
+    if (!listBox) return;
+    listBox.textContent = '';
+    if (totalEl) totalEl.textContent = reports.length ? `共 ${reports.length} 則` : '';
+
+    if (reports.length === 0) {
+      const empty = document.createElement('p');
+      empty.className =
+        'rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm text-muted';
+      empty.textContent = '前台目前沒有任何回報。';
+      listBox.append(empty);
+      return;
+    }
+
+    for (const r of reports) {
+      const card = document.createElement('article');
+      card.className = 'min-w-0 rounded-2xl border border-line bg-surface p-5';
+      card.append(...meta(r));
+
+      if (r.photo) {
+        const tag = document.createElement('p');
+        tag.className = 'mt-2 text-xs font-bold text-accent';
+        tag.textContent = r.photo === 'approved' ? '📷 照片已公開' : '📷 照片待審';
+        card.append(tag);
+      }
+
+      const del = button('刪除整則', 'danger');
+      del.className += ' mt-4';
+      del.addEventListener('click', async () => {
+        if (!confirm('整則刪掉？文字和照片都會消失，救不回來。')) return;
+        del.disabled = true;
+        try {
+          await act(r.id, 'delete');
+          say('已刪除。', 'ok');
+          await load();
+        } catch (e) {
+          say(`失敗：${(e as Error).message}`, 'err');
+          del.disabled = false;
+        }
+      });
+      card.append(del);
+      listBox.append(card);
+    }
+  }
+
+  async function load() {
+    if (!token()) {
+      say('先貼上 token。', 'err');
+      return;
+    }
+    try {
+      sessionStorage.setItem(KEY, token());
+    } catch {
+      /* 存不進去也沒關係 */
+    }
+
+    try {
+      const res = await fetch('/api/reports/admin', {
+        headers: { authorization: `Bearer ${token()}` },
+      });
+      if (res.status === 401) return say('token 不對。', 'err');
+      if (res.status === 503) return say('伺服器還沒設定管理 token（REPORT_ADMIN_TOKEN）。', 'err');
+      const data = await res.json();
+      renderPending(Array.isArray(data.pending) ? data.pending : []);
+      renderList(Array.isArray(data.reports) ? data.reports : []);
+      // 載入成功就把之前的錯誤訊息收掉（剛剛某個動作的「好了」留著）
+      if (msg && lastKind === 'err') msg.hidden = true;
+    } catch {
+      say('讀不到資料，請稍後再試。', 'err');
+    }
+  }
+
+  loadBtn?.addEventListener('click', load);
+  tokenInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') load();
+  });
+
+  // 上次輸入過就直接載入，省一次點擊
+  if (token()) load();
+</script>

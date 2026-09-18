@@ -40,6 +40,14 @@ const FAQ = [
     a: '因為不需要註冊，系統認不出哪一則是你的，所以沒有自助刪除。請到[[/wishlist|許願留言區]]說明是哪一則、哪裡寫錯，我看到會處理。不實、灌水或不當的內容我也會直接刪掉。',
   },
   {
+    q: '照片為什麼不能馬上出現？',
+    a: '照片是最容易出問題的地方 —— 拍到當事人的臉、血腥畫面、或純粹的廣告，一旦公開就收不回來，所以每一張都要我看過才會顯示。文字不受影響，送出當下就公開了，後面的人馬上看得到。照片通常會在我看到的時候處理，不會拖太久。',
+  },
+  {
+    q: '上傳照片會不會連我的位置也一起傳出去？',
+    a: '不會。照片在你的瀏覽器裡就先被重新縮圖（長邊 1600 像素的 JPEG）再上傳，這個過程只留下畫面本身，原檔的 EXIF 資訊（包含 GPS 座標、手機型號、拍攝時間）都不會跟著送出。',
+  },
+  {
     q: '回報會留多久？',
     a: '頁面上顯示最近的 80 則，超過的會自動被新的擠掉。雪況資訊過期得很快，卡片上會標出是幾天前的事，超過三天的會標成「較舊」，請自己斟酌參考價值。',
   },
@@ -149,6 +157,39 @@ const FAQ = [
       />
     </div>
 
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <label for="report-photo" class="block text-sm font-bold text-head">
+        現場照片 <span class="font-normal text-muted">（選填，一張）</span>
+      </label>
+      <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+        結冰的落地區、雪崩痕跡、封鎖線 —— 一張照片常常勝過一段描述。
+        <strong class="text-head">照片要我看過才會公開</strong>，文字則是立刻就上。
+        請不要拍到傷者的臉或任何認得出是誰的東西。
+      </p>
+      <input
+        type="file"
+        id="report-photo"
+        name="photo"
+        accept="image/jpeg,image/png,image/webp"
+        class="mt-3 w-full cursor-pointer rounded-xl border border-line bg-panel px-4 py-3 text-sm text-body file:mr-3 file:rounded-lg file:border-0 file:bg-tint2 file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-head hover:file:bg-tint3"
+      />
+      <p id="report-photo-note" class="mt-2 text-xs leading-relaxed break-words text-muted" hidden></p>
+      <div id="report-photo-preview" class="mt-3" hidden>
+        <img
+          id="report-photo-img"
+          alt="你選的照片預覽"
+          class="max-h-52 w-auto rounded-xl border border-line"
+        />
+        <button
+          type="button"
+          id="report-photo-clear"
+          class="mt-2 rounded-lg border border-line px-3 py-1.5 text-xs font-bold text-head hover:bg-tint1"
+        >
+          移除照片
+        </button>
+      </div>
+    </div>
+
     <!-- 蜜罐欄位：給機器人填的，真人看不到 -->
     <div class="hidden" aria-hidden="true">
       <label for="report-website">Website</label>
@@ -160,7 +201,8 @@ const FAQ = [
         <strong class="text-head">送出前請注意：</strong>送出後<strong class="text-head"
           >會立刻公開</strong
         >，而且沒有自助刪除。請不要填入姓名、電話、email
-        或任何認得出當事人是誰的資訊；描述別人的傷勢時只講一般性的狀況（例如「有人摔傷被巡邏隊載走」），不要寫傷者的身分或就醫細節。
+        或任何認得出當事人是誰的資訊；描述別人的傷勢時只講一般性的狀況（例如「有人摔傷被巡邏隊載走」），不要寫傷者的身分或就醫細節。照片也一樣
+        —— 拍現場、不要拍人。
       </p>
     </div>
 
@@ -216,8 +258,13 @@ const FAQ = [
       >：雪況資訊的價值跟時效直接相關，今天結冰的跳台如果等到明天審完才出現，對今天上山的人一點幫助都沒有。代價是內容未經查證，所以頁面上到處都標著這件事，也提供了讓平台隨時刪除不實內容的機制。
     </p>
     <p>
+      <strong>照片是唯一要審核的部分。</strong
+      >文字的價值在快，照片的風險在於一旦公開就收不回來（拍到當事人、血腥畫面、廣告），所以每一張都要站長看過才會顯示；退回的照片會直接刪掉，文字則留在原地。照片在你的瀏覽器就先縮圖再上傳，EXIF（含
+      GPS 座標）不會跟著送出。
+    </p>
+    <p>
       資料存在本站自己的 Cloudflare KV，不經過任何第三方留言服務；不需要註冊、不收 email，也不記錄
-      IP 原文（只存雜湊值用來擋灌水）。頁面顯示最近 80 則。
+      IP 原文（只存雜湊值用來擋灌水）。頁面顯示最近 80 則，照片保留 180 天。
     </p>
   </Fragment>
 
@@ -260,6 +307,11 @@ const FAQ = [
   const submitBtn = document.getElementById('report-submit') as HTMLButtonElement | null;
   const timeInput = document.getElementById('report-time') as HTMLInputElement | null;
   const filter = document.getElementById('report-filter') as HTMLInputElement | null;
+  const photoInput = document.getElementById('report-photo') as HTMLInputElement | null;
+  const photoNote = document.getElementById('report-photo-note');
+  const photoPreview = document.getElementById('report-photo-preview');
+  const photoImg = document.getElementById('report-photo-img') as HTMLImageElement | null;
+  const photoClear = document.getElementById('report-photo-clear');
 
   interface Report {
     id: string;
@@ -268,6 +320,8 @@ const FAQ = [
     nickname: string;
     text: string;
     createdAt: string;
+    /** 'approved' 才會顯示照片；'pending' 只顯示「審核中」 */
+    photo?: 'pending' | 'approved' | null;
   }
 
   let reports: Report[] = [];
@@ -287,6 +341,77 @@ const FAQ = [
   form?.addEventListener('input', () => {
     if (msg) msg.hidden = true;
   });
+
+  /* ── 照片 ──────────────────────────────────────────────
+   * 手機拍的照片動輒四、五 MB，直接上傳又慢又佔空間，
+   * 所以在瀏覽器裡先縮到長邊 1600 px 的 JPEG 再送出。
+   * 縮圖也順手把 EXIF（含 GPS 座標）丟掉了 —— 重畫到 canvas 只留畫面本身。
+   */
+  const MAX_EDGE = 1600;
+  const MAX_BYTES = 1_200_000;
+  let photoDataUrl: string | null = null;
+
+  const showPhotoNote = (text: string) => {
+    if (!photoNote) return;
+    photoNote.textContent = text;
+    photoNote.hidden = false;
+  };
+
+  const clearPhoto = () => {
+    photoDataUrl = null;
+    if (photoInput) photoInput.value = '';
+    if (photoPreview) photoPreview.hidden = true;
+    if (photoImg) photoImg.removeAttribute('src');
+    if (photoNote) photoNote.hidden = true;
+  };
+
+  const shrink = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale = Math.min(1, MAX_EDGE / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('no canvas'));
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // 先用 0.82，還是太大就再壓一次
+        let out = canvas.toDataURL('image/jpeg', 0.82);
+        if (out.length * 0.75 > MAX_BYTES) out = canvas.toDataURL('image/jpeg', 0.6);
+        resolve(out);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('bad image'));
+      };
+      img.src = url;
+    });
+
+  photoInput?.addEventListener('change', async () => {
+    const file = photoInput.files?.[0];
+    if (!file) return clearPhoto();
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+      clearPhoto();
+      showPhotoNote('只收 JPG、PNG 或 WebP 的照片。');
+      return;
+    }
+    showPhotoNote('處理照片中…');
+    try {
+      photoDataUrl = await shrink(file);
+      if (photoImg) photoImg.src = photoDataUrl;
+      if (photoPreview) photoPreview.hidden = false;
+      showPhotoNote('照片會在我看過之後才公開，文字的部分會立刻出現。');
+    } catch {
+      clearPhoto();
+      showPhotoNote('這張照片讀不出來，換一張試試。');
+    }
+  });
+
+  photoClear?.addEventListener('click', clearPhoto);
 
   const show = (text: string, kind: 'ok' | 'err') => {
     if (!msg) return;
@@ -389,11 +514,34 @@ const FAQ = [
       body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-body';
       body.textContent = r.text ?? '';
 
+      card.append(top, when, body);
+
+      if (r.photo === 'approved') {
+        const fig = document.createElement('a');
+        fig.href = `/api/reports/photo?id=${encodeURIComponent(r.id)}`;
+        fig.target = '_blank';
+        fig.rel = 'noopener noreferrer';
+        fig.className = 'mt-3 block';
+        const im = document.createElement('img');
+        im.src = fig.href;
+        im.loading = 'lazy';
+        im.alt = `${r.resort} 的現場照片，由雪友提供`;
+        im.className =
+          'max-h-72 w-auto rounded-xl border border-line transition-opacity hover:opacity-90';
+        fig.append(im);
+        card.append(fig);
+      } else if (r.photo === 'pending') {
+        const wait = document.createElement('p');
+        wait.className = 'mt-3 text-xs text-muted';
+        wait.textContent = '📷 這則有附照片，審核通過後才會顯示。';
+        card.append(wait);
+      }
+
       const who = document.createElement('p');
       who.className = 'mt-4 border-t border-line pt-3 text-xs text-muted';
       who.textContent = `— ${r.nickname || '匿名雪友'}`;
 
-      card.append(top, when, body, who);
+      card.append(who);
       list.append(card);
     }
   }
@@ -428,6 +576,7 @@ const FAQ = [
       nickname: String(data.get('nickname') ?? ''),
       text: String(data.get('text') ?? ''),
       website: String(data.get('website') ?? ''),
+      photo: photoDataUrl,
     };
 
     submitBtn.disabled = true;
@@ -443,8 +592,14 @@ const FAQ = [
 
       if (res.ok && result.ok) {
         (window as any).snowmedTrack?.('done', 'snow-report');
-        show('收到了，謝謝你！你的回報已經出現在下面，其他雪友馬上看得到。', 'ok');
+        show(
+          photoDataUrl
+            ? '收到了，謝謝你！文字已經出現在下面，照片我看過之後才會公開。'
+            : '收到了，謝謝你！你的回報已經出現在下面，其他雪友馬上看得到。',
+          'ok'
+        );
         form.reset();
+        clearPhoto();
         if (counter) counter.textContent = '0';
         if (timeInput) timeInput.value = nowLocal();
         if (result.report) {

@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="563" viewBox="0 0 1000 563">
+  <!--
+    工具卡片「雪場即時狀況回饋單」的背景圖（原創向量插圖，不是第三方素材，不需要授權標示）。
+    這個 .svg 是原始檔，同目錄的 tool-snow-report.jpg 由它輸出（1000x563，與其他卡片一致）。
+    構圖：卡片會由上往下疊深色遮罩，只有上緣約三分之一看得清楚，
+    所以稜線與纜車壓在畫面上半部；窄螢幕會裁掉左右，重點放中間。
+    畫法跟 tool-helmet-check.svg 是同一套，兩張插圖看起來才像一組的。
+  -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#0b2f4e"/>
+      <stop offset="42%" stop-color="#17577f"/>
+      <stop offset="100%" stop-color="#3a86b4"/>
+    </linearGradient>
+    <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1d5883"/>
+      <stop offset="100%" stop-color="#14456b"/>
+    </linearGradient>
+    <linearGradient id="mid" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#0f3a5c"/>
+      <stop offset="100%" stop-color="#0a2b45"/>
+    </linearGradient>
+    <linearGradient id="snowcap" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cfe4f4"/>
+    </linearGradient>
+    <linearGradient id="slope" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eaf4fc"/>
+      <stop offset="100%" stop-color="#bcd6ea"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.62" cy="0.18" r="0.6">
+      <stop offset="0%" stop-color="#9fd8f7" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#9fd8f7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 天空 -->
+  <rect width="1000" height="563" fill="url(#sky)"/>
+  <rect width="1000" height="563" fill="url(#glow)"/>
+  <g fill="#ffffff">
+    <circle cx="128" cy="62" r="2.6" opacity="0.7"/>
+    <circle cx="232" cy="118" r="2" opacity="0.5"/>
+    <circle cx="352" cy="54" r="2.4" opacity="0.6"/>
+    <circle cx="512" cy="96" r="1.8" opacity="0.45"/>
+    <circle cx="700" cy="60" r="2.6" opacity="0.6"/>
+    <circle cx="846" cy="126" r="2" opacity="0.5"/>
+    <circle cx="930" cy="70" r="2.4" opacity="0.55"/>
+  </g>
+
+  <g transform="translate(0 -78)">
+  <!-- 最遠的一排山：淡、低對比，做出空氣感 -->
+  <path d="M0 268 L96 196 L168 246 L262 168 L352 252 L440 190 L520 258 L610 176 L702 250 L790 198 L880 258 L1000 202 L1000 650 L0 650 Z"
+        fill="url(#far)" opacity="0.55"/>
+
+  <!-- 主稜線 -->
+  <path id="ridge"
+        d="M0 330 L110 236 L186 286 L296 150 L392 246 L470 198 L556 272 L668 132 L760 232 L840 186 L920 252 L1000 214 L1000 650 L0 650 Z"
+        fill="url(#mid)"/>
+  <clipPath id="ridgeClip"><use href="#ridge"/></clipPath>
+  <!-- 山頂積雪 -->
+  <path d="M296 150 L356 212 L330 222 L296 206 L264 224 L238 208 Z" fill="url(#snowcap)"/>
+  <path d="M668 132 L734 200 L704 212 L668 194 L634 214 L606 196 Z" fill="url(#snowcap)"/>
+  <path d="M110 236 L152 280 L132 288 L110 276 L86 290 L66 278 Z" fill="url(#snowcap)" opacity="0.85"/>
+  <path d="M840 186 L882 232 L860 240 L840 228 L816 242 L796 230 Z" fill="url(#snowcap)" opacity="0.85"/>
+  <!-- 背光面，讓山有立體感。裁進稜線裡，免得多出幾條直的邊 -->
+  <g clip-path="url(#ridgeClip)">
+    <path d="M296 150 L392 246 L470 198 L556 272 L556 650 L296 650 Z" fill="#061c30" opacity="0.22"/>
+    <path d="M668 132 L760 232 L840 186 L920 252 L1000 214 L1000 650 L668 650 Z" fill="#061c30" opacity="0.14"/>
+  </g>
+  </g>
+
+  <!-- 雪坡 -->
+  <path d="M0 404 C 200 366, 330 430, 520 408 C 700 388, 850 436, 1000 400 L1000 563 L0 563 Z"
+        fill="url(#slope)"/>
+  <!-- 雪道上的轉彎痕跡 -->
+  <g fill="none" stroke="#9dbdd6" stroke-width="3" stroke-linecap="round" opacity="0.5">
+    <path d="M250 563 C 300 500, 250 470, 300 424"/>
+    <path d="M330 563 C 380 502, 330 472, 380 428"/>
+    <path d="M690 563 C 740 504, 690 474, 740 430"/>
+  </g>
+
+  <!-- 纜車：兩根塔柱與纜繩，一眼就知道是雪場 -->
+  <g stroke="#0a2438" stroke-linecap="round">
+    <path d="M178 402 L178 196" stroke-width="7"/>
+    <path d="M150 208 L206 208" stroke-width="6"/>
+    <path d="M820 392 L820 160" stroke-width="7"/>
+    <path d="M792 172 L848 172" stroke-width="6"/>
+    <path d="M178 204 C 420 282, 600 258, 820 168" stroke-width="3" fill="none" opacity="0.9"/>
+  </g>
+  <!-- 吊掛的纜車廂 -->
+  <g fill="#0a2438">
+    <path d="M356 252 L356 264" stroke="#0a2438" stroke-width="3"/>
+    <rect x="338" y="264" width="36" height="26" rx="7"/>
+    <path d="M556 244 L556 256" stroke="#0a2438" stroke-width="3"/>
+    <rect x="538" y="256" width="36" height="26" rx="7"/>
+  </g>
+  <g fill="#7dd3fc" opacity="0.85">
+    <rect x="344" y="270" width="24" height="10" rx="3"/>
+    <rect x="544" y="262" width="24" height="10" rx="3"/>
+  </g>
+</svg>
