@@ -13,6 +13,8 @@
  *
  * 每個選項的 recommend：投完票之後推薦給這個人的工具（href 對應 consts.ts 的 TOOLS）
  * 與一句「為什麼推薦你這個」。
+ * 要推薦工具以外的頁面（例如許願區）就自己補上 label 與 emoji ——
+ * 沒有 label 而且 href 又不是工具的話，建置時會直接報錯，擋掉打錯的網址。
  *
  * 題目有兩種：
  * - 一般題（有 options）：選一個選項，看各選項的比例。
@@ -90,6 +92,11 @@ export const POLLS = [
         recommend: { href: '/tools/xray-check', why: '膝蓋扭到後要不要照 X 光？用渥太華規則三分鐘自己檢查。' },
       },
       {
+        id: 'ankle',
+        label: '腳踝',
+        recommend: { href: '/tools/xray-check', why: '腳踝扭到要不要照 X 光？渥太華規則連腳踝也適用，三分鐘自己檢查。' },
+      },
+      {
         id: 'wrist',
         label: '手腕',
         recommend: { href: '/tools/pre-trip-checklist', why: '手腕骨折是單板新手最常見的傷，護腕就在檢核表的第一區。' },
@@ -143,6 +150,41 @@ export const POLLS = [
       href: '/tools/training-plan',
       why: '有日期就能排訓練：從今天到出發前該練什麼，一頁排給你。',
     },
+  },
+  {
+    id: 'useful',
+    emoji: '💬',
+    question: '這個網頁讓你覺得如何？',
+    options: [
+      {
+        id: 'very',
+        label: '非常實用！',
+        recommend: {
+          href: '/tools/snow-report',
+          why: '太好了。那這個你可能還沒看過：雪友即時回報的雪場狀況，出發前掃一眼。',
+        },
+      },
+      {
+        id: 'ok',
+        label: '還算可以用',
+        recommend: {
+          href: '/wishlist',
+          emoji: '📮',
+          label: '許願留言區',
+          why: '哪裡卡卡的、少了什麼？一句話就好，我會看，也真的會改。',
+        },
+      },
+      {
+        id: 'no',
+        label: '沒太大幫助',
+        recommend: {
+          href: '/wishlist',
+          emoji: '📮',
+          label: '許願留言區',
+          why: '抱歉沒幫上忙。告訴我你本來想找什麼，我把它做出來。',
+        },
+      },
+    ],
   },
 ];
 

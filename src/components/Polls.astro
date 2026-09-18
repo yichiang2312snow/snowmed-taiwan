@@ -9,6 +9,17 @@
  */
 import { POLLS } from '../../functions/api/_polls.js';
 import { TOOLS } from '../consts';
+
+/**
+ * 投完票要推薦什麼：預設是 consts.ts 裡的工具，
+ * 想指到工具以外的頁面（例如許願區）就在題目裡自己給 label 與 emoji。
+ * 兩個都沒有 = 網址打錯了，建置時直接失敗，不要等到上線才發現連結是死的。
+ */
+const recTarget = (rec: { href: string; label?: string; emoji?: string }) => {
+  const tool = TOOLS.find((t) => t.href === rec.href);
+  if (!tool && !rec.label) throw new Error(`投票推薦指到不存在的工具：${rec.href}`);
+  return { emoji: rec.emoji ?? tool!.emoji, name: rec.label ?? tool!.name };
+};
 ---
 
 <div id="polls" class="grid gap-5 sm:grid-cols-2">
@@ -60,8 +71,7 @@ import { TOOLS } from '../consts';
 
         {/* 投完票才出現：依他的答案推薦一個工具 */}
         {p.options.map((o) => {
-          const tool = TOOLS.find((t) => t.href === o.recommend.href);
-          if (!tool) throw new Error(`投票推薦指到不存在的工具：${o.recommend.href}`);
+          const target = recTarget(o.recommend);
           return (
             <a
               data-rec={o.id}
@@ -70,14 +80,14 @@ import { TOOLS } from '../consts';
               class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-surface p-3 transition-colors hover:bg-tint2"
             >
               <span class="text-2xl leading-none" aria-hidden="true">
-                {tool.emoji}
+                {target.emoji}
               </span>
               <span class="min-w-0">
                 <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase">
                   給你的建議
                 </span>
                 <span class="block text-sm font-bold break-words text-head group-hover:underline">
-                  {tool.name} →
+                  {target.name} →
                 </span>
                 <span class="mt-0.5 block text-xs leading-relaxed break-words text-muted">
                   {o.recommend.why}
