@@ -4,6 +4,7 @@
  *
  * 首頁 HERO 用的是一次一題的 HeroPoll.astro；這個元件目前沒有掛在任何頁面上，
  * 留著是為了之後想做一個獨立的投票頁時可以直接用。
+ * 日期題（type: 'date'）的畫法目前只做在 HeroPoll，所以這裡先略過那種題目。
  * 題目在 functions/api/_polls.js（前後端共用），投票邏輯在 src/scripts/polls.ts。
  */
 import { POLLS } from '../../functions/api/_polls.js';
@@ -12,7 +13,7 @@ import { TOOLS } from '../consts';
 
 <div id="polls" class="grid gap-5 sm:grid-cols-2">
   {
-    POLLS.map((p) => (
+    POLLS.filter((p) => Array.isArray(p.options)).map((p) => (
       <section
         class="poll min-w-0 rounded-2xl border border-line bg-panel p-5 sm:p-6"
         data-poll={p.id}

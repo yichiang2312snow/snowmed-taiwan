@@ -13,6 +13,11 @@
  *
  * 每個選項的 recommend：投完票之後推薦給這個人的工具（href 對應 consts.ts 的 TOOLS）
  * 與一句「為什麼推薦你這個」。
+ *
+ * 題目有兩種：
+ * - 一般題（有 options）：選一個選項，看各選項的比例。
+ * - 日期題（type: 'date'）：填一個日期，票數以「半個月」為單位彙總，
+ *   看目前最多人出發的時段。計票方式與 key 都不一樣，見 polls.js。
  */
 export const POLLS = [
   {
@@ -128,4 +133,32 @@ export const POLLS = [
       },
     ],
   },
+  {
+    id: 'departure',
+    type: 'date',
+    emoji: '📅',
+    question: '預計幾月幾號出發去滑雪？',
+    hint: '選好日期就看得到目前最多人出發的時段。還沒訂行程的話，填你心裡想的那天也可以。',
+    recommend: {
+      href: '/tools/training-plan',
+      why: '有日期就能排訓練：從今天到出發前該練什麼，一頁排給你。',
+    },
+  },
 ];
+
+/** 日期題允許的範圍：今天往前 7 天（剛出發的也讓他填）到往後兩年 */
+export const DATE_POLL_RANGE = { pastDays: 7, futureDays: 730 };
+
+/**
+ * 日期分組：以半個月為單位。
+ * 只到「幾月上／下半」而不是精確到某一天 —— 一來大家的行程本來就差幾天，
+ * 二來單一日期的票數太散，看不出「大家都什麼時候去」。
+ * 回傳像 '2027-01-H1'（1–15 日）或 '2027-01-H2'（16 日之後）。
+ */
+export function dateBucket(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
+  if (!m) return null;
+  const day = Number(m[3]);
+  if (day < 1 || day > 31) return null;
+  return `${m[1]}-${m[2]}-${day <= 15 ? 'H1' : 'H2'}`;
+}

@@ -43,66 +43,133 @@ import { TOOLS } from '../consts';
             <span class="min-w-0 light:text-sky-950">{p.question}</span>
           </h3>
 
-          <div class="poll-options mt-3 grid gap-1.5" role="group" aria-label="選項">
-            {p.options.map((o) => (
-              <button
-                type="button"
-                data-option={o.id}
-                class="min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-left text-sm font-medium break-words text-white transition-colors hover:border-accent hover:bg-white/20 disabled:opacity-60 light:border-sky-200 light:bg-sky-50 light:text-sky-950 light:hover:border-sky-500 light:hover:bg-sky-100"
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
+          {p.type === 'date' ? (
+            /* 日期題：填一個日期，送出後看目前最多人出發的時段 */
+            <Fragment>
+              <p class="mt-2 text-xs leading-relaxed break-words text-body/80 light:text-slate-600">
+                {p.hint}
+              </p>
 
-          <ol class="poll-results mt-3 space-y-2" hidden>
-            {p.options.map((o) => (
-              <li data-result={o.id} class="min-w-0">
-                <div class="flex items-baseline justify-between gap-3 text-sm">
-                  <span class="poll-label min-w-0 font-medium break-words text-white light:text-sky-950">{o.label}</span>
-                  <span class="shrink-0 text-xs text-body/80 tabular-nums light:text-slate-500">
-                    <span class="poll-pct font-black text-white light:text-sky-950">0%</span>
-                    <span class="poll-n ml-1">(0)</span>
-                  </span>
-                </div>
-                <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/15 light:bg-sky-100">
-                  <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700 light:bg-sky-600" style="width:0%" />
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p class="poll-footer mt-2.5 text-xs text-body/80 light:text-slate-500" hidden>
-            共 <span class="poll-total tabular-nums">0</span> 票
-          </p>
+              <div class="poll-options mt-3 grid gap-2">
+                <input
+                  type="date"
+                  class="poll-date-input min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm font-medium text-white disabled:opacity-60 light:border-sky-200 light:bg-sky-50 light:text-sky-950"
+                  aria-label="預計出發日期"
+                />
+                <button
+                  type="button"
+                  class="poll-date-submit min-w-0 rounded-xl bg-white px-3.5 py-2.5 text-sm font-bold text-bg transition-colors hover:bg-accent disabled:opacity-60 light:bg-sky-700 light:text-white light:hover:bg-sky-600"
+                >
+                  送出，看大家都什麼時候去 →
+                </button>
+                <p class="poll-date-note text-xs text-accent light:text-sky-700" hidden />
+              </div>
 
-          {/* 投完票才出現：依他的答案推薦一個工具 */}
-          {p.options.map((o) => {
-            const tool = TOOLS.find((t) => t.href === o.recommend.href);
-            if (!tool) throw new Error(`投票推薦指到不存在的工具：${o.recommend.href}`);
-            return (
-              <a
-                data-rec={o.id}
-                href={o.recommend.href}
+              <p
+                class="poll-date-headline mt-3 rounded-xl bg-white/10 px-3 py-2 text-xs leading-relaxed font-bold break-words text-white light:bg-sky-50 light:text-sky-950"
                 hidden
-                class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-white/10 p-3 transition-colors hover:bg-white/20 light:border-sky-300 light:bg-sky-50 light:hover:bg-sky-100"
-              >
-                <span class="text-2xl leading-none" aria-hidden="true">
-                  {tool.emoji}
-                </span>
-                <span class="min-w-0">
-                  <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
-                    給你的建議
+              />
+
+              {/* 長條是投完票才知道有哪些區間，所以由 JS 生出來 */}
+              <ol class="poll-results mt-3 space-y-2" hidden />
+              <p class="poll-footer mt-2.5 text-xs text-body/80 light:text-slate-500" hidden>
+                共 <span class="poll-total tabular-nums">0</span> 票
+              </p>
+
+              {(() => {
+                const tool = TOOLS.find((t) => t.href === p.recommend.href);
+                if (!tool) throw new Error(`投票推薦指到不存在的工具：${p.recommend.href}`);
+                return (
+                  <a
+                    data-rec="date"
+                    data-href={p.recommend.href}
+                    href={p.recommend.href}
+                    hidden
+                    class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-white/10 p-3 transition-colors hover:bg-white/20 light:border-sky-300 light:bg-sky-50 light:hover:bg-sky-100"
+                  >
+                    <span class="text-2xl leading-none" aria-hidden="true">
+                      {tool.emoji}
+                    </span>
+                    <span class="min-w-0">
+                      <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
+                        給你的建議
+                      </span>
+                      <span class="block text-sm font-bold break-words text-white group-hover:underline light:text-sky-950">
+                        {tool.name} →
+                      </span>
+                      <span class="mt-0.5 block text-xs leading-relaxed break-words text-body/85 light:text-slate-600">
+                        {p.recommend.why}
+                      </span>
+                    </span>
+                  </a>
+                );
+              })()}
+            </Fragment>
+          ) : (
+            <Fragment>
+            <div class="poll-options mt-3 grid gap-1.5" role="group" aria-label="選項">
+              {p.options.map((o) => (
+                <button
+                  type="button"
+                  data-option={o.id}
+                  class="min-w-0 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-left text-sm font-medium break-words text-white transition-colors hover:border-accent hover:bg-white/20 disabled:opacity-60 light:border-sky-200 light:bg-sky-50 light:text-sky-950 light:hover:border-sky-500 light:hover:bg-sky-100"
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+
+            <ol class="poll-results mt-3 space-y-2" hidden>
+              {p.options.map((o) => (
+                <li data-result={o.id} class="min-w-0">
+                  <div class="flex items-baseline justify-between gap-3 text-sm">
+                    <span class="poll-label min-w-0 font-medium break-words text-white light:text-sky-950">{o.label}</span>
+                    <span class="shrink-0 text-xs text-body/80 tabular-nums light:text-slate-500">
+                      <span class="poll-pct font-black text-white light:text-sky-950">0%</span>
+                      <span class="poll-n ml-1">(0)</span>
+                    </span>
+                  </div>
+                  <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/15 light:bg-sky-100">
+                    <div class="poll-bar h-full rounded-full bg-accent transition-all duration-700 light:bg-sky-600" style="width:0%" />
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p class="poll-footer mt-2.5 text-xs text-body/80 light:text-slate-500" hidden>
+              共 <span class="poll-total tabular-nums">0</span> 票
+            </p>
+
+            {/* 投完票才出現：依他的答案推薦一個工具 */}
+            {p.options.map((o) => {
+              const tool = TOOLS.find((t) => t.href === o.recommend.href);
+              if (!tool) throw new Error(`投票推薦指到不存在的工具：${o.recommend.href}`);
+              return (
+                <a
+                  data-rec={o.id}
+                  href={o.recommend.href}
+                  hidden
+                  class="group mt-3 flex min-w-0 items-start gap-3 rounded-xl border border-accent/60 bg-white/10 p-3 transition-colors hover:bg-white/20 light:border-sky-300 light:bg-sky-50 light:hover:bg-sky-100"
+                >
+                  <span class="text-2xl leading-none" aria-hidden="true">
+                    {tool.emoji}
                   </span>
-                  <span class="block text-sm font-bold break-words text-white group-hover:underline light:text-sky-950">
-                    {tool.name} →
+                  <span class="min-w-0">
+                    <span class="block text-[10px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
+                      給你的建議
+                    </span>
+                    <span class="block text-sm font-bold break-words text-white group-hover:underline light:text-sky-950">
+                      {tool.name} →
+                    </span>
+                    <span class="mt-0.5 block text-xs leading-relaxed break-words text-body/85 light:text-slate-600">
+                      {o.recommend.why}
+                    </span>
                   </span>
-                  <span class="mt-0.5 block text-xs leading-relaxed break-words text-body/85 light:text-slate-600">
-                    {o.recommend.why}
-                  </span>
-                </span>
-              </a>
-            );
-          })}
+                </a>
+              );
+            })}
+            </Fragment>
+          )}
+
         </section>
       ))
     }
@@ -143,7 +210,7 @@ import { TOOLS } from '../consts';
 </div>
 
 <script>
-  import { fetchCounts, wireCard } from '../scripts/polls';
+  import { fetchCounts, wireCard, wireDateCard } from '../scripts/polls';
 
   const root = document.getElementById('hero-poll');
   if (root) {
@@ -173,7 +240,11 @@ import { TOOLS } from '../consts';
 
     // 每次打開都從第一題開始；票數先抓好，投完馬上能顯示比例
     fetchCounts().then((counts) => {
-      cards.forEach((card) => wireCard(card, counts, { remember: false }));
+      cards.forEach((card) =>
+        card.querySelector('.poll-date-input')
+          ? wireDateCard(card, counts)
+          : wireCard(card, counts, { remember: false })
+      );
       show(0);
     });
   }
