@@ -48,7 +48,7 @@ export const NAV = [
 export const IMAGE_CREDITS = [
   {
     file: 'hero-ski-slope.jpg',
-    where: '首頁 HERO 區',
+    where: '首頁 HERO 區、工具卡片：安全帽觀念快篩與雪場即時狀況回饋單',
     title: 'Kyrgyzstan Alpinism and Downhill Skiing',
     author: 'Thomas Depenbusch (Depi)',
     authorUrl: 'https://www.flickr.com/photos/8324633@N03/',
@@ -56,7 +56,7 @@ export const IMAGE_CREDITS = [
       'https://commons.wikimedia.org/wiki/File:Kyrgyzstan_Alpinism_and_Downhill_Skiing_(7208590364).jpg',
     license: 'CC BY 2.0',
     licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
-    modified: '已縮放尺寸以符合網頁需求',
+    modified: '同一張照片依版面需要裁切成不同區塊，並縮放尺寸以符合網頁需求',
   },
   {
     file: 'tools/tool-fitness-check.jpg',
@@ -145,18 +145,6 @@ export const IMAGE_CREDITS = [
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
-  },
-  {
-    file: 'tools/tool-helmet-check.jpg',
-    where: '工具卡片：安全帽觀念快篩',
-    title: 'Kyrgyzstan Alpinism and Downhill Skiing',
-    author: 'Thomas Depenbusch (Depi)',
-    authorUrl: 'https://www.flickr.com/photos/8324633@N03/',
-    sourceUrl:
-      'https://commons.wikimedia.org/wiki/File:Kyrgyzstan_Alpinism_and_Downhill_Skiing_(7208590364).jpg',
-    license: 'CC BY 2.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
-    modified: '取自與首頁 HERO 同一張照片的另一處裁切，並縮放尺寸以符合網頁需求',
   },
   {
     file: 'tools/tool-taiwan-indoor-ski.jpg',
