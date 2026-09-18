@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../consts';
+import { SITE, SITE_A } from '../consts';
 
 const services = [
   {
@@ -106,13 +106,29 @@ const services = [
     <div class="mx-auto max-w-3xl px-5 py-14">
       <div class="rounded-2xl border border-line bg-panel p-7">
         <h2 class="text-lg font-black text-head">看診地點與時段</h2>
-        <p class="mt-3 text-sm leading-relaxed text-muted">
-          {
-            SITE.clinicName
-              ? `${SITE.clinicName}${SITE.clinicAddress ? ` · ${SITE.clinicAddress}` : ''}`
-              : '【待補】看診院所、地址與門診時段。'
-          }
-        </p>
+        {
+          /* consts.ts 填上院所與地址就直接顯示；還沒填的時候，
+             指到個人網站而不是留一句「待補」給讀者看。 */
+          SITE.clinicName ? (
+            <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+              {SITE.clinicName}
+              {SITE.clinicAddress ? ` · ${SITE.clinicAddress}` : ''}
+            </p>
+          ) : (
+            <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+              門診時段與掛號方式會隨每一季調整，最新資訊請見
+              <a
+                href={SITE_A.aboutUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-bold text-accent hover:underline"
+              >
+                {SITE.doctor}的個人網站
+              </a>
+              。網路上無法提供個別化的醫療建議，有急性外傷或劇烈疼痛請直接就醫。
+            </p>
+          )
+        }
         <a
           href="/contact"
           class="mt-6 inline-block rounded-xl bg-cta px-6 py-3 text-sm font-bold text-ctatext hover:bg-accent"

@@ -13,7 +13,7 @@ export const SITE = {
   threads: 'https://www.threads.com/@snowdoc_ycy',
   author: '楊怡強 醫師',
   description:
-    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、訓練計畫產生器、雪場受傷分流判斷、何時該照 X 光、回歸雪場準備度評估、出發前檢核表、日本雪場選擇指引、台灣室內滑雪場館搜尋。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
+    '免費、免註冊的滑雪運動醫學工具平台：行前體能自我檢測、肌力＆體能訓練計畫、安全帽觀念快篩、出發前檢核表、日本雪場選擇指引、台灣室內滑雪場館搜尋，以及受傷後用的雪場分流判斷、何時該照 X 光、腦震盪、疲勞指數監測、回歸雪場準備度評估與雪友即時雪場狀況回報。每個工具都附上依據與適用範圍，你可以自己判斷要不要採用。',
   // TODO 待楊醫師確認：以下聯絡資訊目前是預留欄位
   email: '',
   clinicName: '',
@@ -352,7 +352,7 @@ export const TOOLS = [
     href: '/tools/return-to-snow',
     id: 'SMT-T-08',
     version: TOOLS_VERSION,
-    updated: '2026-09-15',
+    updated: '2026-09-18',
     category: 'injury',
     name: '回歸雪場準備度自評',
     emoji: '↩️',

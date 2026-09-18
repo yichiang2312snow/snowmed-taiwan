@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../consts';
+import { SITE, SITE_A } from '../consts';
 
 const channels = [
   { label: '電子郵件', value: SITE.email, href: SITE.email ? `mailto:${SITE.email}` : null },
@@ -40,12 +40,42 @@ const channels = [
             ))}
           </dl>
         ) : (
-          <div class="mt-10 rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center">
-            <p class="font-bold text-head">聯絡方式尚未設定</p>
-            <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-              請在 <code class="rounded bg-tint2 px-1.5 py-0.5 text-xs">src/consts.ts</code>{' '}
-              填入 email、LINE 官方帳號或社群連結，這一區就會自動顯示。
-            </p>
+          /* 還沒公開 email 或社群帳號時，給讀者一條真的走得通的路，
+             而不是一個「尚未設定」的空框。等 consts.ts 填上就會自動換成上面那張表。 */
+          <div class="mt-10 space-y-4">
+            <div class="min-w-0 rounded-2xl border border-line bg-surface p-6">
+              <p class="font-black text-head">想問工具或網站的事</p>
+              <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+                最快的方式是到
+                <a href="/wishlist" class="font-bold text-accent hover:underline">許願留言區</a>
+                留言 —— 免註冊、可匿名，我會定期看。想要什麼新工具、哪裡用起來卡卡的、資料有誤要更正，都寫在那裡。
+              </p>
+            </div>
+
+            <div class="min-w-0 rounded-2xl border border-line bg-surface p-6">
+              <p class="font-black text-head">想問門診、個別化的醫療問題</p>
+              <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+                個別化的醫療建議沒辦法在網路上給。門診資訊與聯絡方式請見
+                <a
+                  href={SITE_A.aboutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-bold text-accent hover:underline"
+                >
+                  {SITE.doctor}的個人網站
+                </a>
+                ，上面也有更深入的衛教專文。
+              </p>
+            </div>
+
+            <div class="min-w-0 rounded-2xl border border-line bg-surface p-6">
+              <p class="font-black text-head">人在國外雪場、現在就受傷了</p>
+              <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+                不要等回信。先看
+                <a href="/emergency" class="font-bold text-accent hover:underline">海外受傷緊急處置</a>
+                ：急救電話、雪場巡邏隊、附近的醫院與理賠要準備的文件都在那一頁。
+              </p>
+            </div>
           </div>
         )
       }

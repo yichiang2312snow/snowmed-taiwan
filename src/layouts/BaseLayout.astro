@@ -134,10 +134,16 @@ const jsonLd = {
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
     />
 
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230e3450'/%3E%3Cpath d='M50 18v64M22 34l56 32M78 34L22 66' stroke='%237dd3fc' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E"
-    />
+    {/*
+      圖示放實體檔案而不是 data URI —— Google 搜尋結果只抓得到真的網址，
+      iOS 加到主畫面也需要 apple-touch-icon，不然會是一片空白。
+      原始圖形在 public/icon.svg，其他尺寸都是從它輸出的。
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#08243c" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <slot name="head" />

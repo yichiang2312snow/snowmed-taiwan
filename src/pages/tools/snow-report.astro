@@ -202,7 +202,10 @@ const FAQ = [
           >會立刻公開</strong
         >，而且沒有自助刪除。請不要填入姓名、電話、email
         或任何認得出當事人是誰的資訊；描述別人的傷勢時只講一般性的狀況（例如「有人摔傷被巡邏隊載走」），不要寫傷者的身分或就醫細節。照片也一樣
-        —— 拍現場、不要拍人。
+        —— 拍現場、不要拍人。完整說明見<a
+          href="/privacy"
+          class="underline underline-offset-2 hover:text-head">隱私權與使用條款</a
+        >。
       </p>
     </div>
 
@@ -537,11 +540,23 @@ const FAQ = [
         card.append(wait);
       }
 
+      // 卡片底部：暱稱 + 檢舉入口。沒有註冊制，檢舉就是帶著這一則的資訊去許願區留言
+      const foot = document.createElement('div');
+      foot.className =
+        'mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3 text-xs';
+
       const who = document.createElement('p');
-      who.className = 'mt-4 border-t border-line pt-3 text-xs text-muted';
+      who.className = 'min-w-0 text-muted';
       who.textContent = `— ${r.nickname || '匿名雪友'}`;
 
-      card.append(who);
+      const flag = document.createElement('a');
+      flag.className = 'shrink-0 text-muted underline underline-offset-2 hover:text-head';
+      flag.href = '/wishlist#wish-form';
+      flag.title = '內容有問題？到許願區告訴我，會盡快處理';
+      flag.textContent = '⚑ 回報這則';
+
+      foot.append(who, flag);
+      card.append(foot);
       list.append(card);
     }
   }

@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SITE_A, TOOLS } from '../consts';
+
+/**
+ * 隱私權與使用條款。
+ *
+ * 寫作原則：只寫這個網站「實際上」在做的事 ——
+ * 每一條都可以在 functions/ 與各工具頁的程式碼裡對得上，
+ * 不承諾做不到的事，也不抄一份通用範本上來。
+ * 之後行為有變（例如新增會收資料的功能），這一頁要跟著改。
+ */
+const UPDATED = '2026-09-18';
+---
+
+<BaseLayout
+  title="隱私權與使用條款"
+  seoTitle="隱私權與使用條款：這個網站收集什麼、不收集什麼"
+  eyebrow="Privacy & Terms"
+  description="台灣滑雪運動醫學科學平台的隱私權說明與使用條款：不需註冊、不放追蹤 cookie、不記錄 IP 原文，公開留言與照片的處理方式，以及醫療免責聲明。"
+>
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p class="text-lg leading-relaxed font-medium break-words text-head">
+        這一頁講清楚三件事：這個網站收集什麼、不收集什麼，以及你在這裡填的東西會怎麼被處理。
+      </p>
+      <p class="mt-3 text-xs text-muted">最後更新：{UPDATED}</p>
+
+      <!-- 一句話版本 -->
+      <div class="mt-8 rounded-2xl border-l-4 border-accent bg-tint1 p-5 sm:p-6">
+        <p class="text-sm leading-relaxed break-words text-body">
+          <strong class="text-head">一句話版本：</strong>不需要註冊、不放追蹤用的 cookie、不記錄你的 IP
+          原文、不把資料賣給任何人。你在工具裡填的身高體重、勾選的症狀
+          <strong class="text-head">完全留在你自己的瀏覽器</strong>，不會送到伺服器；只有你<strong
+            class="text-head">主動按下送出</strong
+          >的公開留言、雪場回報與照片才會存到這個網站的資料庫。
+        </p>
+      </div>
+
+      <!-- 收什麼 / 不收什麼 -->
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">一、我們不收集的東西</h2>
+      <ul class="mt-4 space-y-2.5">
+        {
+          [
+            '不需要註冊、不需要登入，沒有會員資料。',
+            '沒有追蹤用的 cookie，也沒有任何訪客識別碼或 session。',
+            '不使用 Google Analytics、Meta Pixel 等第三方追蹤服務。',
+            '不記錄你的 IP 位址原文（公開留言與雪場回報只會存 IP 的雜湊值，用來擋灌水，無法回推是誰）。',
+            '不收集 email、電話或任何聯絡方式 —— 因為我們沒有要回信給你。',
+          ].map((t) => (
+            <li class="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed break-words text-body">
+              <span class="mt-0.5 shrink-0 font-bold text-accent" aria-hidden="true">
+                ✗
+              </span>
+              <span class="min-w-0">{t}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">二、工具裡填的內容</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        {TOOLS.length} 個工具裡填的所有內容 —— 身高體重、出發日期、勾選的症狀、單腳跳幾公分 ——
+        <strong class="text-head">都在你的瀏覽器裡算完、顯示完就結束了，不會傳送到伺服器</strong>。
+        關掉分頁就沒了（少數工具會用瀏覽器的 localStorage 幫你記住勾選進度，那份資料一樣只存在你的裝置上）。
+      </p>
+      <p class="mt-3 text-sm leading-relaxed break-words text-body">
+        伺服器只會知道「某一天，某個工具被打開了幾次、有幾個人看到結果」這種純數字，
+        沒有任何欄位可以把兩次使用連在一起，也無法回推是誰。這是為了決定接下來要做哪些工具。
+      </p>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">三、你主動送出的內容</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        以下三個地方是<strong class="text-head">公開</strong>的，送出前請當成在公開場合發言：
+      </p>
+
+      <div class="mt-5 space-y-4">
+        <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <p class="font-black break-words text-head">許願留言區</p>
+          <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+            送出後<strong class="text-head">一律先進待審</strong>，我看過才會公開。暱稱可留空（顯示為「匿名雪友」）。
+            同一頁上方的 Google 表單由 Google 提供，內容會經過 Google 的伺服器；不希望如此的話請改用下方的快速許願，那是跑在本站自己的伺服器上的。
+          </p>
+        </div>
+
+        <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <p class="font-black break-words text-head">雪場即時狀況回饋單</p>
+          <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+            文字<strong class="text-head">送出後立刻公開</strong>（雪況資訊有時效，等審核就失去意義）。
+            照片則相反：<strong class="text-head">要站長看過核准才會顯示</strong>。
+            照片在你的瀏覽器就先被重新縮圖再上傳，原檔的 EXIF（含 GPS 座標、手機型號）不會跟著送出。
+            頁面顯示最近 80 則，照片保留 180 天。
+          </p>
+        </div>
+
+        <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+          <p class="font-black break-words text-head">雪友快問快答（投票）</p>
+          <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+            只累加一個數字，不記錄是誰投的、也不放 cookie。日期題的答案會併成「半個月」的區間再計票。
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-5 rounded-2xl border-l-4 border-red-500 bg-red-500/10 p-5">
+        <p class="text-sm leading-relaxed break-words text-body">
+          <strong class="text-head">請不要在公開留言裡填入可以認出你或別人是誰的資訊</strong>
+          —— 姓名、電話、email、病歷號、傷者的身分或就醫細節都不要寫，照片也請拍現場、不要拍人。
+          需要個別化的醫療建議，請直接就醫。
+        </p>
+      </div>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">四、想刪掉已經送出的內容</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        因為不需要註冊，系統認不出哪一則是你送的，所以沒有自助刪除。請到
+        <a href="/wishlist" class="font-bold text-accent hover:underline">許願留言區</a>
+        說明是哪一則（雪場、時間、大概的內容），我看到會處理。
+        不實、灌水、帶有廣告或可能傷害到當事人的內容，我也會主動刪除，不需要事先通知。
+      </p>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">五、資料放在哪裡</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        網站與上述資料都放在 Cloudflare 的服務上（Pages 與 Workers KV）。
+        Cloudflare 作為主機服務商，會依其自身政策處理連線層級的技術紀錄；
+        本站自己的資料庫裡只有上面列出的那些內容。
+        字型由 Google Fonts 提供，載入字型時你的瀏覽器會連到 Google 的伺服器。
+      </p>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">六、醫療免責聲明</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        這個網站提供的是<strong class="text-head">一般性的健康資訊與衛教內容，不是醫療診斷，也不能取代醫師面對面的診察</strong>。
+        所有工具的設計原則都是「有疑慮就建議你去看醫師」；如果結果和你的實際感受不一致，請以你的身體感受與專業醫療意見為準。
+        急性外傷、劇烈疼痛、肢體無力或麻木、意識改變等狀況，請直接就醫或撥打 119（日本境內同樣是 119）。
+      </p>
+      <p class="mt-3 text-sm leading-relaxed break-words text-body">
+        雪場、醫院與交通資訊會變動。本站的每一筆雪場醫療資料都附上官方來源與查證日期，
+        但實際狀況請以各機構的官方公告為準。雪友回報的內容未經查證，請當成線索而非結論。
+      </p>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">七、轉載與引用</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        工具與內容歡迎引用、教學、轉載，條件是<strong class="text-head"
+          >標明出處、非商業使用、改作後以相同方式分享</strong
+        >（CC BY-NC-SA 4.0）。每個工具頁下方都有現成的引用格式，含編號與版本。
+        站上使用的第三方照片另有各自的授權，列在頁尾。
+      </p>
+
+      <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">八、這一頁會變</h2>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body">
+        之後如果新增了會收集資料的功能，這一頁會跟著更新，並改掉上面的日期。
+        有任何疑問，或發現實際行為跟這裡寫的不一致，請到
+        <a href="/wishlist" class="font-bold text-accent hover:underline">許願留言區</a>告訴我，
+        或到<a
+          href={SITE_A.aboutUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-bold text-accent hover:underline">{SITE.doctor}的個人網站</a
+        >。
+      </p>
+    </div>
+  </section>
+</BaseLayout>
