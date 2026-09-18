@@ -91,7 +91,8 @@
   在裡面把 token 復寫回深色版本，所以不管整站是深是淺，
   這些區塊裡的文字、框線、按鈕都會自動用對的顏色。
 */
-.on-dark {
+.on-dark,
+.on-dark-photo {
   --color-surface: #0c3050;
   --color-panel: #113c62;
   --color-line: rgb(255 255 255 / 0.26);
@@ -107,6 +108,29 @@
   --color-cta: #ffffff;
   --color-ctatext: #08243c;
   color-scheme: dark;
+}
+
+/*
+  底下鋪著雪地照片、白天模式要跟著翻淺的區塊（目前是首頁 HERO）。
+  深色模式跟 .on-dark 一樣；白天模式不再蓋藍色濾鏡，照片維持雪地原本的白，
+  所以 token 要換回淺色版，標題與內文才會是深色。
+*/
+[data-theme='light'] .on-dark-photo {
+  --color-surface: #e2edf6;
+  --color-panel: #ffffff;
+  --color-line: rgb(10 42 68 / 0.16);
+  --color-linestrong: rgb(10 42 68 / 0.34);
+  --color-tint1: rgb(10 42 68 / 0.05);
+  --color-tint2: rgb(10 42 68 / 0.09);
+  --color-tint3: rgb(10 42 68 / 0.16);
+  --color-head: #0a2a44;
+  --color-body: #1d3f5b;
+  --color-muted: #46637d;
+  --color-accent: #0d6a9e;
+  --color-accent2: #0a5680;
+  --color-cta: #0d6a9e;
+  --color-ctatext: #ffffff;
+  color-scheme: light;
 }
 
 html {

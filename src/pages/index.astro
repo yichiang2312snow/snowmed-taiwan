@@ -12,7 +12,7 @@ import PopularTools from '../components/PopularTools.astro';
 
 <BaseLayout>
   <!-- HERO -->
-  <section class="relative isolate overflow-hidden bg-band text-white on-dark">
+  <section class="relative isolate overflow-hidden bg-band text-head on-dark-photo light:bg-snow">
     <VisitCounter threshold={1000} />
 
     <Image
@@ -24,8 +24,13 @@ import PopularTools from '../components/PopularTools.astro';
       loading="eager"
       fetchpriority="high"
     />
+    {/*
+      夜間模式蓋深藍色濾鏡；白天模式改成白色薄霧 ——
+      雪地照片本來就是白的，不套藍色濾鏡才看得到雪原本的顏色，
+      左側仍留較厚的白霧，深色的標題與內文才壓得住底下的樹與纜車。
+    */}
     <div
-      class="absolute inset-0 -z-10 bg-gradient-to-r from-band/96 via-band/90 to-band/70"
+      class="absolute inset-0 -z-10 bg-gradient-to-r from-band/96 via-band/90 to-band/70 light:from-white/92 light:via-white/78 light:to-white/40"
       aria-hidden="true"
     >
     </div>
@@ -42,7 +47,7 @@ import PopularTools from '../components/PopularTools.astro';
         {SITE.poweredBy}
       </p>
 
-      <p class="mt-7 max-w-2xl text-lg leading-relaxed font-bold break-words text-white sm:text-xl">
+      <p class="mt-7 max-w-2xl text-lg leading-relaxed font-bold break-words text-head sm:text-xl">
         你可能還不認識我，但這裡有你出發滑雪前最需要的小工具。
       </p>
 
@@ -58,7 +63,7 @@ import PopularTools from '../components/PopularTools.astro';
         >
         <a
           href="/emergency"
-          class="rounded-xl border border-white/40 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-tint1"
+          class="rounded-xl border border-linestrong px-6 py-3.5 text-sm font-bold text-head transition-colors hover:bg-tint1"
           >人在國外受傷了？</a
         >
       </div>

@@ -9,10 +9,13 @@ import xrayCheck from '../assets/tools/tool-xray-check.jpg';
 import japanResorts from '../assets/tools/tool-japan-resorts.jpg';
 import concussion from '../assets/tools/tool-concussion.jpg';
 import taiwanIndoorSki from '../assets/tools/tool-taiwan-indoor-ski.jpg';
+import helmetCheck from '../assets/tools/tool-helmet-check.jpg';
 
 /**
  * 工具卡片的背景圖，key 是工具的網址。
- * 每張圖的授權與出處列在 consts.ts 的 IMAGE_CREDITS，頁尾會自動顯示。
+ * 第三方照片的授權與出處列在 consts.ts 的 IMAGE_CREDITS，頁尾會自動顯示；
+ * 本站自己畫的插圖（例如安全帽觀念快篩）不是第三方素材，不列在那裡，
+ * 原始向量檔就放在圖片旁邊的同名 .svg。
  */
 export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> = {
   '/tools/fitness-check': {
@@ -50,5 +53,9 @@ export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> 
   '/tools/taiwan-indoor-ski': {
     image: taiwanIndoorSki,
     alt: '新竹小叮噹科學主題樂園的室內真雪滑雪場',
+  },
+  '/tools/helmet-check': {
+    image: helmetCheck,
+    alt: '一頂戴著雪鏡的滑雪安全帽，背景是雪山',
   },
 };

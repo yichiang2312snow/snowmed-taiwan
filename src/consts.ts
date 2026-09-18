@@ -71,7 +71,7 @@ export const IMAGE_CREDITS = [
   },
   {
     file: 'tools/tool-training-plan.jpg',
-    where: '工具卡片：行前訓練計畫產生器',
+    where: '工具卡片：行前肌力＆體能訓練計畫產生器',
     title: 'Fitness Model Leg Exercise Strength Weight Training',
     author: 'ThoroughlyReviewed',
     authorUrl: 'https://www.flickr.com/photos/143842337@N03/',
@@ -259,7 +259,7 @@ export const TOOLS = [
     version: TOOLS_VERSION,
     updated: '2026-09-15',
     category: 'prep',
-    name: '行前訓練計畫產生器',
+    name: '行前肌力＆體能訓練計畫產生器',
     emoji: '📅',
     time: '約 1 分鐘',
     summary: '輸入出發日期，自動排出到出發前的分期訓練行程，可以直接列印或存下來。',
