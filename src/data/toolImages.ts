@@ -15,7 +15,7 @@ import snowReport from '../assets/tools/tool-snow-report.jpg';
 /**
  * 工具卡片的背景圖，key 是工具的網址。
  * 第三方照片的授權與出處列在 consts.ts 的 IMAGE_CREDITS，頁尾會自動顯示；
- * 本站自己畫的插圖（例如安全帽觀念快篩）不是第三方素材，不列在那裡，
+ * 本站自己畫的插圖（目前是雪場即時狀況回饋單）不是第三方素材，不列在那裡，
  * 原始向量檔就放在圖片旁邊的同名 .svg。
  */
 export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> = {
@@ -57,7 +57,7 @@ export const TOOL_IMAGES: Record<string, { image: ImageMetadata; alt: string }> 
   },
   '/tools/helmet-check': {
     image: helmetCheck,
-    alt: '一頂戴著雪鏡的滑雪安全帽，背景是雪山',
+    alt: '雪山稜線上的滑雪道，兩側是覆雪的樹林',
   },
   '/tools/snow-report': {
     image: snowReport,

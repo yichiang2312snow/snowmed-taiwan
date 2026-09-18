@@ -147,6 +147,18 @@ export const IMAGE_CREDITS = [
     modified: '已裁切與縮放尺寸；修改後的版本同樣以 CC BY-SA 4.0 授權',
   },
   {
+    file: 'tools/tool-helmet-check.jpg',
+    where: '工具卡片：安全帽觀念快篩',
+    title: 'Kyrgyzstan Alpinism and Downhill Skiing',
+    author: 'Thomas Depenbusch (Depi)',
+    authorUrl: 'https://www.flickr.com/photos/8324633@N03/',
+    sourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Kyrgyzstan_Alpinism_and_Downhill_Skiing_(7208590364).jpg',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+    modified: '取自與首頁 HERO 同一張照片的另一處裁切，並縮放尺寸以符合網頁需求',
+  },
+  {
     file: 'tools/tool-taiwan-indoor-ski.jpg',
     where: '工具卡片：台灣室內滑雪場館搜尋',
     title: '2015-08-22 Indoor ski slope at the Little Ding-Dong Science Theme Park',
