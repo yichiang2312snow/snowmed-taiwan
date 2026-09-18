@@ -1,0 +1,62 @@
+---
+/**
+ * 某一類工具的卡片網格。
+ *
+ * HTML 先照 consts.ts 的順序印出來（沒有 JavaScript、或統計讀不到時就是這個順序），
+ * 載入後再依本站自己的匿名使用次數重新排序 ——
+ * 最多人用的排在左上角，往右、再換行，就是大家實際在用的樣子。
+ *
+ * 次數來自 /api/popular（近 30 天，跟熱門排行同一份資料，所以只多一次快取命中）。
+ * 還沒有人用過的工具維持原本的順序排在後面，不會因為沒數據就被丟到最前面。
+ */
+import ToolCard from './ToolCard.astro';
+import { TOOLS } from '../consts';
+import type { ToolCategory } from '../consts';
+
+interface Props {
+  category: ToolCategory;
+  class?: string;
+}
+const { category, class: className = 'mt-7' } = Astro.props;
+const tools = TOOLS.filter((t) => t.category === category);
+---
+
+<div class:list={['grid gap-5 sm:grid-cols-2 lg:grid-cols-3', className]} data-tool-grid>
+  {tools.map((t) => <ToolCard {...t} />)}
+</div>
+
+<script>
+  const grids = Array.from(document.querySelectorAll<HTMLElement>('[data-tool-grid]'));
+
+  if (grids.length > 0) {
+    (async () => {
+      let uses = new Map<string, number>();
+      try {
+        const res = await fetch('/api/popular');
+        const data = await res.json();
+        for (const t of Array.isArray(data.tools) ? data.tools : []) {
+          // opens = 工具被打開的次數，就是「使用次數」；done 只拿來打平手
+          const opens = Number(t.opens) || 0;
+          const done = Number(t.done) || 0;
+          uses.set(String(t.id), opens * 1000 + done);
+        }
+      } catch {
+        return; // 讀不到統計就維持原本的順序
+      }
+      if (uses.size === 0) return;
+
+      for (const grid of grids) {
+        const cards = Array.from(grid.children) as HTMLElement[];
+        // -1 代表還沒有人用過：排在有數據的後面，彼此維持原順序
+        const score = (el: HTMLElement) => uses.get(el.dataset.tool ?? '') ?? -1;
+
+        const sorted = cards
+          .map((el, i) => ({ el, i }))
+          .sort((a, b) => score(b.el) - score(a.el) || a.i - b.i)
+          .map((x) => x.el);
+
+        if (sorted.some((el, i) => el !== cards[i])) grid.append(...sorted);
+      }
+    })();
+  }
+</script>

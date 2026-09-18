@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ToolCard from '../components/ToolCard.astro';
+import ToolGrid from '../components/ToolGrid.astro';
 import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
 import heroImage from '../assets/hero-ski-slope.jpg';
 import VisitCounter from '../components/VisitCounter.astro';
@@ -102,11 +102,7 @@ import PopularTools from '../components/PopularTools.astro';
                 <p class="text-sm break-words text-muted">{cat.intro}</p>
               </div>
 
-              <div class="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {TOOLS.filter((t) => t.category === cat.id).map((t) => (
-                  <ToolCard {...t} />
-                ))}
-              </div>
+              <ToolGrid category={cat.id} />
             </div>
           ))
         }

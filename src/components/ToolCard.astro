@@ -17,6 +17,7 @@ const bg = TOOL_IMAGES[href];
 
 <a
   href={href}
+  data-tool={href.replace('/tools/', '')}
   class:list={[
     'group relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-line bg-panel p-6 transition-all hover:-translate-y-0.5 hover:border-linestrong hover:shadow-xl hover:shadow-black/20',
     // 有背景照片的卡片，內容永遠落在深色遮罩上 —— 所以文字要固定用深色版的顏色，

@@ -1,0 +1,468 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import { JAPAN_RESORT_DIRECTORY } from '../../data/japanResortDirectory';
+
+/**
+ * 雪場即時狀況回饋單
+ *
+ * 一個開放的回報板：填「雪場名稱 / 發生時間 / 暱稱 / 事件內容」，
+ * 送出後立刻變成下面的小卡片，其他雪友可以直接搜尋最近哪裡出狀況。
+ *
+ * 刻意不做審核 —— 今天的雪崩、今天結冰的跳台，等審完才出現就沒有意義了。
+ * 換來的代價寫在 /api/reports.js：蜜罐欄位、每小時上限、字數限制，
+ * 加上一個只有站長用得到的刪除端點。
+ */
+
+// 雪場名稱給 datalist 用：打幾個字就能選到官方名稱，
+// 大家寫的名字一致，之後用關鍵字搜尋才找得到同一個雪場。
+const RESORT_OPTIONS = [...new Set(JAPAN_RESORT_DIRECTORY.map((r) => r.name))].sort();
+
+const FAQ = [
+  {
+    q: '這裡的回報有經過查證嗎？',
+    a: '沒有。這是雪友之間互相提醒的公開留言板，每一則都是網友自己填的，平台不會、也沒有能力一一查證。請當成「有人這樣說」的線索，實際狀況以雪場官方公告、巡邏隊與現場判斷為準。',
+  },
+  {
+    q: '人就在現場、狀況很緊急，該先做什麼？',
+    a: '先求救，不要先發文。在雪場受傷或目擊事故，第一步是通知雪場巡邏隊（多數日本雪場的纜車站、索道口都有直撥電話），日本境內叫救護車是 119。狀況穩定之後再回來回報，讓後面上山的人知道。受傷當下該不該就醫可以用[[/tools/injury-triage|雪場受傷分流判斷]]。',
+  },
+  {
+    q: '發生時間要填台灣時間還是雪場當地時間？',
+    a: '填雪場當地時間 —— 也就是你在現場看到的時鐘時間。系統不會做時區換算，卡片上顯示的就是你填的那個時間，並標明是當地時間，這樣人在台灣的人看也不會誤解。',
+  },
+  {
+    q: '可以填台灣或日本以外的雪場嗎？',
+    a: '可以，雪場名稱是自由填寫的欄位。輸入框會提示日本 482 座雪場的官方名稱，是為了讓大家寫的名字一致、比較好搜尋；其他國家的雪場直接打名字就好。',
+  },
+  {
+    q: '我填錯了或想刪掉自己的回報怎麼辦？',
+    a: '因為不需要註冊，系統認不出哪一則是你的，所以沒有自助刪除。請到[[/wishlist|許願留言區]]說明是哪一則、哪裡寫錯，我看到會處理。不實、灌水或不當的內容我也會直接刪掉。',
+  },
+  {
+    q: '回報會留多久？',
+    a: '頁面上顯示最近的 80 則，超過的會自動被新的擠掉。雪況資訊過期得很快，卡片上會標出是幾天前的事，超過三天的會標成「較舊」，請自己斟酌參考價值。',
+  },
+];
+---
+
+<ToolLayout
+  title="雪場即時狀況回饋單"
+  seoTitle="雪場即時狀況回報板：雪崩、結冰、事故，雪友互相提醒"
+  emoji="📣"
+  time="約 1 分鐘"
+  summary="今天哪裡發生雪崩？哪個跳台結冰有人受傷？這是一個開放的回報板 —— 填雪場、時間、暱稱與事件內容就送得出去，馬上變成下面的卡片。要出發前也可以先上來看看最近哪個雪場有狀況。"
+  description="開放的雪場即時狀況回報板：雪友可以回報雪崩、結冰、公園設施與事故等現場狀況，送出後立即公開成卡片，並可依雪場名稱搜尋最近的回報。免註冊、可匿名。"
+>
+  <div class="rounded-2xl border-l-4 border-red-500 bg-red-500/10 p-5">
+    <p class="text-sm leading-relaxed break-words text-head">
+      <strong>人在現場、狀況緊急的話，先求救再回報。</strong>
+      通知雪場巡邏隊（纜車站、索道口都有直撥電話），日本境內叫救護車是
+      <strong>119</strong>。這個板子是給「已經安全了、想提醒後面的人」用的。
+    </p>
+  </div>
+
+  <div class="mt-6 rounded-2xl border-l-4 border-accent bg-tint1 p-5">
+    <p class="text-sm leading-relaxed break-words text-body">
+      <strong class="text-head">這裡的每一則都是雪友自己填的，沒有經過查證。</strong>
+      它的價值在於快 —— 官方公告通常要等，但同一條雪道上的人可以馬上提醒你。
+      請把它當成線索，不是結論；實際狀況以雪場官方公告、巡邏隊與你自己在現場的判斷為準。
+    </p>
+  </div>
+
+  <!-- 回報表單 -->
+  <form id="report-form" class="mt-8 space-y-5">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+        <label for="report-resort" class="block text-sm font-bold text-head">
+          雪場名稱 <span class="text-red-400 light:text-red-600">*</span>
+        </label>
+        <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+          打幾個字會跳出日本雪場的官方名稱，其他國家直接填就好。
+        </p>
+        <input
+          type="text"
+          id="report-resort"
+          name="resort"
+          list="resort-options"
+          maxlength="40"
+          required
+          autocomplete="off"
+          placeholder="例如：星野リゾート トマム スキー場"
+          class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
+        />
+        <datalist id="resort-options">
+          {RESORT_OPTIONS.map((name) => <option value={name} />)}
+        </datalist>
+      </div>
+
+      <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+        <label for="report-time" class="block text-sm font-bold text-head">
+          發生時間 <span class="text-red-400 light:text-red-600">*</span>
+        </label>
+        <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+          填<strong class="text-head">雪場當地時間</strong>，不用換算成台灣時間。
+        </p>
+        <input
+          type="datetime-local"
+          id="report-time"
+          name="occurredAt"
+          required
+          class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head focus:border-accent focus:outline-none"
+        />
+      </div>
+    </div>
+
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <label for="report-text" class="block text-sm font-bold text-head">
+        事件內容 <span class="text-red-400 light:text-red-600">*</span>
+      </label>
+      <p class="mt-1 text-xs leading-relaxed break-words text-muted">
+        寫清楚<strong class="text-head">在哪一條道／哪個區域、發生了什麼、你建議後面的人怎麼做</strong
+        >，別人才用得上。
+      </p>
+      <textarea
+        id="report-text"
+        name="text"
+        rows="5"
+        maxlength="500"
+        required
+        placeholder="例如：今天下午在星野 TOMAMU 的公園，中跳台落地區整片結冰，已經有兩個人摔傷被巡邏隊載走。建議今天先不要進公園，或至少先走一次看落地區狀況。"
+        class="mt-3 w-full resize-y rounded-xl border border-line bg-panel px-4 py-3 text-base leading-relaxed text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
+      ></textarea>
+      <p class="mt-1.5 text-right text-xs text-muted">
+        <span id="report-count">0</span> / 500
+      </p>
+    </div>
+
+    <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+      <label for="report-nickname" class="block text-sm font-bold text-head">
+        填表人暱稱 <span class="font-normal text-muted">（選填）</span>
+      </label>
+      <input
+        type="text"
+        id="report-nickname"
+        name="nickname"
+        maxlength="20"
+        placeholder="不填就顯示「匿名雪友」"
+        class="mt-3 w-full rounded-xl border border-line bg-panel px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
+      />
+    </div>
+
+    <!-- 蜜罐欄位：給機器人填的，真人看不到 -->
+    <div class="hidden" aria-hidden="true">
+      <label for="report-website">Website</label>
+      <input type="text" id="report-website" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="rounded-2xl border-l-4 border-accent bg-tint1 p-5">
+      <p class="text-xs leading-relaxed break-words text-muted">
+        <strong class="text-head">送出前請注意：</strong>送出後<strong class="text-head"
+          >會立刻公開</strong
+        >，而且沒有自助刪除。請不要填入姓名、電話、email
+        或任何認得出當事人是誰的資訊；描述別人的傷勢時只講一般性的狀況（例如「有人摔傷被巡邏隊載走」），不要寫傷者的身分或就醫細節。
+      </p>
+    </div>
+
+    <button
+      type="submit"
+      id="report-submit"
+      class="w-full rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      送出回報
+    </button>
+
+    <p
+      id="report-msg"
+      class="rounded-xl px-4 py-3 text-sm leading-relaxed font-bold break-words"
+      hidden
+    >
+    </p>
+  </form>
+
+  <!-- 回報清單 -->
+  <div class="mt-14 border-t border-line pt-10">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <h2 class="text-xl font-black break-words text-head sm:text-2xl">最近的雪場狀況</h2>
+      <p id="report-total" class="text-xs text-muted"></p>
+    </div>
+
+    <div class="mt-5">
+      <label for="report-filter" class="sr-only">搜尋雪場或關鍵字</label>
+      <input
+        type="search"
+        id="report-filter"
+        placeholder="搜尋雪場名稱或關鍵字，例如：二世谷、跳台、雪崩"
+        class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-base text-head placeholder:text-muted/60 focus:border-accent focus:outline-none"
+      />
+    </div>
+
+    <div id="report-list" class="mt-6 space-y-4">
+      <p
+        class="rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm text-muted"
+      >
+        載入中…
+      </p>
+    </div>
+  </div>
+
+  <Fragment slot="basis">
+    <p>
+      這個工具沒有任何醫學演算法 ——
+      它的內容完全來自雪友即時填寫的回報，性質接近雪場現場的口耳相傳，只是把它變成查得到、有時間戳記的形式。
+    </p>
+    <p>
+      設計上刻意<strong>不設審核</strong
+      >：雪況資訊的價值跟時效直接相關，今天結冰的跳台如果等到明天審完才出現，對今天上山的人一點幫助都沒有。代價是內容未經查證，所以頁面上到處都標著這件事，也提供了讓平台隨時刪除不實內容的機制。
+    </p>
+    <p>
+      資料存在本站自己的 Cloudflare KV，不經過任何第三方留言服務；不需要註冊、不收 email，也不記錄
+      IP 原文（只存雜湊值用來擋灌水）。頁面顯示最近 80 則。
+    </p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>
+        <strong>緊急狀況不要靠這裡。</strong
+        >人還在現場、有人受傷或失聯，請直接通知巡邏隊或撥 119，不要先來發文或等別人回覆。
+      </li>
+      <li>
+        <strong>這不是官方的雪崩或封閉資訊。</strong
+        >正式的雪崩風險、雪道封閉與天候公告以雪場官方與當地氣象單位為準。沒有人回報，不代表那裡就是安全的。
+      </li>
+      <li>
+        <strong>內容可能過時或不準確。</strong
+        >雪況以小時為單位在變，而且每個人的程度不同，同一個地形對別人危險不代表對你危險，反之亦然。
+      </li>
+      <li>
+        <strong>不要用它做醫療判斷。</strong
+        >別人寫的傷勢描述不能拿來推論你的狀況。自己或同行者受傷，請用<a
+          href="/tools/injury-triage"
+          class="text-accent underline underline-offset-2 hover:text-head">雪場受傷分流判斷</a
+        >或直接就醫。
+      </li>
+    </ul>
+  </Fragment>
+
+  <Fragment slot="faq">
+    <Faq items={FAQ} />
+  </Fragment>
+</ToolLayout>
+
+<script>
+  const form = document.getElementById('report-form') as HTMLFormElement | null;
+  const msg = document.getElementById('report-msg');
+  const list = document.getElementById('report-list');
+  const totalEl = document.getElementById('report-total');
+  const textarea = document.getElementById('report-text') as HTMLTextAreaElement | null;
+  const counter = document.getElementById('report-count');
+  const submitBtn = document.getElementById('report-submit') as HTMLButtonElement | null;
+  const timeInput = document.getElementById('report-time') as HTMLInputElement | null;
+  const filter = document.getElementById('report-filter') as HTMLInputElement | null;
+
+  interface Report {
+    id: string;
+    resort: string;
+    occurredAt: string;
+    nickname: string;
+    text: string;
+    createdAt: string;
+  }
+
+  let reports: Report[] = [];
+
+  /** 發生時間預設填「現在」（使用者自己的時鐘，人在雪場時就是當地時間） */
+  const nowLocal = () => {
+    const d = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
+    return d.toISOString().slice(0, 16);
+  };
+  if (timeInput && !timeInput.value) timeInput.value = nowLocal();
+
+  textarea?.addEventListener('input', () => {
+    if (counter) counter.textContent = String(textarea.value.length);
+  });
+
+  // 開始改表單就把上一次的訊息收起來，免得「送出成功」跟新的錯誤同時出現
+  form?.addEventListener('input', () => {
+    if (msg) msg.hidden = true;
+  });
+
+  const show = (text: string, kind: 'ok' | 'err') => {
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className =
+      'rounded-xl px-4 py-3 text-sm leading-relaxed font-bold break-words ' +
+      (kind === 'ok'
+        ? 'bg-emerald-500/15 text-emerald-200 light:text-emerald-800'
+        : 'bg-red-500/15 text-red-200 light:text-red-800');
+    msg.hidden = false;
+  };
+
+  /** 「2026-09-18T14:30」→「2026/09/18 14:30」 */
+  const fmtWhen = (value: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value ?? '');
+    if (!m) return value ?? '';
+    return `${m[1]}/${m[2]}/${m[3]} ${m[4]}:${m[5]}`;
+  };
+
+  /**
+   * 幾天前。
+   * 只比日期、不比時間 —— 發生時間是「雪場當地時間」、看的人可能在別的時區，
+   * 算到小時反而會出現「1 小時後」這種怪東西。
+   */
+  const daysAgo = (value: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value ?? '');
+    if (!m) return null;
+    const then = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const now = new Date();
+    const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((today - then) / 86400000);
+  };
+
+  const ageLabel = (days: number | null) => {
+    if (days === null) return '';
+    if (days <= 0) return '今天';
+    if (days === 1) return '昨天';
+    return `${days} 天前`;
+  };
+
+  function render() {
+    if (!list) return;
+    const q = (filter?.value ?? '').trim().toLowerCase();
+    const shown = q
+      ? reports.filter((r) =>
+          `${r.resort} ${r.text} ${r.nickname}`.toLowerCase().includes(q)
+        )
+      : reports;
+
+    list.textContent = '';
+
+    if (totalEl) {
+      totalEl.textContent = reports.length
+        ? q
+          ? `符合「${filter?.value.trim()}」的有 ${shown.length} 則／共 ${reports.length} 則`
+          : `目前有 ${reports.length} 則回報`
+        : '';
+    }
+
+    if (shown.length === 0) {
+      const empty = document.createElement('p');
+      empty.className =
+        'rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm leading-relaxed text-muted';
+      empty.textContent = reports.length
+        ? '沒有符合的回報。換個關鍵字試試，或清空搜尋看全部。'
+        : '還沒有人回報。如果你剛從雪場回來，你可以是第一個。';
+      list.append(empty);
+      return;
+    }
+
+    for (const r of shown) {
+      const days = daysAgo(r.occurredAt);
+      const fresh = days !== null && days <= 2;
+
+      const card = document.createElement('article');
+      card.className =
+        'min-w-0 rounded-2xl border bg-surface p-5 sm:p-6 ' +
+        (fresh ? 'border-accent/60' : 'border-line');
+
+      const top = document.createElement('div');
+      top.className = 'flex flex-wrap items-center gap-x-3 gap-y-2';
+
+      const resort = document.createElement('h3');
+      resort.className = 'min-w-0 text-base font-black break-words text-head';
+      resort.textContent = `📍 ${r.resort}`;
+      top.append(resort);
+
+      const badge = document.createElement('span');
+      badge.className =
+        'shrink-0 rounded-full px-3 py-1 text-[11px] font-bold ' +
+        (fresh ? 'bg-accent text-ctatext light:text-white' : 'bg-tint2 text-muted');
+      badge.textContent = fresh ? ageLabel(days) : days !== null && days > 3 ? '較舊' : ageLabel(days);
+      top.append(badge);
+
+      const when = document.createElement('p');
+      when.className = 'mt-2 text-xs text-muted';
+      when.textContent = `發生時間：${fmtWhen(r.occurredAt)}（雪場當地時間）`;
+
+      const body = document.createElement('p');
+      body.className = 'mt-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-body';
+      body.textContent = r.text ?? '';
+
+      const who = document.createElement('p');
+      who.className = 'mt-4 border-t border-line pt-3 text-xs text-muted';
+      who.textContent = `— ${r.nickname || '匿名雪友'}`;
+
+      card.append(top, when, body, who);
+      list.append(card);
+    }
+  }
+
+  async function load() {
+    if (!list) return;
+    try {
+      const res = await fetch('/api/reports');
+      const data = await res.json();
+      reports = Array.isArray(data.reports) ? data.reports : [];
+      render();
+    } catch {
+      list.textContent = '';
+      const err = document.createElement('p');
+      err.className =
+        'rounded-2xl border-2 border-dashed border-line bg-surface p-8 text-center text-sm text-muted';
+      err.textContent = '目前讀不到回報清單，請稍後再試。';
+      list.append(err);
+    }
+  }
+
+  filter?.addEventListener('input', render);
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn) return;
+
+    const data = new FormData(form);
+    const payload = {
+      resort: String(data.get('resort') ?? ''),
+      occurredAt: String(data.get('occurredAt') ?? ''),
+      nickname: String(data.get('nickname') ?? ''),
+      text: String(data.get('text') ?? ''),
+      website: String(data.get('website') ?? ''),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送出中…';
+
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+
+      if (res.ok && result.ok) {
+        (window as any).snowmedTrack?.('done', 'snow-report');
+        show('收到了，謝謝你！你的回報已經出現在下面，其他雪友馬上看得到。', 'ok');
+        form.reset();
+        if (counter) counter.textContent = '0';
+        if (timeInput) timeInput.value = nowLocal();
+        if (result.report) {
+          // 先把自己這則插到最前面，不用等快取過期
+          reports = [result.report, ...reports];
+          render();
+        }
+        load();
+      } else {
+        show(result.error ?? '送出失敗，請稍後再試。', 'err');
+      }
+    } catch {
+      show('送出失敗，請檢查網路連線後再試一次。', 'err');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出回報';
+    }
+  });
+
+  load();
+</script>

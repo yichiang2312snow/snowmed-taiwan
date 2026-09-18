@@ -51,6 +51,7 @@ draft: false              # 設 true 就不會發佈
 | 卡片排序 | 依「發佈日期」與「最後更新時間」取較晚者，新的在最前面 |
 | 最後更新時間 | 建置時自動讀取該檔案的 git commit 時間，改完推上去就會更新 |
 | 瀏覽計數器 | Cloudflare Pages Functions + KV（`functions/api/views/`），不需第三方服務、不需 API 金鑰 |
+| 工具卡片排序 | HTML 先照 `src/consts.ts` 的順序，載入後依近 30 天使用次數重排（`src/components/ToolGrid.astro`） |
 | 圖片 | 放 `src/assets/`，Astro 會自動產生多種尺寸的 WebP |
 | 圖片授權 | 全部使用 CC BY 授權照片，出處列在 `src/consts.ts` 的 `IMAGE_CREDITS`，會自動顯示在頁尾 |
 
@@ -108,6 +109,38 @@ npx wrangler pages secret put WISH_ADMIN_TOKEN --project-name snowmed-taiwan
 - 不收集 email，暱稱可留空
 - 送出者的 IP **只存雜湊值**（做防灌水用），不存原文
 - 公開的 API 回應完全不含審核欄位與來源雜湊
+
+---
+
+## 雪場即時狀況回饋單的管理
+
+`/tools/snow-report` 的回報跟許願區相反，**送出後立刻公開、不經審核** ——
+今天結冰的跳台如果等到審完才出現就沒有意義了。擋灌水靠蜜罐欄位、每小時上限（同一來源 5 則）與字數限制，
+不實或不當的內容則是事後刪除。
+
+看目前公開的回報：
+
+```bash
+curl -H "Authorization: Bearer <你的TOKEN>" https://snowmed-taiwan.com/api/reports/admin
+```
+
+刪掉某一則（`id` 從上面的清單取得）：
+
+```bash
+curl -X POST https://snowmed-taiwan.com/api/reports/admin \
+  -H "Authorization: Bearer <你的TOKEN>" \
+  -H "content-type: application/json" \
+  -d '{"id":"<回報ID>","action":"delete"}'
+```
+
+Token 用 `REPORT_ADMIN_TOKEN`；沒設定的話會沿用許願區的 `WISH_ADMIN_TOKEN`，兩個都沒有就回 503（不會有預設密碼）。
+
+```bash
+npx wrangler pages secret put REPORT_ADMIN_TOKEN --project-name snowmed-taiwan
+```
+
+頁面顯示最近 80 則（`rpt:feed`），單筆另存一份 180 天（`rpt:i:*`）。
+為了不把免費方案的 KV `list()` 額度用掉，前台讀的是算好的那份清單，只有你手動刪除時才會用到 `list()`。
 
 ## 雪場醫療資料的維護規則
 
