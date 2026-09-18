@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="563" viewBox="0 0 1000 563">
+  <!--
+    工具卡片「疲勞指數監測」的背景圖（原創向量插圖，不是第三方素材，不需要授權標示）。
+    這個 .svg 是原始檔，同目錄的 tool-fatigue-check.jpg 由它輸出（1000x563，與其他卡片一致）。
+    主題取自演講裡的「人體電池」：運動手錶上的心率線與電量。
+    構圖：卡片會由上往下疊深色遮罩，只有上緣約三分之一看得清楚，
+    所以手錶與心率線壓在畫面上半部；窄螢幕會裁掉左右，主體因此置中偏左一點。
+    畫法跟 tool-snow-report.svg 是同一套，插圖看起來才像一組的。
+  -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0%" stop-color="#0a2b48"/>
+      <stop offset="45%" stop-color="#15517c"/>
+      <stop offset="100%" stop-color="#2f7ba6"/>
+    </linearGradient>
+    <linearGradient id="case" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="#e8f2fa"/>
+      <stop offset="55%" stop-color="#c2d6e8"/>
+      <stop offset="100%" stop-color="#8ea9c1"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#0d3151"/>
+      <stop offset="100%" stop-color="#071f34"/>
+    </linearGradient>
+    <linearGradient id="strap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#16405f"/>
+      <stop offset="100%" stop-color="#0c2a42"/>
+    </linearGradient>
+    <linearGradient id="trace" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.15"/>
+      <stop offset="25%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8f3fb"/>
+      <stop offset="100%" stop-color="#bed7ea"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.3" r="0.7">
+      <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 底 -->
+  <rect width="1000" height="563" fill="url(#sky)"/>
+  <rect width="1000" height="563" fill="url(#glow)"/>
+
+  <!-- 遠處的雪山，把它跟站上其他插圖連起來 -->
+  <path d="M0 392 L120 306 L206 358 L318 262 L430 372 L470 348 L556 414 L668 306 L780 388 L880 316 L1000 392 L1000 563 L0 563 Z"
+        fill="#0c3050" opacity="0.85"/>
+  <path d="M318 262 L356 300 L336 310 L314 298 L288 314 L266 300 Z" fill="#dbeaf6" opacity="0.7"/>
+  <path d="M668 306 L702 342 L682 350 L664 340 L640 352 L620 340 Z" fill="#dbeaf6" opacity="0.55"/>
+  <path d="M0 452 C 190 414, 340 474, 520 452 C 700 430, 850 478, 1000 446 L1000 563 L0 563 Z"
+        fill="url(#snow)" opacity="0.92"/>
+
+  <!-- 手錶與心率線：卡片會裁掉左右，所以整組往右移到畫面中間 -->
+  <g transform="translate(176 0)">
+  <!-- 心率線：從手錶往右拉出去，落在卡片看得到的那一條 -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M330 150 L430 150 L452 150 L470 96 L490 206 L512 150 L560 150 L582 150 L600 108 L618 194 L638 150 L700 150
+             L726 150 L744 84 L764 214 L786 150 L860 150 L884 150 L900 116 L918 186 L936 150 L1060 150"
+          stroke="#0a2438" stroke-width="16" opacity="0.35"/>
+    <path d="M330 150 L430 150 L452 150 L470 96 L490 206 L512 150 L560 150 L582 150 L600 108 L618 194 L638 150 L700 150
+             L726 150 L744 84 L764 214 L786 150 L860 150 L884 150 L900 116 L918 186 L936 150 L1060 150"
+          stroke="url(#trace)" stroke-width="7"/>
+  </g>
+
+  <!-- 運動手錶 -->
+  <g>
+    <!-- 錶帶 -->
+    <path d="M118 22 L286 22 L272 96 L132 96 Z" fill="url(#strap)"/>
+    <path d="M132 258 L272 258 L286 344 L118 344 Z" fill="url(#strap)"/>
+    <!-- 錶殼 -->
+    <rect x="98" y="72" width="208" height="212" rx="46" fill="url(#case)"/>
+    <rect x="116" y="90" width="172" height="176" rx="34" fill="url(#face)"/>
+    <!-- 右側按鈕 -->
+    <rect x="304" y="140" width="14" height="34" rx="6" fill="#8ea9c1"/>
+    <rect x="304" y="190" width="14" height="26" rx="6" fill="#8ea9c1"/>
+
+    <!-- 錶面：心率數字位置的小心率線 -->
+    <path d="M140 172 L166 172 L178 148 L192 200 L206 160 L222 172 L264 172"
+          fill="none" stroke="#7dd3fc" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 錶面：電量條（人體電池） -->
+    <rect x="140" y="216" width="124" height="20" rx="10" fill="#0a2438"/>
+    <rect x="140" y="216" width="46" height="20" rx="10" fill="#7dd3fc"/>
+    <rect x="268" y="221" width="7" height="10" rx="3" fill="#0a2438"/>
+    <!-- 錶面：上緣的小標 -->
+    <rect x="140" y="112" width="52" height="10" rx="5" fill="#9dbdd6" opacity="0.75"/>
+    <rect x="202" y="112" width="30" height="10" rx="5" fill="#9dbdd6" opacity="0.4"/>
+  </g>
+  </g>
+
+  <!-- 飄雪 -->
+  <g fill="#ffffff">
+    <circle cx="62" cy="416" r="4" opacity="0.4"/>
+    <circle cx="410" cy="60" r="4" opacity="0.5"/>
+    <circle cx="662" cy="44" r="3.4" opacity="0.45"/>
+    <circle cx="828" cy="238" r="4.4" opacity="0.4"/>
+    <circle cx="952" cy="72" r="3.6" opacity="0.5"/>
+    <circle cx="536" cy="262" r="3.4" opacity="0.35"/>
+  </g>
+</svg>
