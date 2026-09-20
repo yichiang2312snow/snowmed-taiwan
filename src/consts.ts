@@ -26,7 +26,7 @@ export const SITE = {
 /** 網站 A：楊醫師個人官網 */
 export const SITE_A = {
   url: 'https://dr.snowmed-taiwan.com/',
-  aboutUrl: 'https://dr.snowmed-taiwan.com/about/',
+  aboutUrl: 'https://dr.snowmed-taiwan.com/about',
   articlesUrl: 'https://dr.snowmed-taiwan.com/articles',
   label: '楊怡強醫師衛教專文',
   labelLong: '楊怡強醫師個人網站的衛教專文',
@@ -34,6 +34,7 @@ export const SITE_A = {
 
 export const NAV = [
   { href: '/tools', label: '實用小工具' },
+  { href: '/ski-beginner-guide', label: '新手指南' },
   { href: '/emergency', label: '海外受傷' },
   // 衛教文章都在楊醫師的個人網站上，這裡直接外連過去
   { href: SITE_A.articlesUrl, label: '知識庫', external: true },

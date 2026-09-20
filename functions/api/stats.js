@@ -13,7 +13,13 @@
  * 所以網站上「不收集個資、不做追蹤」的說明依然成立。
  */
 
-const DAY_TTL = 60 * 60 * 24 * 400; // 日資料留約 13 個月，月彙總永久保留
+/**
+ * 只存「每日」計數，月報表在讀取時由每日資料加總。
+ * 以前每個事件會同時寫當日鍵與當月鍵，等於每次瀏覽寫 KV 兩次；
+ * 免費方案一天只有 1,000 次寫入，流量一上來就撞牆（2026-09-18 收到 Cloudflare 警告信）。
+ * 改成只寫一次後，額度直接多一倍。每日資料保留 3 年，月報表不會因此少掉歷史。
+ */
+const DAY_TTL = 60 * 60 * 24 * 365 * 3;
 
 /** 允許的事件類型。沒在清單上的一律丟掉，避免被灌入任意資料 */
 const EVENTS = new Set([
@@ -75,11 +81,10 @@ export async function onRequestPost({ request, env }) {
 
   if (!EVENTS.has(event) || !LABEL_RE.test(label)) return json({ ok: false }, 400);
 
-  const { day, month } = taipeiParts();
+  const { day } = taipeiParts();
 
   try {
     await bump(env, `st:d:${day}:${event}:${label}`, DAY_TTL);
-    await bump(env, `st:m:${month}:${event}:${label}`, undefined);
   } catch {
     /* 統計失敗不該影響使用者，安靜地忽略 */
   }
@@ -102,7 +107,9 @@ export async function onRequestGet({ request, env }) {
   const month = url.searchParams.get('month');
   const day = url.searchParams.get('day');
   const all = url.searchParams.get('range') === 'all';
-  const prefix = all ? 'st:m:' : day ? `st:d:${day}:` : `st:m:${month ?? taipeiParts().month}:`;
+  // 三種範圍都從每日鍵 st:d:YYYY-MM-DD:event:label 彙總：
+  //   全部 → 前綴 st:d:；某月 → st:d:YYYY-MM-；某天 → st:d:YYYY-MM-DD:
+  const prefix = all ? 'st:d:' : day ? `st:d:${day}:` : `st:d:${month ?? taipeiParts().month}-`;
 
   const counts = {};
   const byMonth = {};
@@ -111,25 +118,21 @@ export async function onRequestGet({ request, env }) {
     const list = await env.VIEWS.list({ prefix, cursor });
     await Promise.all(
       list.keys.map(async (key) => {
-        let rest = key.name.slice(prefix.length); // [YYYY-MM:]event:label
-        let m = null;
-        if (all) {
-          const j = rest.indexOf(':');
-          if (j < 0) return;
-          m = rest.slice(0, j);
-          rest = rest.slice(j + 1);
-        }
-        const i = rest.indexOf(':');
-        if (i < 0) return;
-        const event = rest.slice(0, i);
-        const label = rest.slice(i + 1);
+        // st:d:YYYY-MM-DD:event:label
+        const parts = key.name.split(':');
+        if (parts.length < 5) return;
+        const keyDay = parts[2];
+        const event = parts[3];
+        const label = parts.slice(4).join(':');
         const n = Number.parseInt((await env.VIEWS.get(key.name)) ?? '0', 10) || 0;
+        if (n === 0) return;
         counts[event] ??= {};
         counts[event][label] = (counts[event][label] ?? 0) + n;
-        if (m) {
+        if (all) {
+          const m = keyDay.slice(0, 7);
           byMonth[m] ??= {};
           byMonth[m][event] ??= {};
-          byMonth[m][event][label] = n;
+          byMonth[m][event][label] = (byMonth[m][event][label] ?? 0) + n;
         }
       })
     );

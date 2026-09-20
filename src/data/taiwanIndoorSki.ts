@@ -64,7 +64,7 @@ export const INDOOR_VENUES: IndoorVenue[] = [
     source: 'https://www.ding-dong.com.tw/skifacility-jp/1943',
     sourceLabel: '小叮噹科學主題樂園 官方網站（場內設施／SKI&SB 教練課程頁）',
     checkedAt: '2026-09-15',
-    note: '平日 09:30–17:00、假日 09:00–17:00，12:00–12:30 場地維護；需購園區門票；官網載明 60 歲以上、心臟病、懷孕、高血壓者不得進入雪場；課程需預約。台灣目前唯一可以在真雪上練習的室內場地。',
+    note: '平日 09:30–17:00、假日 09:00–17:00，12:00–12:30 場地維護；需購園區門票；官網載明 60 歲以上、心臟病、懷孕、高血壓者不得進入雪場；課程需預約。目前查到台灣有室內真雪練習場地的只有這一家。',
   },
 
   // ══════════ 北部 ══════════
@@ -448,7 +448,7 @@ export const INDOOR_VENUES: IndoorVenue[] = [
     typeLabel: '滑雪機',
     machines: null,
     features: { jump: false, freestyle: null, kids: true, snowboard: true, ski: true },
-    featureDetail: '官網：滑雪學校嘉義分校，乾式滑雪機，提供單板與雙板一對一、團體班及新生體驗包場；官網 2025 年仍公告嘉義體驗包場梯次。未提到跳台。雲嘉地區目前查到的唯一一家。',
+    featureDetail: '官網：滑雪學校嘉義分校，乾式滑雪機，提供單板與雙板一對一、團體班及新生體驗包場；官網 2025 年仍公告嘉義體驗包場梯次。未提到跳台。雲嘉地區目前只查到這一家。',
     status: 'open',
     officialUrl: 'https://www.skitaiwan.com/',
     social: 'https://www.facebook.com/profile.php?id=100075433165271',

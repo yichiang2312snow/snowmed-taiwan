@@ -1,0 +1,383 @@
+---
+/**
+ * 滑雪初學者注意事項：給第一次滑雪的人看的完整指南。
+ *
+ * 這一頁的目的有兩個：
+ * 1. 讓「滑雪初學者注意事項」「第一次滑雪要準備什麼」這類搜尋找得到平台，
+ *    再把讀者導到對應的工具（體能檢測、檢核表、安全帽快篩、受傷分流）。
+ * 2. 把工具背後的觀念用一篇文章串起來，工具頁本身文字太少，搜尋引擎看不懂。
+ *
+ * 醫療內容請楊醫師發布前逐段確認；改完內容記得更新下面的 UPDATED。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SITE_A, TOOLS } from '../consts';
+
+const UPDATED = '2026-09-18';
+const PUBLISHED = '2026-09-18';
+
+const tool = (href: string) => TOOLS.find((t) => t.href === href)!;
+const T = {
+  fitness: tool('/tools/fitness-check'),
+  plan: tool('/tools/training-plan'),
+  checklist: tool('/tools/pre-trip-checklist'),
+  helmet: tool('/tools/helmet-check'),
+  indoor: tool('/tools/taiwan-indoor-ski'),
+  resorts: tool('/tools/japan-resorts'),
+  triage: tool('/tools/injury-triage'),
+  xray: tool('/tools/xray-check'),
+  concussion: tool('/tools/concussion'),
+  fatigue: tool('/tools/fatigue-check'),
+};
+
+/** 頁面最上面的重點摘要：搜尋結果與 AI 摘要最常抓這一段 */
+const keyPoints = [
+  '出發前至少 4 週開始練下肢肌力與平衡，第一天才有體力顧安全',
+  '安全帽一定要戴；單板初學者加護腕，雙板請技師依體重調固定器',
+  '第一次滑雪報名教練課，比自己摸索省時間也省膝蓋',
+  '滑雪傷害多發生在下午與最後一趟：累了就收，不要硬撐',
+  '撞到頭、關節腫脹變形、無法承重就停止滑行，用分流工具判斷該不該就醫',
+  '海外旅遊保險要確認「滑雪」不在除外項目，並有緊急後送',
+];
+
+const faqs = [
+  {
+    q: '第一次滑雪需要先做體能訓練嗎？',
+    a: '需要。滑雪一整天大部分時間都在半蹲與離心收縮，平常沒運動的人第一天下午大腿就會沒力，而疲勞正是受傷風險上升的時間點。建議出發前 4 到 8 週開始練深蹲、分腿蹲、橋式與單腳平衡，每週 2 到 3 次；可以先用「行前體能自我檢測」看自己缺哪一項。',
+  },
+  {
+    q: '滑雪初學者選單板還是雙板比較安全？',
+    a: '兩種傷的部位不同。單板初學者最常傷到手腕（跌倒時用手撐），所以護腕很重要；雙板則以膝蓋韌帶傷害較多，固定器設定與正確跌倒方式是關鍵。哪一種都可以入門，重點是第一次上教練課、戴齊護具。',
+  },
+  {
+    q: '滑雪一定要戴安全帽嗎？',
+    a: '建議一定要。頭部外傷是雪地運動最嚴重的傷害來源，安全帽能明顯降低頭部傷害的嚴重程度。初學者跌倒次數多、又常在人多的初級道，被撞的機會也高。撞擊過的安全帽即使外觀完整也建議更換。',
+  },
+  {
+    q: '滑雪前可以先在台灣練習嗎？',
+    a: '可以。台灣有室內真雪場與滑雪機訓練場館，出發前上幾堂課熟悉裝備與基本動作，到雪場的第一天會輕鬆很多。用「台灣室內滑雪場館搜尋」找離你最近的場館。',
+  },
+  {
+    q: '在雪場受傷了，怎麼判斷要不要就醫？',
+    a: '撞到頭後有頭痛、噁心、意識恍惚；關節明顯腫脹、變形、無法承重走四步；手腕或鎖骨劇痛且不敢動，這些都要停止滑行並就醫。不確定時用「雪場受傷分流判斷」與「何時該照 X 光」兩個工具逐項檢查。',
+  },
+  {
+    q: '滑雪的旅遊保險要注意什麼？',
+    a: '先確認保單沒有把滑雪列為除外的「危險活動」，再確認海外醫療費用額度與緊急醫療後送是否包含。日本雪場的救護與後送費用可能相當高，出發前把保險公司的 24 小時電話存進手機。',
+  },
+];
+
+const title = '滑雪初學者注意事項：復健科醫師整理的第一次滑雪完整指南';
+const seoTitle = '滑雪初學者注意事項｜第一次滑雪必看：體能、裝備、雪場安全與受傷處理';
+const description =
+  '第一次滑雪要注意什麼？復健科醫師整理滑雪初學者注意事項：出發前 4 到 8 週的體能準備、安全帽與護具怎麼選、第一天上雪道怎麼摔才安全、單板雙板最常見的受傷與預防、受傷了什麼時候該就醫，以及保險與海外就醫重點。附免費檢核工具。';
+
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const siteUrl = Astro.site?.toString() ?? 'https://snowmed-taiwan.com/';
+
+// Article + FAQPage：讓搜尋引擎知道作者是醫師（醫療內容的作者資歷很重要），並有機會顯示 FAQ
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${canonical}#article`,
+      headline: title,
+      description,
+      inLanguage: 'zh-Hant-TW',
+      datePublished: PUBLISHED,
+      dateModified: UPDATED,
+      author: { '@id': `${siteUrl}#doctor` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      mainEntityOfPage: { '@id': `${canonical}#webpage` },
+      about: ['滑雪初學者', '滑雪注意事項', '第一次滑雪', '滑雪運動傷害預防'],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+
+---
+
+<BaseLayout title={title} seoTitle={seoTitle} description={description} eyebrow="Beginner Guide">
+  <Fragment slot="head">
+    <meta property="article:published_time" content={PUBLISHED} />
+    <meta property="article:modified_time" content={UPDATED} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  </Fragment>
+
+  <!-- 作者與更新資訊 + 重點摘要 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p class="text-sm text-muted">
+        作者：<a href={SITE_A.aboutUrl} class="font-bold text-accent hover:underline" target="_blank" rel="noopener">{SITE.doctor}</a>
+        ｜復健科專科醫師、疼痛與運動醫學次專長，雪齡 200 天以上 ｜ 更新：{UPDATED}
+      </p>
+      <div class="prose-tc mt-6">
+        <p class="text-lg leading-relaxed font-medium text-head">
+          第一次滑雪，最常見的問題不是「學不會」，而是第一天下午就沒力、摔到手腕或膝蓋，後面幾天只能在飯店休息。
+        </p>
+        <p>
+          這篇把初學者出發前到回國後該注意的事，依時間順序整理成一份清單。每一段結尾都有對應的免費工具，可以直接檢查自己準備到哪裡。
+        </p>
+      </div>
+      <div class="mt-8 rounded-2xl border border-line bg-surface p-6">
+        <h2 class="text-base font-black text-head">先看重點：滑雪初學者的 6 件事</h2>
+        <ol class="mt-4 space-y-2.5 text-sm leading-relaxed text-muted">
+          {keyPoints.map((p, i) => (
+            <li class="flex gap-3">
+              <span class="shrink-0 font-black text-accent">{i + 1}.</span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. 體能 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>一、出發前 4 到 8 週：滑雪前的體能準備</h2>
+        <p>
+          滑雪看起來是「站著往下滑」，實際上整天都在半蹲。大腿在每一個轉彎都做離心收縮（邊出力邊被拉長），這種收縮最容易累、隔天也最痠。
+          平常沒有規律運動的人，第一天下午通常就會出現「腿軟、站不穩、轉不動」，而這正是跌倒與受傷最集中的時段。
+        </p>
+        <h3>初學者最需要練的四件事</h3>
+        <ul>
+          <li><strong>下肢肌力</strong>：深蹲、分腿蹲、羅馬尼亞硬舉，每週 2 到 3 次。</li>
+          <li><strong>臀肌與後側鏈</strong>：橋式、側臥髖外展。臀肌無力時，膝蓋會往內夾，是膝蓋韌帶受傷的常見姿勢。</li>
+          <li><strong>單腳平衡</strong>：單腳站、單腳微蹲，左右各 30 到 60 秒。換刃時身體重量常落在單側。</li>
+          <li><strong>有氧耐力</strong>：每週 2 到 3 次、每次 30 分鐘以上，讓你第三天還滑得動。</li>
+        </ul>
+        <p>
+          時間不夠也沒關係，就算只剩 2 週，練習「滑雪蹲」（背靠牆半蹲撐 60 秒）與單腳平衡，第一天的感受還是會差很多。
+        </p>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.fitness, T.plan].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-panel p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 裝備 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>二、第一次滑雪要準備什麼：裝備與護具</h2>
+        <p>
+          初學者的雪板、雪鞋用租的就好，錢應該花在<strong>護具</strong>與<strong>保暖防水</strong>。下面依重要性排序。
+        </p>
+        <h3>安全帽：不是選配</h3>
+        <p>
+          頭部外傷是雪地運動最嚴重的傷害來源。初學者跌倒次數多，又常待在人多的初級道，被別人撞到的機會也比進階者高。
+          安全帽要合頭、扣好下巴帶，撞擊過的帽子即使外觀完整也建議更換。多數雪場都能租到。
+        </p>
+        <h3>護腕：單板初學者必備</h3>
+        <p>
+          單板跌倒時本能會用手撐地，手腕骨折是單板初學者最常見的傷。護腕對初學到中階的單板者有明確的保護效果，建議一開始就戴。
+        </p>
+        <h3>固定器設定：雙板請技師調</h3>
+        <p>
+          雙板的固定器有「該脫的時候會脫開」的設計，設定值（DIN）要依體重、身高、鞋底長度與程度決定。
+          租板時會問你這些資料，請誠實回答程度是「初學」，設定過緊的固定器會把跌倒的力量全部送進膝蓋。
+        </p>
+        <h3>其他容易忽略的</h3>
+        <ul>
+          <li><strong>護目鏡</strong>：雪地反射與高海拔紫外線都強，雪盲是真的會發生的事；陰天也要戴。</li>
+          <li><strong>防水手套、防水外層</strong>：初學者會坐在雪上很多次，棉質衣物濕了很快失溫。</li>
+          <li><strong>雪鞋合腳</strong>：過鬆控制不了板子，過緊會麻與痛。租鞋時多試兩個尺寸。</li>
+          <li><strong>防曬</strong>：臉與嘴唇。</li>
+        </ul>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.helmet, T.checklist].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 雪場與課程 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>三、初學者怎麼選雪場與課程</h2>
+        <ul>
+          <li><strong>報名教練課</strong>。朋友「會滑」不代表「會教」，初學者最需要的是正確的跌倒方式與煞車，這兩件事教練一個上午就能教會，自己摸索可能要摔一整天。</li>
+          <li><strong>選有寬敞初級道、魔毯或緩速纜車的雪場</strong>。第一天不需要大雪場，需要的是不會被高速滑行者穿越的練習區。</li>
+          <li><strong>先查雪場的巡邏隊與最近的醫院</strong>。萬一受傷，知道要找誰、後送要多久，比雪場有幾條雪道重要。</li>
+          <li><strong>出發前先在台灣上一兩堂課</strong>。熟悉穿脫裝備與基本站姿，到雪場的第一天可以直接進入練習。</li>
+        </ul>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.resorts, T.indoor].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-panel p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 第一天上雪道 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>四、第一天上雪道：怎麼摔才安全、什麼時候該停</h2>
+        <h3>跌倒的原則</h3>
+        <ul>
+          <li>覺得要摔了，<strong>主動往側邊或屁股坐下</strong>，比硬撐到最後失控往前撲安全得多。</li>
+          <li>單板：<strong>手握拳、手臂收在身體前方</strong>，用前臂與身體受力，不要伸直手掌撐地。</li>
+          <li>雙板：跌倒後<strong>不要急著站起來繼續滑</strong>，先確認雪板是否脫開、膝蓋有沒有扭到的感覺。</li>
+          <li>摔倒後儘快移到雪道邊緣，坐在雪道中間會被後方的人撞到。</li>
+        </ul>
+        <h3>什麼時候該停</h3>
+        <ul>
+          <li><strong>前 30 分鐘當作熱身</strong>，不要第一趟就上中級道。</li>
+          <li><strong>下午與「最後一趟」的受傷風險最高</strong>。腿開始抖、轉彎變慢、注意力渙散，就是該收的訊號。</li>
+          <li><strong>不喝酒上山</strong>。酒精同時影響判斷、平衡與體溫調節。</li>
+          <li>能見度差、雪面硬冰、風大時，主動降低難度或提早結束。</li>
+          <li>每滑 1 到 2 小時休息、補水、吃點東西，高海拔與低溫會讓你比平常更快脫水。</li>
+        </ul>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.fatigue].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 常見受傷 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>五、滑雪初學者最常見的受傷與預防</h2>
+        <table>
+          <thead>
+            <tr><th>部位</th><th>常見情境</th><th>預防重點</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>頭部、腦震盪</td><td>後仰跌倒後腦著地、被人撞倒</td><td>安全帽、待在雪道邊緣、不逆向或停在盲點</td></tr>
+            <tr><td>手腕（單板）</td><td>往前或往後跌倒伸手撐地</td><td>護腕、練習握拳收手的跌法</td></tr>
+            <tr><td>膝蓋韌帶（雙板）</td><td>低速往後坐倒、板尾勾住、固定器沒脫開</td><td>固定器由技師設定、臀肌訓練、累了就收</td></tr>
+            <tr><td>拇指（雙板）</td><td>跌倒時雪杖把拇指往外掰</td><td>跌倒前放開雪杖、不要把腕帶套死</td></tr>
+            <tr><td>肩膀、鎖骨</td><td>側摔肩膀直接著地</td><td>跌倒時身體側滾分散力量</td></tr>
+            <tr><td>腳踝（單板）</td><td>落地或卡雪時腳踝內翻</td><td>合腳的雪鞋、不要第一天就跳台</td></tr>
+          </tbody>
+        </table>
+        <p>
+          想知道這些傷害背後的機轉與復健，楊醫師在個人網站上有依部位分類的
+          <a href={SITE_A.articlesUrl} target="_blank" rel="noopener">衛教專文</a>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 受傷了怎麼辦 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>六、在雪場受傷了：什麼時候該就醫</h2>
+        <p>不確定嚴不嚴重時，先看有沒有下面這些「紅旗」，有任何一項就停止滑行並找巡邏隊或就醫：</p>
+        <ul>
+          <li>撞到頭之後：頭痛加劇、噁心嘔吐、意識恍惚、記不得剛才發生的事、走路不穩。<strong>當天絕對不要再滑</strong>，短時間內再撞一次是最危險的事。</li>
+          <li>關節明顯腫脹、變形，或受傷當下聽到「啪」一聲。</li>
+          <li>膝蓋或腳踝痛到無法連續走四步。</li>
+          <li>手腕、鎖骨劇痛、不敢動，或外觀有明顯凸起。</li>
+          <li>手腳發麻、無力，或頸部疼痛不敢轉頭（不要移動傷者，直接叫巡邏隊）。</li>
+        </ul>
+        <p>
+          輕微扭傷可以先冰敷、加壓、抬高並休息觀察；但「能走」不代表「沒事」，回國後若腫痛超過幾天沒有改善，仍建議找復健科或骨科評估。
+        </p>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-3">
+        {[T.triage, T.xray, T.concussion].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+      <p class="mt-6 text-sm text-muted">
+        人在海外、不知道該去哪間醫院？看 <a href="/emergency" class="font-bold text-accent hover:underline">海外受傷怎麼辦</a>。
+      </p>
+    </div>
+  </section>
+
+  <!-- 7. 保險 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>七、出發前的保險與行政準備</h2>
+        <ul>
+          <li>確認旅遊保險<strong>沒有把滑雪列為除外項目</strong>，海外醫療額度足夠，並包含緊急醫療後送。</li>
+          <li>把保險公司 24 小時電話、雪場巡邏隊電話、住宿地址存進手機，並截圖離線備份。</li>
+          <li>有舊傷、手術史或慢性病的人，出發前找醫師做一次行前評估，並帶著英文病摘或用藥清單。</li>
+          <li>把護照影本與保單影本分開放。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <h2 class="text-2xl font-black text-head sm:text-3xl">滑雪初學者常見問題</h2>
+      <div class="mt-8 divide-y divide-line overflow-hidden rounded-2xl border border-line">
+        {faqs.map((f) => (
+          <details class="group bg-surface">
+            <summary class="cursor-pointer list-none px-6 py-5 font-bold text-head transition-colors hover:bg-panel">
+              <span class="flex items-start justify-between gap-4">
+                <span>{f.q}</span>
+                <span class="shrink-0 text-accent transition-transform group-open:rotate-45" aria-hidden="true">＋</span>
+              </span>
+            </summary>
+            <p class="px-6 pb-6 text-sm leading-relaxed text-muted">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 免責 + 收尾 -->
+  <section class="bg-band text-white on-dark">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <h2 class="text-2xl font-black">準備好了嗎？</h2>
+      <p class="mt-4 text-sm leading-relaxed text-body">
+        用「出發前注意事項互動檢核表」把上面的事項變成你自己的清單，勾選狀態會存在瀏覽器裡，出發前再打開確認一次。
+      </p>
+      <a href={T.checklist.href} class="mt-7 inline-block rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent">
+        {T.checklist.emoji} 產生我的出發前檢核表 →
+      </a>
+      <p class="mt-10 text-xs leading-relaxed text-muted">
+        本文為一般性衛教資訊，由復健科專科醫師依現有文獻與臨床經驗整理，不能取代個別診療。若有舊傷、手術史或慢性病，請於出發前諮詢醫師。
+      </p>
+    </div>
+  </section>
+</BaseLayout>
