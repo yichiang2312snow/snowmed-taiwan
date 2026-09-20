@@ -34,7 +34,7 @@ const {
 } = Astro.props;
 
 const headTitle = seoTitle ?? title;
-const pageTitle = headTitle ? `${headTitle}｜${SITE.name}` : `${SITE.name}｜${SITE.poweredByShort}`;
+const pageTitle = headTitle ? `${headTitle}｜${SITE.name}` : `${SITE.name}｜${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const ogImageUrl = new URL(ogImage, Astro.site).toString();
 const siteUrl = Astro.site?.toString() ?? 'https://snowmed-taiwan.com/';

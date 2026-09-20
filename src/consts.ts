@@ -7,6 +7,8 @@ export const SITE = {
   poweredBy: 'powered by 楊怡強醫師｜復健科專科醫師・疼痛醫學與運動醫學次專長・專攻滑雪運動醫學',
   /** 選單列用的短版副標 */
   poweredByShort: 'powered by 楊怡強醫師',
+  /** 選單列標題下的一句話（也當首頁分頁標題的副標） */
+  tagline: '滑雪初學者的最佳夥伴，以及玩家們最需要的小工具',
   doctor: '楊怡強 醫師',
   doctorEn: 'Dr. Yi-Chiang Yang',
   /** 醫師在其他平台的帳號（schema.org sameAs 用，幫搜尋引擎把同一個人連起來） */
