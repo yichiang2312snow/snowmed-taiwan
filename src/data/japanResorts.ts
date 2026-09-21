@@ -200,11 +200,11 @@ export const RESORTS: Resort[] = [
     pricing: {
       adultYen: 10000,
       childYen: 0,
-      season: '2025-26',
+      season: '2026-27',
       tier: 'high',
-      note: '正規期 ¥10,000；特定日 ¥12,000、年末年始等最繁忙日 ¥13,000。小學生以下免費',
+      note: '正規期（12/19–3/22）¥10,000；特定日 ¥12,000、年末年始與 2 月連假等最繁忙日 ¥13,000。開季期（10/31–12/18）與春滑（3/23–3/31）¥8,000。小學生以下免費',
       source: 'https://www.princehotels.co.jp/ski/karuizawa/winter/lift/',
-      checkedAt: '2026-09-13',
+      checkedAt: '2026-09-21',
     },
   },
   {
@@ -587,12 +587,13 @@ export const RESORTS: Resort[] = [
         '官方雪道圖只逐條列出雪道、沒有彙總統計。非官方版本的計算基礎還互相不同 —— 有的按雪道條數、有的按滑走距離（易 31%／中 40%／難 29%），無法直接比較，所以這裡不給單一數字。',
     },
     family: {
-      childcare: '度假村附設保育園收滿 1 歲到學齡前，09:00–17:00，每小時 ¥2,000，完全預約制（前一日 18:00 前）',
+      childcare:
+        '度假村附設保育園收滿 1 歲到學齡前，08:30–18:30、每週二公休，每小時 ¥2,000（另計午餐 ¥1,300、點心 ¥250），完全預約制（前一日 18:00 前）。冬季開放 2026/11/28–2027/3/31',
       kidsFacilities: '4–7 歲兒童滑雪學校；West Mt. 的兒童雪園（2 歲以下免費）',
       kidsTicket: '3 歲以下纜車免費；4–12 歲一般季窗口 ¥8,300、線上 ¥6,400',
       rating: 'high',
       source: 'https://rusutsu.com/nursery-school/',
-      checkedAt: '2026-09-13',
+      checkedAt: '2026-09-21',
     },
     language: {
       siteLanguages: ['日文', '英文', '簡體中文', '韓文'],

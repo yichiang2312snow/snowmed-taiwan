@@ -238,7 +238,7 @@ export const TOOLS = [
     href: '/tools/japan-resorts',
     id: 'SMT-T-01',
     version: TOOLS_VERSION,
-    updated: '2026-09-15',
+    updated: '2026-09-21',
     category: 'prep',
     name: '日本雪場選擇指引',
     emoji: '🗾',
