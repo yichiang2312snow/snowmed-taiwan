@@ -355,7 +355,7 @@ export const TOOLS = [
     href: '/tools/return-to-snow',
     id: 'SMT-T-08',
     version: TOOLS_VERSION,
-    updated: '2026-09-18',
+    updated: '2026-09-25',
     category: 'injury',
     name: '回歸雪場準備度自評',
     emoji: '↩️',
