@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import Faq from '../../components/Faq.astro';
+import FatigueBodyMap from '../../components/FatigueBodyMap.astro';
 import { SITE_A } from '../../consts';
 
 /**
@@ -13,19 +14,6 @@ import { SITE_A } from '../../consts';
  * 過度訓練沒有單一確診指標，臨床上靠的就是「症狀叢集 + 表現下降 + 監控數值偏離基準」，
  * 所以這裡只做提醒與行動建議，不下診斷。
  */
-
-/** 投影片上的九個症狀。每個附一句「怎麼算數」，避免有人把一般的累也勾下去 */
-const SYMPTOMS = [
-  { id: 'mood', emoji: '😟', label: '情緒起伏', hint: '比平常容易煩躁、提不起勁，對本來喜歡的事也沒興趣。' },
-  { id: 'hr', emoji: '💓', label: '心跳加快', hint: '早上剛醒來的心跳比自己平常快（大約多 5–10 下／分鐘以上）。' },
-  { id: 'perf', emoji: '📉', label: '表現下降', hint: '一樣的重量、一樣的雪道，做起來明顯比以前吃力。' },
-  { id: 'appetite', emoji: '🍔', label: '沒有胃口', hint: '吃不下、體重下降，或訓練後完全不想吃東西。' },
-  { id: 'doms', emoji: '🦵', label: '肌肉痠痛', hint: '痠痛超過 72 小時還沒退，或每次訓練後都痛得比以前久。' },
-  { id: 'focus', emoji: '🧠', label: '無法專注', hint: '注意力難集中、反應變慢，動作也跟著變遲鈍。' },
-  { id: 'sick', emoji: '🤧', label: '頻頻感冒', hint: '一個月內反覆感冒、喉嚨痛，或小傷口特別慢好。' },
-  { id: 'weak', emoji: '🥵', label: '持續無力', hint: '休息一整天也沒有回復的那種疲倦，不是單純的累。' },
-  { id: 'sleep', emoji: '😴', label: '失眠', hint: '睡不著、睡不沉，或睡滿八小時醒來還是覺得累。' },
-];
 
 const MONITOR = [
   {
@@ -112,58 +100,7 @@ const FAQ = [
     <h2 class="text-lg font-black break-words text-head sm:text-xl">
       一、最近一週，你出現過哪些狀況？
     </h2>
-    <p class="mt-2 text-sm leading-relaxed break-words text-muted">
-      可以複選。<strong class="text-head">請以「跟你自己平常比」為準</strong
-      >，不是跟別人比。想不起來的就不要勾。
-    </p>
-
-    <div id="symptoms" class="mt-5 grid gap-3 sm:grid-cols-2">
-      {
-        SYMPTOMS.map((s) => (
-          <label class="group min-w-0 cursor-pointer rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-linestrong has-[:checked]:border-accent has-[:checked]:bg-tint1">
-            <div class="flex items-start gap-3">
-              <input type="checkbox" class="sr-only" data-symptom={s.id} />
-              <span
-                class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-linestrong text-sm leading-none group-has-[:checked]:border-accent group-has-[:checked]:bg-accent group-has-[:checked]:text-bg"
-                aria-hidden="true"
-              >
-                <span class="hidden group-has-[:checked]:inline">✓</span>
-              </span>
-              <span class="min-w-0">
-                <span class="block text-sm font-bold break-words text-head">
-                  <span aria-hidden="true">{s.emoji}</span> {s.label}
-                </span>
-                <span class="mt-1 block text-xs leading-relaxed break-words text-muted">
-                  {s.hint}
-                </span>
-              </span>
-            </div>
-          </label>
-        ))
-      }
-    </div>
-
-    <div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-5 py-4">
-      <p class="text-sm font-bold text-head">
-        已勾選 <span id="symptom-count" class="text-accent tabular-nums">0</span> / {SYMPTOMS.length} 項
-      </p>
-      <button
-        type="button"
-        id="symptom-reset"
-        class="rounded-xl border border-line px-4 py-2 text-xs font-bold text-head transition-colors hover:bg-tint1"
-      >
-        全部清空
-      </button>
-    </div>
-
-    <div id="symptom-result" class="mt-5 rounded-2xl border-l-4 p-5" hidden>
-      <p class="flex items-center gap-2 text-base font-black break-words">
-        <span id="result-emoji" class="text-2xl leading-none" aria-hidden="true"></span>
-        <span id="result-title" class="min-w-0"></span>
-      </p>
-      <p id="result-body" class="mt-2.5 text-sm leading-relaxed break-words text-body"></p>
-      <ul id="result-actions" class="mt-3 space-y-1.5 text-sm leading-relaxed break-words text-body"></ul>
-    </div>
+    <FatigueBodyMap />
   </section>
 
   <!-- 監控習慣 -->
@@ -308,129 +245,6 @@ const FAQ = [
 </ToolLayout>
 
 <script>
-  const box = document.getElementById('symptoms');
-  const countEl = document.getElementById('symptom-count');
-  const resetBtn = document.getElementById('symptom-reset');
-  const result = document.getElementById('symptom-result');
-  const emojiEl = document.getElementById('result-emoji');
-  const titleEl = document.getElementById('result-title');
-  const bodyEl = document.getElementById('result-body');
-  const actionsEl = document.getElementById('result-actions');
-
-  /**
-   * 分級。門檻訂在三個 ——
-   * 一兩個症狀每個人都有，三個以上同時出現才是「叢集」，值得當一回事。
-   */
-  const TIERS = [
-    {
-      min: 6,
-      key: 'high',
-      emoji: '🔴',
-      border: 'border-red-500',
-      bg: 'bg-red-500/10',
-      title: '訊號很多，身體已經在抗議了',
-      body: '這個數量的症狀同時出現，代表疲勞累積得相當明顯。繼續照原訂的量練下去，變強的機會很低，受傷與生病的機會倒是會一直升高。',
-      actions: [
-        '這一週先把訓練量砍一半以上，或直接安排幾天完全休息 —— 休息也是訓練的一部分。',
-        '先把睡眠補回來：睡眠不足的時候，其他做什麼都補不回來。',
-        '如果減量、補眠兩週後還是沒有改善，或有發燒、體重明顯下降、胸痛，請就醫檢查。',
-        '如果滑雪行程就在最近，出發前這一週不要再加練了，把體力留到雪場。',
-      ],
-    },
-    {
-      min: 3,
-      key: 'mid',
-      emoji: '🟠',
-      border: 'border-amber-500',
-      bg: 'bg-amber-500/10',
-      title: '符合過度訓練的樣子，該減量了',
-      body: '三個以上的訊號同時出現，通常代表訓練量已經超過目前的回復能力。這不是意志力的問題 —— 適應是在休息時發生的，沒有休息就沒有進步。',
-      actions: [
-        '接下來一週把強度或訓練量降下來（先降強度，再降次數），給身體 36–72 小時完整回復。',
-        '開始每天固定量靜態心率：連續幾天偏高，就是身體還沒回來的客觀證據。',
-        '睡眠、蛋白質與熱量先顧好，這三個沒到位，練再多也只是在挖洞。',
-        '要出發滑雪的話，出發前一週開始減量（Tapering）。',
-      ],
-    },
-    {
-      min: 1,
-      key: 'low',
-      emoji: '🟡',
-      border: 'border-amber-400',
-      bg: 'bg-amber-400/10',
-      title: '有一點累積，還在可以處理的範圍',
-      body: '一兩個訊號很常見，不一定是過度訓練，但它是身體給的第一個提示。接下來幾天注意它有沒有變多或變久。',
-      actions: [
-        '這幾天先不要再加量，維持現狀就好，讓身體把這一波吃下去。',
-        '睡飽一點，特別是有失眠或早上心跳偏快的話。',
-        '過幾天再回來勾一次：症狀變少就沒事，變多就照上一級處理。',
-      ],
-    },
-    {
-      min: 0,
-      key: 'none',
-      emoji: '🟢',
-      border: 'border-emerald-500',
-      bg: 'bg-emerald-500/10',
-      title: '目前沒有明顯的過度訓練訊號',
-      body: '看起來回復得不錯。這是加量的好時機 —— 但記得加的是「一點點」，而且加完要留 36–72 小時讓身體適應。',
-      actions: [
-        '維持現在的節奏，每次增加的量不要一次跳太多。',
-        '趁沒事的時候把基準值建立起來：每天同一時間量靜態心率，連續兩週。',
-        '出發滑雪前一週記得減量，把狀態帶到雪場而不是留在健身房。',
-      ],
-    },
-  ];
-
-  if (box && countEl && result && emojiEl && titleEl && bodyEl && actionsEl) {
-    const boxes = Array.from(box.querySelectorAll<HTMLInputElement>('[data-symptom]'));
-
-    const render = () => {
-      const picked = boxes.filter((b) => b.checked);
-      countEl.textContent = String(picked.length);
-
-      const tier = TIERS.find((t) => picked.length >= t.min)!;
-      result.className = `mt-5 rounded-2xl border-l-4 p-5 ${tier.border} ${tier.bg}`;
-      emojiEl.textContent = tier.emoji;
-      titleEl.textContent = tier.title;
-      bodyEl.textContent = tier.body;
-
-      actionsEl.textContent = '';
-      for (const a of tier.actions) {
-        const li = document.createElement('li');
-        li.className = 'flex min-w-0 items-start gap-2.5';
-        const dot = document.createElement('span');
-        dot.className = 'mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent';
-        dot.setAttribute('aria-hidden', 'true');
-        const span = document.createElement('span');
-        span.className = 'min-w-0';
-        span.textContent = a;
-        li.append(dot, span);
-        actionsEl.append(li);
-      }
-
-      result.hidden = false;
-      return tier.key;
-    };
-
-    let tracked = false;
-    for (const b of boxes) {
-      b.addEventListener('change', () => {
-        const key = render();
-        if (!tracked) {
-          (window as any).snowmedTrack?.('done', 'fatigue-check');
-          tracked = true;
-        }
-        (window as any).snowmedTrack?.('result', `fatigue-check/${key}`);
-      });
-    }
-
-    resetBtn?.addEventListener('click', () => {
-      for (const b of boxes) b.checked = false;
-      countEl.textContent = '0';
-      result.hidden = true;
-    });
-  }
 
   // 監控習慣：選一個，顯示對應的做法
   const monitorBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.monitor-btn'));

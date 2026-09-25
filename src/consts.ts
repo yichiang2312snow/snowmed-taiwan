@@ -368,7 +368,7 @@ export const TOOLS = [
     href: '/tools/fatigue-check',
     id: 'SMT-T-12',
     version: TOOLS_VERSION,
-    updated: '2026-09-18',
+    updated: '2026-09-25',
     category: 'injury',
     name: '疲勞指數監測',
     emoji: '🔋',

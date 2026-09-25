@@ -1,0 +1,434 @@
+---
+/**
+ * 過度訓練症狀自我檢查：人形圖 + 可勾選的症狀，下方依勾到幾項給建議。
+ *
+ * 版面沿用「雪場受傷分流判斷」與「腦震盪」那一套（左右兩欄卡片 + 中間人形 + JS 畫連線）。
+ * 差別在這裡不分紅黃兩級 —— 過度訓練看的是「幾個訊號同時出現」，不是哪一個特別嚴重，
+ * 所以判讀規則是數量：三個以上就提醒可能練過頭。
+ *
+ * ⚠️ 這不是診斷工具。過度訓練沒有單一確診指標，這裡只做提醒與行動建議。
+ */
+import { SYMPTOMS, FATIGUE_REGIONS } from '../data/fatigueSymptoms';
+
+const byId = new Map(SYMPTOMS.map((s) => [s.id, s]));
+const regions = FATIGUE_REGIONS.map((r, i) => ({
+  ...r,
+  n: i + 1,
+  items: r.symptoms.map((id) => byId.get(id)!),
+}));
+const left = regions.filter((r) => r.side === 'left');
+const right = regions.filter((r) => r.side === 'right');
+
+// 人形（以身體中線為 x = 0），跟受傷分流頁、腦震盪頁用同一套
+const ARMS = [
+  [-66, 160, -84, 262, -92, 352],
+  [66, 160, 84, 262, 92, 352],
+];
+const LEGS = [
+  [-26, 360, -32, 480, -36, 576],
+  [26, 360, 32, 480, 36, 576],
+];
+const TORSO =
+  'M-58,150 Q0,138 58,150 Q74,156 74,172 Q78,262 50,372 L-50,372 Q-78,262 -74,172 Q-74,156 -58,150 Z';
+const pts = (a: number[]) => a.join(' ');
+---
+
+<div>
+  <p class="text-sm leading-relaxed break-words text-muted">
+    過度訓練不是只有「腿痠」—— 訊號會從腦袋、睡眠、免疫、心跳、食慾各個地方冒出來。
+    <strong class="text-head">請以「跟你自己平常比」為準</strong>，不是跟別人比；想不起來的就不要勾。
+    手機可以點人形圖上的號碼，跳到對應的清單。
+  </p>
+
+  <form id="fg-form" class="mt-5">
+    <div
+      id="fg-map"
+      class="relative grid gap-4 md:grid-cols-[minmax(0,1fr)_200px_minmax(0,1fr)] md:gap-x-6"
+    >
+      {/* 連線層：寬螢幕時由 JS 畫，把卡片連到人形上的點 */}
+      <svg
+        id="fg-lines"
+        class="pointer-events-none absolute inset-0 hidden h-full w-full md:block"
+        aria-hidden="true"></svg>
+
+      {/* 人形：手機時在最上面，寬螢幕時在中間 */}
+      <div
+        class="order-first mx-auto w-full max-w-[220px] md:order-none md:col-start-2 md:row-start-1 md:max-w-none md:self-start md:sticky md:top-24"
+      >
+        <svg
+          id="fg-figure"
+          viewBox="-125 30 250 590"
+          class="h-auto w-full"
+          role="img"
+          aria-label="人形示意圖，上面標了 6 個號碼，對應各部位可能出現的過度訓練訊號"
+          style="font-family: inherit"
+        >
+          <g>
+            {/* 先畫一層外框色、再疊一層填色，拼起來就是乾淨的剪影輪廓 */}
+            {[
+              { color: 'var(--color-linestrong)', grow: 6 },
+              { color: 'var(--color-panel)', grow: 0 },
+            ].map(({ color, grow }) => (
+              <g
+                style={`fill:${color};stroke:${color}`}
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                {LEGS.map((l) => (
+                  <polyline points={pts(l)} style={`fill:none;stroke-width:${36 + grow}`} />
+                ))}
+                {ARMS.map((a) => (
+                  <polyline points={pts(a)} style={`fill:none;stroke-width:${26 + grow}`} />
+                ))}
+                <path d={TORSO} style={`stroke-width:${grow}`} />
+                <rect x="-14" y="118" width="28" height="40" rx="6" style={`stroke-width:${grow}`} />
+                <circle cx="0" cy="85" r="42" style={`stroke-width:${grow}`} />
+                <circle cx="-94" cy="372" r="15" style={`stroke-width:${grow}`} />
+                <circle cx="94" cy="372" r="15" style={`stroke-width:${grow}`} />
+                <ellipse cx="-44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+                <ellipse cx="44" cy="594" rx="25" ry="11" style={`stroke-width:${grow}`} />
+              </g>
+            ))}
+
+            {/* 大腦與心臟：讓「連到哪裡」一眼就看得出來 */}
+            <g style="stroke:var(--color-linestrong);stroke-width:1.6" stroke-linecap="round">
+              <ellipse cx="0" cy="67" rx="28" ry="19" style="fill:var(--color-tint2)" />
+              <path d="M0,49 L0,85 M-17,58 q7,6 0,13 M17,58 q-7,6 0,13" style="fill:none" />
+              <path
+                d="M14,196 c0,-10 -14,-13 -18,-4 c-4,-9 -18,-6 -18,4 c0,12 18,22 18,22 s18,-10 18,-22 z"
+                style="fill:var(--color-tint2)"
+              />
+            </g>
+          </g>
+
+          {/* 標記點：每個部位一個號碼，連線就指到這裡 */}
+          {regions.map((r) =>
+            r.targets.map(([x, y]) => (
+              <g class="fg-marker" data-region={r.id}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="13"
+                  style="fill:var(--color-band);stroke:var(--color-accent);stroke-width:2"
+                />
+                <text
+                  x={x}
+                  y={y}
+                  text-anchor="middle"
+                  dominant-baseline="central"
+                  font-size="14"
+                  font-weight="900"
+                  style="fill:#ffffff"
+                >
+                  {r.n}
+                </text>
+              </g>
+            ))
+          )}
+        </svg>
+        <p class="mt-1 text-center text-[11px] text-muted md:hidden">號碼對應下方的症狀清單</p>
+      </div>
+
+      {[
+        { side: 'left', list: left },
+        { side: 'right', list: right },
+      ].map(({ side, list }) => (
+        <div
+          class:list={[
+            'space-y-4',
+            side === 'left' ? 'md:col-start-1' : 'md:col-start-3',
+            'md:row-start-1',
+          ]}
+        >
+          {list.map((r) => (
+            <fieldset
+              class="fg-card min-w-0 rounded-2xl border border-line bg-surface p-4 transition-colors has-[:checked]:border-accent sm:p-5"
+              data-region={r.id}
+              data-side={side}
+            >
+              <legend class="flex items-center gap-2 px-1">
+                <span
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-band text-xs font-black text-white ring-2 ring-accent"
+                  aria-hidden="true"
+                >
+                  {r.n}
+                </span>
+                <span class="text-sm font-black text-head">{r.title}</span>
+              </legend>
+
+              <div class="mt-3 grid gap-2">
+                {r.items.map((s) => (
+                  <label class="flex min-w-0 cursor-pointer items-start gap-3 rounded-xl border border-line bg-panel px-3.5 py-2.5 text-sm transition-colors has-[:checked]:border-accent has-[:checked]:bg-tint2">
+                    <input
+                      type="checkbox"
+                      name="symptom"
+                      value={s.label}
+                      data-symptom={s.id}
+                      class="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+                    />
+                    <span class="min-w-0">
+                      <span class="block leading-relaxed font-bold break-words text-head">
+                        {s.label}
+                      </span>
+                      <span class="mt-0.5 block text-xs leading-relaxed break-words text-muted">
+                        {s.hint}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <p class="text-sm font-bold text-head">
+        已勾選 <span id="fg-count" class="text-accent tabular-nums">0</span> / {SYMPTOMS.length} 項
+      </p>
+      <div class="flex flex-1 flex-wrap justify-end gap-3">
+        <button
+          type="submit"
+          class="flex-1 rounded-xl bg-cta px-6 py-4 text-sm font-bold text-ctatext transition-colors hover:bg-accent sm:flex-none"
+        >
+          看我的結果
+        </button>
+        <button
+          type="reset"
+          id="fg-reset"
+          class="rounded-xl border border-line bg-panel px-6 py-4 text-sm font-bold text-head hover:bg-tint1"
+        >
+          清除
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- 結果 -->
+  <div id="fg-result" class="mt-8 scroll-mt-20" hidden>
+    <div id="fg-box" class="rounded-2xl border-l-4 p-6 sm:p-8">
+      <p class="text-xs font-black tracking-widest text-muted uppercase">你的結果</p>
+      <p class="mt-3 flex flex-wrap items-center gap-3">
+        <span id="fg-emoji" class="text-4xl leading-none" aria-hidden="true"></span>
+        <span id="fg-title" class="text-xl font-black break-words sm:text-2xl"></span>
+      </p>
+      <p id="fg-lead" class="mt-3 text-sm leading-relaxed break-words text-head"></p>
+
+      <ul id="fg-actions" class="mt-5 space-y-3 text-sm leading-relaxed break-words text-head"></ul>
+
+      <div id="fg-picked-wrap" class="mt-6 rounded-xl bg-tint1 p-5" hidden>
+        <p class="text-sm font-bold text-head">你勾選的訊號：</p>
+        <ul id="fg-picked" class="mt-2 space-y-1.5 text-sm break-words text-muted"></ul>
+      </div>
+    </div>
+
+    <p
+      class="mt-4 rounded-xl border border-line bg-panel px-5 py-4 text-xs leading-relaxed break-words text-muted"
+    >
+      <strong class="text-head">這個結果不是診斷。</strong>
+      過度訓練沒有單一檢查可以確認，勾很多項只代表「值得認真看待」；勾很少也不保證身體就沒事。
+      這些症狀也都不是過度訓練專屬的 —— 降低訓練量、好好睡兩週還是沒改善，或出現發燒、明顯體重減輕、胸痛、呼吸困難，請就醫檢查。
+    </p>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('fg-form') as HTMLFormElement | null;
+  const result = document.getElementById('fg-result');
+  const map = document.getElementById('fg-map');
+  const lines = document.getElementById('fg-lines') as SVGSVGElement | null;
+  const countEl = document.getElementById('fg-count');
+  const wide = window.matchMedia('(min-width: 768px)');
+
+  // ── 連線：把每張卡片連到人形上的號碼點（只在寬螢幕畫） ──
+  function drawLines() {
+    if (!map || !lines) return;
+    lines.textContent = '';
+    if (!wide.matches) return;
+    const box = map.getBoundingClientRect();
+    lines.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+
+    for (const card of Array.from(map.querySelectorAll<HTMLElement>('.fg-card'))) {
+      const id = card.dataset.region;
+      const cb = card.getBoundingClientRect();
+      const active = card.querySelector('input:checked') !== null;
+      const ax = card.dataset.side === 'left' ? cb.right - box.left : cb.left - box.left;
+      const ay = cb.top - box.top + 22;
+
+      map.querySelectorAll<SVGGElement>(`.fg-marker[data-region="${id}"]`).forEach((m) => {
+        const mb = m.getBoundingClientRect();
+        const tx = mb.left + mb.width / 2 - box.left;
+        const ty = mb.top + mb.height / 2 - box.top;
+        const midx = card.dataset.side === 'left' ? ax + 14 : ax - 14;
+        const d = `M${ax},${ay} L${midx},${ay} L${tx},${ty}`;
+        for (const [stroke, width] of [
+          ['var(--color-panel)', '5'],
+          [active ? 'var(--color-accent)' : 'var(--color-muted)', active ? '2.5' : '1.5'],
+        ] as const) {
+          const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          p.setAttribute('d', d);
+          p.setAttribute('fill', 'none');
+          p.setAttribute('stroke', stroke);
+          p.setAttribute('stroke-width', width);
+          p.setAttribute('stroke-linejoin', 'round');
+          p.setAttribute('stroke-linecap', 'round');
+          lines.append(p);
+        }
+        const circle = m.querySelector('circle');
+        if (circle) circle.style.fill = active ? 'var(--color-accent)' : 'var(--color-band)';
+        const text = m.querySelector('text');
+        if (text) text.style.fill = active ? 'var(--color-ctatext, #08243c)' : '#ffffff';
+      });
+    }
+  }
+
+  // 手機：點人形上的號碼，捲到對應的卡片
+  map?.querySelectorAll<SVGGElement>('.fg-marker').forEach((m) => {
+    m.style.cursor = 'pointer';
+    m.addEventListener('click', () => {
+      const card = map.querySelector<HTMLElement>(`.fg-card[data-region="${m.dataset.region}"]`);
+      card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card?.classList.add('ring-2', 'ring-accent');
+      setTimeout(() => card?.classList.remove('ring-2', 'ring-accent'), 1600);
+    });
+  });
+
+  let raf = 0;
+  const schedule = () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(drawLines);
+  };
+  window.addEventListener('resize', schedule);
+  window.addEventListener('load', schedule);
+  document.fonts?.ready.then(schedule);
+  schedule();
+
+  if (form && result) {
+    const checkedBoxes = () =>
+      Array.from(form.querySelectorAll<HTMLInputElement>('input[name="symptom"]:checked'));
+
+    /**
+     * 分級。門檻訂在三個 ——
+     * 一兩個症狀每個人都有，三個以上同時出現才是「叢集」，值得當一回事。
+     */
+    const TIERS = [
+      {
+        min: 6,
+        key: 'high',
+        emoji: '🔴',
+        cls: 'border-red-500 bg-red-500/15',
+        title: '訊號很多，身體已經在抗議了',
+        lead: '這個數量的症狀同時出現，代表疲勞累積得相當明顯。繼續照原訂的量練下去，變強的機會很低，受傷與生病的機會倒是會一直升高。',
+        actions: [
+          '這一週先把訓練量砍一半以上，或直接安排幾天完全休息 —— 休息也是訓練的一部分。',
+          '先把睡眠補回來：睡眠不足的時候，其他做什麼都補不回來。',
+          '如果減量、補眠兩週後還是沒有改善，或有發燒、體重明顯下降、胸痛，請就醫檢查。',
+          '如果滑雪行程就在最近，出發前這一週不要再加練了，把體力留到雪場。',
+        ],
+      },
+      {
+        min: 3,
+        key: 'mid',
+        emoji: '🟠',
+        cls: 'border-amber-500 bg-amber-500/15',
+        title: '符合過度訓練的樣子，該減量了',
+        lead: '三個以上的訊號同時出現，通常代表訓練量已經超過目前的回復能力。這不是意志力的問題 —— 適應是在休息時發生的，沒有休息就沒有進步。',
+        actions: [
+          '接下來一週把強度或訓練量降下來（先降強度，再降次數），給身體 36–72 小時完整回復。',
+          '開始每天固定量靜態心率：連續幾天偏高，就是身體還沒回來的客觀證據。',
+          '睡眠、蛋白質與熱量先顧好，這三個沒到位，練再多也只是在挖洞。',
+          '要出發滑雪的話，出發前一週開始減量（Tapering）。',
+        ],
+      },
+      {
+        min: 1,
+        key: 'low',
+        emoji: '🟡',
+        cls: 'border-amber-400 bg-amber-400/15',
+        title: '有一點累積，還在可以處理的範圍',
+        lead: '一兩個訊號很常見，不一定是過度訓練，但它是身體給的第一個提示。接下來幾天注意它有沒有變多或變久。',
+        actions: [
+          '這幾天先不要再加量，維持現狀就好，讓身體把這一波吃下去。',
+          '睡飽一點，特別是有失眠或早上心跳偏快的話。',
+          '過幾天再回來勾一次：症狀變少就沒事，變多就照上一級處理。',
+        ],
+      },
+      {
+        min: 0,
+        key: 'none',
+        emoji: '🟢',
+        cls: 'border-emerald-500 bg-emerald-500/15',
+        title: '目前沒有明顯的過度訓練訊號',
+        lead: '看起來回復得不錯。這是加量的好時機 —— 但記得加的是「一點點」，而且加完要留 36–72 小時讓身體適應。',
+        actions: [
+          '維持現在的節奏，每次增加的量不要一次跳太多。',
+          '趁沒事的時候把基準值建立起來：每天同一時間量靜態心率，連續兩週。',
+          '出發滑雪前一週記得減量，把狀態帶到雪場而不是留在健身房。',
+        ],
+      },
+    ];
+
+    const box = document.getElementById('fg-box');
+    const pickedWrap = document.getElementById('fg-picked-wrap');
+
+    const updateCount = () => {
+      if (countEl) countEl.textContent = String(checkedBoxes().length);
+      schedule();
+    };
+    form.addEventListener('change', updateCount);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const picked = checkedBoxes().map((b) => b.value);
+      const tier = TIERS.find((t) => picked.length >= t.min)!;
+
+      if (box) box.className = `rounded-2xl border-l-4 p-6 sm:p-8 ${tier.cls}`;
+      const set = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      set('fg-emoji', tier.emoji);
+      set('fg-title', tier.title);
+      set('fg-lead', tier.lead);
+
+      const actions = document.getElementById('fg-actions');
+      if (actions) {
+        actions.textContent = '';
+        for (const a of tier.actions) {
+          const li = document.createElement('li');
+          li.className = 'flex gap-2.5';
+          const dot = document.createElement('span');
+          dot.textContent = '·';
+          dot.className = 'shrink-0 font-bold';
+          const span = document.createElement('span');
+          span.textContent = a;
+          li.append(dot, span);
+          actions.append(li);
+        }
+      }
+
+      const list = document.getElementById('fg-picked');
+      if (list) {
+        list.textContent = '';
+        for (const t of picked) {
+          const li = document.createElement('li');
+          li.textContent = '· ' + t;
+          list.append(li);
+        }
+      }
+      if (pickedWrap) pickedWrap.hidden = picked.length === 0;
+
+      (window as any).snowmedTrack?.('done', 'fatigue-check');
+      (window as any).snowmedTrack?.('result', 'fatigue-check/' + tier.key);
+
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('fg-reset')?.addEventListener('click', () => {
+      result.hidden = true;
+      setTimeout(updateCount, 0);
+    });
+  }
+</script>
