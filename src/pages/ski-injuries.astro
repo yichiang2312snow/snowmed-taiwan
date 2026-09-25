@@ -1,0 +1,580 @@
+---
+/**
+ * 滑雪運動傷害總覽：依身體部位整理成因、判斷與預防。
+ *
+ * 這一頁的定位跟 ski-beginner-guide 一樣是「中樞頁」，但打的是另一群人：
+ * 已經受傷、或想知道自己最可能傷到哪裡的人。Search Console 顯示「滑雪運動傷害」
+ * 這個字已經有曝光，但站上沒有任何一頁是為它寫的（2026-09）。
+ *
+ * 資料來源刻意集中在 2026 年 3 月韓國平昌 ISSS 年會的口頭報告 —— 楊醫師本人到場
+ * 聽的第一手內容，這是其他整理文拿不到的東西。引用時一律標明報告人與單位。
+ * 數字若與日後正式發表的論文不同，以論文為準；改動內容記得更新 UPDATED。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SITE_A, TOOLS } from '../consts';
+
+const UPDATED = '2026-09-25';
+const PUBLISHED = '2026-09-25';
+
+const tool = (href: string) => TOOLS.find((t) => t.href === href)!;
+const T = {
+  fitness: tool('/tools/fitness-check'),
+  plan: tool('/tools/training-plan'),
+  helmet: tool('/tools/helmet-check'),
+  triage: tool('/tools/injury-triage'),
+  xray: tool('/tools/xray-check'),
+  concussion: tool('/tools/concussion'),
+  fatigue: tool('/tools/fatigue-check'),
+  ret: tool('/tools/return-to-snow'),
+};
+
+/** 最上面的重點摘要：搜尋結果與 AI 摘要最常抓這一段 */
+const keyPoints = [
+  '滑雪的整體受傷率是每 1,000 人次約 2.2 次，比 2010 年下降了 39%',
+  '單板受傷機率約是雙板的 2 倍，但傷的部位不同：單板在手腕、肩膀、腳踝，雙板在膝蓋',
+  '六成五的受傷發生在綠線與藍線，六成四只是「失去控制或單純跌倒」，不是撞到人',
+  '雙板的膝蓋傷主要來自器材槓桿：雪板長、雪靴固定腳踝，力量全部送進膝蓋',
+  '單板的腳踝痛可能不是扭傷：距骨外側突骨折有四到五成一開始被當成扭傷',
+  '安全帽能降低一般頭部外傷，但擋不住高速撞樹 —— 控制速度才是關鍵',
+];
+
+const faqs = [
+  {
+    q: '滑雪最常受傷的部位是哪裡？',
+    a: '看你玩哪一種。雙板最常見的是膝蓋的扭傷與韌帶傷害，來自扭轉或彎曲；單板最常見的是撞擊雪面造成的手腕、肩膀骨折與脫臼，腳踝也要特別注意。整體而言單板的受傷機率約為雙板的 2 倍，但雙板傷到膝蓋的後果通常比較久。',
+  },
+  {
+    q: '滑雪受傷大多發生在難的雪道嗎？',
+    a: '不是。約 65% 的受傷發生在綠線與藍線這種初中級雪道，而且最常見的事故型態是「失去控制或單純跌倒」，約佔六成四。原因是初學者多、人也多。反過來說，死亡事故才集中在藍線與黑線，因為那裡速度快。',
+  },
+  {
+    q: '戴了安全帽就不會有事嗎？',
+    a: '不會。安全帽能明顯降低一般頭部外傷的嚴重度，所以一定要戴；但 50 年的死亡個案統計顯示，戴安全帽的比例從接近 0% 上升到幾乎 100%，死亡率卻沒有下降 —— 因為致命個案多半是高速撞上固定物（尤其是樹），能量遠超過安全帽的保護上限。安全帽要戴，速度也要控制。',
+  },
+  {
+    q: '滑雪撞到頭、但沒有昏倒，需要看醫生嗎？',
+    a: '需要留意。腦震盪不一定會昏倒，頭痛、噁心、想吐、反應變慢、記不得撞擊過程、看東西怪怪的都算症狀，而且可能延遲幾小時才出現。撞到頭之後當天不要再滑，並請同行的人陪著觀察。可以用本站的腦震盪自我檢查逐項確認，出現紅旗症狀請立刻就醫。',
+  },
+  {
+    q: '單板跌倒後腳踝一直痛，冰敷休息就好嗎？',
+    a: '如果休息後還是痛、或是外踝前下方特定一點壓下去很痛，建議回診檢查。單板有一種「距骨外側突骨折」很容易被當成一般扭傷，誤診率四到五成，而且一般的 X 光有可能照不出來，醫師會視情況安排電腦斷層。延誤處理可能造成後續的關節問題。',
+  },
+  {
+    q: '滑雪傷到膝蓋前十字韌帶，要多久才能再滑雪？',
+    a: '沒有一體適用的答案，要看手術方式、復健進度與你想滑的強度，通常以「月」為單位而不是週。重點不是時間到了沒，而是功能回來了沒 —— 常見的參考標準之一是受傷腳的表現要達到健康側的 85% 到 90%。請由你的手術醫師與物理治療師共同評估，本站的回歸雪場準備度自評只能當作自我檢查的起點。',
+  },
+  {
+    q: '怎麼練才能減少滑雪受傷？',
+    a: '四個方向：出發前 4 到 8 週練下肢肌力、臀肌與單腳平衡（臀肌無力時膝蓋容易往內夾，是韌帶受傷的常見姿勢）；租板時誠實告知程度讓技師設定固定器；單板戴護腕、所有人戴安全帽；還有最被低估的一項 —— 累了就收，受傷集中在下午與最後一趟。',
+  },
+];
+
+const title = '滑雪運動傷害：復健科醫師整理的部位別成因、判斷與預防';
+const seoTitle = '滑雪運動傷害總覽｜膝蓋、手腕、肩膀、腳踝、頭部、腰椎的成因與預防';
+const description =
+  '滑雪運動傷害怎麼發生、怎麼判斷嚴不嚴重、怎麼預防？復健科醫師依身體部位整理：雙板的膝蓋前十字韌帶、單板的手腕與距骨外側突骨折、鎖骨骨折與肩關節脫位、頭部外傷與腦震盪、腰椎過度使用。資料來自 2026 年 ISSS 國際滑雪安全學會年會的第一手報告，附免費自我檢查工具。';
+
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const siteUrl = Astro.site?.toString() ?? 'https://snowmed-taiwan.com/';
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${canonical}#article`,
+      headline: title,
+      description,
+      inLanguage: 'zh-Hant-TW',
+      datePublished: PUBLISHED,
+      dateModified: UPDATED,
+      author: { '@id': `${siteUrl}#doctor` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      mainEntityOfPage: { '@id': `${canonical}#webpage` },
+      about: ['滑雪運動傷害', '滑雪受傷', '前十字韌帶', '腦震盪', '運動傷害預防'],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+
+/** 依據清單：每一筆都是 ISSS 2026 的口頭報告，標明報告人與單位 */
+const SOURCES = [
+  {
+    topic: '整體受傷率與流行病學',
+    who: 'Lenka Stepan（Guidance Engineering）',
+    what: '2022-2023 NSAA 10-Year Interval Injury Study：美國 32 個雪場、18,980 份巡邏隊報告、逾 860 萬人次',
+  },
+  {
+    topic: '死亡個案的 50 年統計',
+    who: 'Jasper Shealy 博士',
+    what: '1974–2024 年美國雪地運動死亡個案分析',
+  },
+  {
+    topic: '膝蓋前十字韌帶的受傷機制',
+    who: 'Moon Jong Chang 教授（首爾大學波拉美醫療中心）',
+    what: '滑雪 ACL 損傷的生物力學與預防策略',
+  },
+  {
+    topic: '雪板規格與 ACL 預防',
+    who: '古賀英之教授（東京科學大學）',
+    what: 'FIS 世界盃高山滑雪的 ACL 機制分析與 2012/13 賽季器材規格變更的成效',
+  },
+  {
+    topic: '鎖骨骨折',
+    who: 'Myung-Rae Kim 醫師（慶熙大學）',
+    what: '155 名休閒滑雪者鎖骨骨折的多中心回顧研究',
+  },
+  {
+    topic: '肩關節脫位',
+    who: 'Yeong-Hwan Jang 醫師（原州世福蘭斯醫院）',
+    what: '韓國多中心 77 名創傷性肩關節脫位個案的流行病學研究',
+  },
+  {
+    topic: '單板滑雪者骨折（距骨外側突）',
+    who: 'Seung-Myung Choi 博士（大田骨科醫院）',
+    what: '距骨外側突骨折的致病機轉與預防策略',
+  },
+  {
+    topic: '腰椎過度使用傷害',
+    who: 'Hyung-Rae Lee 博士（高麗大學）',
+    what: '滑雪與單板選手腰椎椎間盤與椎弓傷害的生物力學',
+  },
+  {
+    topic: '降雪有限環境下的脊椎傷害',
+    who: 'Hong Jin Kim 教授（高麗大學）',
+    what: '韓國 797 名選手的全國性橫斷面調查',
+  },
+  {
+    topic: '安全帽的撞擊測試表現',
+    who: 'Nicole Stark 博士（Virginia Tech Helmet Lab）',
+    what: '雪地運動安全帽撞擊表現比較',
+  },
+];
+---
+
+<BaseLayout title={title} seoTitle={seoTitle} description={description} eyebrow="Injury Guide">
+  <Fragment slot="head">
+    <meta property="article:published_time" content={PUBLISHED} />
+    <meta property="article:modified_time" content={UPDATED} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  </Fragment>
+
+  <!-- 作者與重點摘要 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p class="text-sm text-muted">
+        作者：<a href={SITE_A.aboutUrl} class="font-bold text-accent hover:underline" target="_blank" rel="noopener">{SITE.doctor}</a>
+        ｜復健科專科醫師、疼痛與運動醫學次專長，雪齡 200 天以上 ｜ 更新：{UPDATED}
+      </p>
+      <div class="prose-tc mt-6">
+        <p class="text-lg leading-relaxed font-medium text-head">
+          滑雪受傷不是隨機的。哪一種板、什麼程度、幾歲、在哪條雪道、當下在做什麼動作 —— 這些都會決定你最可能傷到哪裡。
+        </p>
+        <p>
+          這一頁依身體部位整理滑雪運動傷害：<strong>怎麼發生的、當下怎麼判斷嚴不嚴重、以及怎麼預防</strong>。
+          內容以 2026 年 3 月韓國平昌國際滑雪安全學會（ISSS 2026）年會的報告為主，那是我到場聽的第一手資料，每一段都標明報告人。
+        </p>
+      </div>
+      <div class="mt-8 rounded-2xl border border-line bg-surface p-6">
+        <h2 class="text-base font-black text-head">先看重點：關於滑雪受傷的 6 個事實</h2>
+        <ol class="mt-4 space-y-2.5 text-sm leading-relaxed text-muted">
+          {keyPoints.map((p, i) => (
+            <li class="flex gap-3">
+              <span class="shrink-0 font-black text-accent">{i + 1}.</span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="mt-6 rounded-2xl border-l-4 border-red-400 bg-red-500/10 p-5">
+        <p class="text-sm leading-relaxed text-head">
+          <strong>正在雪場、剛受傷？</strong>
+          先別讀完整篇。用<a href={T.triage.href} class="font-bold text-accent hover:underline">{T.triage.name}</a>逐項判斷要不要停止滑行、要不要就醫；
+          在海外請直接看<a href="/emergency" class="font-bold text-accent hover:underline">海外受傷怎麼辦</a>，那裡有雪場巡邏隊電話查詢。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0. 數字 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>滑雪到底有多容易受傷？</h2>
+        <p>
+          先講結論：<strong>比大家想的安全，而且還在變安全。</strong>
+          ISSS 2026 上，Lenka Stepan 報告了美國 NSAA 的十年區間研究 —— 32 個雪場、18,980 份巡邏隊報告、超過 860 萬人次的資料。
+        </p>
+        <ul>
+          <li>2022-2023 賽季的整體事故率是<strong>每 1,000 人次 2.2 次</strong>，比 2010-2011 賽季下降了 <strong>39%</strong>。</li>
+          <li>從 2000 年的高峰算起，單板下降 46%、雙板下降 32%。</li>
+          <li>下降的原因推測包含玩家組成改變、安全教育推廣，以及地形公園的設計變得更科學。</li>
+        </ul>
+        <h3>誰比較容易受傷</h3>
+        <ul>
+          <li><strong>單板約是雙板的 2 倍</strong>。</li>
+          <li><strong>18 到 24 歲</strong>是風險最高的年齡層，是其他年齡層的 2.4 倍以上。</li>
+          <li><strong>技術每提升一級，風險降低 50% 以上</strong> —— 這是所有因素裡效果最大的一個。花錢上課比買任何裝備都值得。</li>
+          <li>整體男女受傷機率相當，但在相同技術水準下，女性反而低於男性。</li>
+        </ul>
+        <h3>在哪裡、因為什麼</h3>
+        <ul>
+          <li><strong>65% 的受傷發生在綠線與藍線</strong>，不是黑鑽。</li>
+          <li><strong>約 64% 只是「失去控制」或單純跌倒</strong>，不是被撞。</li>
+          <li>碰撞事故裡，撞到人多於撞到自然物，而自然物裡<strong>樹木是主要對象</strong>。</li>
+          <li>纜車事故多發生在<strong>下纜車</strong>的那一刻，單板比例更高。</li>
+        </ul>
+        <p>
+          這幾個數字合起來的意思很實際：你最可能受傷的地方，是你覺得最輕鬆的那條藍線，在你自己一個人滑、而且有點累的時候。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. 膝蓋 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>一、膝蓋：雙板玩家最該認識的傷</h2>
+        <p>
+          雙板最常見的傷害是扭轉或彎曲造成的膝蓋扭傷與韌帶損傷，其中前十字韌帶（ACL）最受關注。
+          首爾大學波拉美醫療中心的 Moon Jong Chang 教授在 ISSS 2026 指出一件很重要的事：
+          <strong>滑雪的膝蓋傷害是「器材驅動」的，跟籃球、足球那種神經肌肉控制失誤造成的受傷不一樣。</strong>
+        </p>
+        <h3>為什麼滑雪特別傷膝蓋</h3>
+        <ul>
+          <li><strong>長槓桿</strong>：160 到 180 公分的雪板，把作用在膝蓋上的力矩放大好幾倍。</li>
+          <li><strong>雪靴限制腳踝</strong>：硬殼雪靴讓腳踝幾乎不能動，衝擊力直接往上傳到膝蓋。</li>
+          <li><strong>卡刃</strong>：雪板內刃突然咬住雪面，膝蓋在極短時間內被迫外翻加旋轉。</li>
+        </ul>
+        <h3>三種典型的受傷情境</h3>
+        <ul>
+          <li>
+            <strong>滑行—卡住（slip-catch）</strong>：外刃失壓、身體失衡的瞬間，板刃突然重新咬雪，膝蓋劇烈外翻內旋。
+            東京科學大學古賀英之教授分析 FIS 世界盃的受傷影片，發現這是競賽選手最主要的機制。
+          </li>
+          <li>
+            <strong>犁式（dynamic snowplow）</strong>：一般玩家最常見。雪板呈 V 字張開時重心過度壓在外側板的內刃上，膝蓋外翻、脛骨內旋。
+            <strong>這正是初學者在減速時最自然的姿勢</strong>，也是為什麼初學者的膝蓋風險不低。
+          </li>
+          <li>
+            <strong>幻影腳（phantom foot）</strong>：往後摔、臀部掉到膝蓋下方時，後方的板尾像一隻多出來的腳，用雪板長度當槓桿扭你的膝蓋。
+          </li>
+        </ul>
+        <p>
+          三種機制有一個共同點：<strong>身體往後坐</strong>。這也是預防的第一件事。
+        </p>
+        <h3>怎麼降低風險</h3>
+        <ul>
+          <li><strong>固定器設定要對。</strong>租板時誠實說自己的體重與程度，設定過緊的固定器該脫的時候不脫，力量全進膝蓋。</li>
+          <li><strong>不要後傾。</strong>保持膝蓋微屈、重心在腳掌上方，這一件事同時對付三種機制。</li>
+          <li><strong>練臀肌與核心。</strong>臀肌無力時膝蓋容易往內夾，橋式與髖外展就是在練這個。</li>
+          <li><strong>選對雪板。</strong>FIS 自 2012/13 賽季起要求雪板更長、更窄、迴轉半徑更大，之後膝蓋與 ACL 的相對受傷率呈現下降趨勢 —— 器材幾何是真的有影響的。</li>
+        </ul>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.fitness, T.plan].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 手腕與肩膀 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>二、手腕、鎖骨與肩膀：單板跌倒的代價</h2>
+        <p>
+          單板雙腳被固定在同一塊板上，跌倒時沒辦法像雙板那樣用雙腿各自吸收力量，力量往往從手臂或肩膀進去。
+        </p>
+        <h3>手腕</h3>
+        <p>
+          跌倒時反射性用手撐地（FOOSH），是單板初學者最典型的受傷方式。
+          <strong>護腕是所有護具裡效益最直接的一件</strong>，第一次上板就該戴。值得注意的是，NSAA 的資料顯示相較 2010 年，單板的手腕與前臂傷害已經明顯減少，護腕的普及應該是原因之一。
+        </p>
+        <h3>鎖骨骨折</h3>
+        <p>
+          慶熙大學 Myung-Rae Kim 醫師在 ISSS 2026 報告了 155 名休閒滑雪者的鎖骨骨折資料：
+        </p>
+        <ul>
+          <li><strong>93.5% 是男性</strong>，平均年齡約 27.6 歲 —— 年輕、速度快、愛跳的族群。</li>
+          <li><strong>84.5% 的機制就是「滑倒」</strong>，肩膀直接撞地，不是什麼複雜的高能量創傷。</li>
+          <li>骨折位置以<strong>中段為主（83.9%）</strong>，因為那是鎖骨力學上最脆弱的地方。</li>
+          <li>合併其他肩部傷害的只有 4.5%，多數是單純的直接撞擊。</li>
+        </ul>
+        <h3>肩關節脫位</h3>
+        <p>
+          原州世福蘭斯醫院 Yeong-Hwan Jang 醫師分析了韓國 77 名個案，<strong>81.8% 同樣來自滑倒</strong>。
+          脫位方式依序是直接撞擊（31.2%）、手臂外展加外旋（24.7%）、手撐地跌倒（20.8%）。
+        </p>
+        <p>
+          有一個細節值得記住：<strong>用手撐地跌倒的人，合併「骨性 Bankart 損傷」（肩臼前下緣骨折）的比例最高，約 38.5%</strong>，因為力量沿著手臂軸向往上，把肱骨頭撞向關節盂邊緣。
+          這也是為什麼所有滑雪教學都在講同一件事 —— <strong>不要用手去撐</strong>。
+        </p>
+        <h3>怎麼降低風險</h3>
+        <ul>
+          <li>單板<strong>戴護腕</strong>，並且練習正確的跌倒方式：收下巴、用前臂與身體側面分散力量，不要伸直手臂去撐。</li>
+          <li>往後倒時盡量讓背部著地、下巴收向胸口，避免後腦直接撞地。</li>
+          <li>肩膀脫位過一次的人復發率不低，回雪場前請讓醫師評估，不要靠感覺。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 腳踝 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>三、腳踝：那個常被當成扭傷的骨折</h2>
+        <p>
+          這一段可能是整頁最值得記起來的。大田骨科醫院 Seung-Myung Choi 博士在 ISSS 2026 專門報告了
+          <strong>「單板滑雪者骨折」（snowboarder&rsquo;s fracture），也就是距骨外側突骨折</strong>。
+        </p>
+        <ul>
+          <li>它佔單板滑雪者踝部傷害的<strong>約 15%</strong>。</li>
+          <li><strong>誤診率高達四到五成</strong>，最常被當成普通的外踝扭傷。</li>
+          <li>標準的 X 光<strong>可能漏掉高達 40%</strong>，醫師通常需要安排電腦斷層才能看清楚。</li>
+          <li>延誤處理可能造成距下關節的退化與慢性不穩定。</li>
+        </ul>
+        <h3>為什麼單板特別容易</h3>
+        <p>
+          單板雪靴比較軟，腳踝可以背屈，好處是吸震、壞處是<strong>軸向的衝擊力直接集中到距骨上</strong>；
+          加上單板固定器不會像雙板那樣脫開，旋轉的能量全部留在腳踝。硬殼的雙板雪靴則是把力量往上送到脛骨與膝蓋 —— 兩種板傷的位置不同，原因就在這裡。
+        </p>
+        <h3>什麼時候該懷疑</h3>
+        <p>
+          Choi 博士提到一個很實用的檢查概念：<strong>「單板滑雪者三角區」</strong> —— 外踝、距骨外側突與第五蹠骨基部之間的那塊區域。
+          如果跌倒後這個區域有明確的壓痛點，而且休息幾天沒有改善，就值得回診做進一步檢查。
+        </p>
+        <p>
+          白話版：<strong>單板跌倒後腳踝痛、腫、走路不敢用力，冰敷休息後還是痛，不要自己當成扭傷放著。</strong>
+        </p>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.triage, T.xray].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 頭部 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>四、頭部：安全帽有用，但不是無敵</h2>
+        <p>
+          Jasper Shealy 博士在 ISSS 2026 發表了 1974 到 2024 年、橫跨 50 年的美國雪地運動死亡個案分析，結論很值得每個雪友知道：
+        </p>
+        <ul>
+          <li><strong>整體受傷率這 50 年下降了至少 65%，但死亡率幾乎沒變</strong>，長期維持在每百萬人次約 0.75 人。</li>
+          <li>同一段期間，戴安全帽的比例從接近 0% 上升到幾乎 100%。<strong>死亡個案中有 89% 當時戴著安全帽。</strong></li>
+          <li>致命事故有 <strong>57% 是撞上固定物</strong>，其中 <strong>78% 撞的是樹</strong>。</li>
+          <li>死亡事故最常發生在<strong>藍線（55%）與黑鑽（28%）</strong>，不是初級道。</li>
+          <li>典型的死亡個案是<strong>男性（約 90%）、四十歲出頭、技術屬於高階或專家級</strong>。</li>
+        </ul>
+        <p>
+          怎麼解讀？<strong>安全帽對一般跌倒撞擊很有效，一定要戴</strong> —— 這是它被設計來對付的情境。
+          但休閒滑雪的速度常常超過 40 到 45 公里，在這個速度撞上樹，能量遠遠超過任何安全帽的保護上限。
+          所以真正能降低致命風險的是另外兩件事：<strong>控制速度，以及遠離樹林邊緣</strong>。
+        </p>
+        <h3>撞到頭之後</h3>
+        <p>
+          腦震盪不一定會昏倒。頭痛、噁心、想吐、頭暈、反應變慢、記不得撞擊過程、畏光或看東西怪怪的都算，而且可能延遲數小時才出現。
+          <strong>當天不要再滑</strong>，請同行的人陪著觀察，出現越來越嚴重的頭痛、反覆嘔吐、意識改變、肢體無力或抽搐，立刻送醫。
+        </p>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.concussion, T.helmet].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-panel p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 腰椎 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>五、腰椎：不是摔出來的，是滑出來的</h2>
+        <p>
+          前面幾種都是「一次事故」造成的。腰椎不一樣 —— 它多半是累積出來的。
+          高麗大學 Hyung-Rae Lee 博士在 ISSS 2026 報告的資料相當驚人：
+        </p>
+        <ul>
+          <li><strong>82% 的精英滑雪選手 MRI 上有異常</strong>，對照組只有 54%。</li>
+          <li><strong>46% 出現許莫氏結節</strong>（椎間盤壓進椎體、代表終板長期過載），對照組是 0%。</li>
+          <li>15 歲以下的競技選手已經有 <strong>23.1% 出現椎間盤退化</strong>。</li>
+        </ul>
+        <h3>為什麼</h3>
+        <ul>
+          <li><strong>長時間的前傾姿勢</strong>：維持 40 到 60 度的屈曲，椎間盤壓力會增加 2 到 3 倍，再加上側彎與旋轉更糟。</li>
+          <li><strong>巨大的地面反作用力</strong>：轉彎時可達體重的 3 到 5 倍，跳躍落地可達 7 倍，全部由腰椎吸收。</li>
+          <li><strong>全身震動</strong>：雪面傳來的震動若落在 4 到 10 Hz，會讓脊椎產生共振，峰值受力再增加約 24%。</li>
+        </ul>
+        <p>
+          雙板與單板的傷法還不太一樣：雙板多是長時間屈曲加震動，單板則是側向姿勢與跳躍衝擊。
+          自由式的空中動作與落地後仰，還可能造成椎弓的疲勞性骨折。
+        </p>
+        <h3>對一般雪友的意義</h3>
+        <p>
+          你不是選手，不會有選手那種訓練量，但原理一樣：<strong>連續滑好幾天、每天滑到最後一刻、姿勢一直是彎著腰的人，腰最容易出問題。</strong>
+          能做的是核心穩定訓練（腹橫肌、多裂肌、腹斜肌）、注意雪靴前傾角不要逼你過度彎腰，以及最簡單的 —— 排行程時留休息日。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 疲勞 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>六、被低估的風險因子：疲勞與環境</h2>
+        <p>
+          高麗大學 Hong Jin Kim 教授針對「降雪有限環境」做的調查，對台灣雪友特別有參考價值 —— 因為我們就是那種環境的極端版：
+          一年只滑幾天、平常沒有雪可以練、去了就想滑好滑滿。
+        </p>
+        <p>
+          該研究調查 797 名選手，<strong>31.7% 在一年內有過脊椎受傷經驗</strong>，其中 45.8% 進展成活動受限的失能。
+          多變項分析找出兩組不同的因素：
+        </p>
+        <ul>
+          <li><strong>造成受傷的是「環境」</strong>：暴露於冰面的風險是 2.63 倍。</li>
+          <li><strong>造成受傷變成長期失能的是「身體條件」</strong>：膝關節排列異常（例如外翻）風險高達 13 倍，柔軟度差的人也明顯較高。</li>
+        </ul>
+        <p>
+          翻譯成人話：<strong>會不會受傷，很大一部分看雪況；受傷之後會不會拖很久，看你出發前的身體準備。</strong>
+          後面這一項是你可以控制的。
+        </p>
+        <p>
+          還有一個所有統計都指向、卻最常被忽略的因素：<strong>疲勞</strong>。受傷集中在下午與當天最後一趟。
+          大腿在每個轉彎都做離心收縮，累了之後動作變形、反應變慢、該收刃的時候收不住。「再滑一趟就好」是雪場上最貴的一句話。
+        </p>
+      </div>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {[T.fatigue, T.ret].map((t) => (
+          <a href={t.href} class="rounded-2xl border border-line bg-panel p-5 transition-colors hover:border-accent">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">免費工具 · {t.time}</p>
+            <p class="mt-1.5 font-bold text-head">{t.emoji} {t.name}</p>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{t.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 紅旗 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <div class="prose-tc">
+        <h2>七、什麼時候一定要停止滑行、就醫</h2>
+        <p>不論傷到哪裡，出現下面任何一項就不要再滑：</p>
+        <ul>
+          <li><strong>撞到頭</strong>，之後有頭痛、噁心、意識恍惚、記不得經過。</li>
+          <li><strong>關節明顯變形</strong>，或聽到／感覺到「啪」的一聲後關節不穩。</li>
+          <li><strong>無法承重走四步</strong>。</li>
+          <li><strong>關節在受傷後短時間內快速腫起來</strong>（常代表關節內出血）。</li>
+          <li><strong>頸部或背部劇痛</strong>，或手腳有麻木、無力 —— 這種情況請不要自行移動，直接請巡邏隊處理。</li>
+          <li><strong>休息數日仍持續疼痛</strong>，特別是單板跌倒後的腳踝外側。</li>
+        </ul>
+        <p>
+          不確定的時候，用<a href={T.triage.href}>{T.triage.name}</a>與<a href={T.xray.href}>{T.xray.name}</a>逐項對照，兩個工具都會告訴你「現在該停下來還是可以觀察」。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <h2 class="text-2xl font-black text-head sm:text-3xl">滑雪運動傷害常見問題</h2>
+      <div class="mt-8 divide-y divide-line overflow-hidden rounded-2xl border border-line">
+        {faqs.map((f) => (
+          <details class="group bg-panel">
+            <summary class="cursor-pointer list-none px-6 py-5 font-bold text-head transition-colors hover:bg-surface">
+              <span class="flex items-start justify-between gap-4">
+                <span>{f.q}</span>
+                <span class="shrink-0 text-accent transition-transform group-open:rotate-45" aria-hidden="true">＋</span>
+              </span>
+            </summary>
+            <p class="px-6 pb-6 text-sm leading-relaxed text-muted">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 依據 -->
+  <section class="bg-panel">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <details class="group rounded-2xl border border-line bg-surface">
+        <summary class="cursor-pointer list-none px-6 py-5 font-bold text-head">
+          <span class="flex items-start justify-between gap-4">
+            <span>這頁的資料是哪裡來的？</span>
+            <span class="shrink-0 text-accent transition-transform group-open:rotate-45" aria-hidden="true">＋</span>
+          </span>
+        </summary>
+        <div class="px-6 pb-6">
+          <p class="text-sm leading-relaxed text-muted">
+            以下全部出自 <strong class="text-head">2026 年 3 月韓國平昌國際滑雪安全學會（ISSS 2026）年會的口頭報告</strong>，
+            由楊醫師到場聽取並整理。這些是學會發表的內容，部分尚未以論文形式正式刊出；
+            若日後正式發表的數字與此處不同，請以論文為準。
+          </p>
+          <ul class="mt-5 space-y-4">
+            {SOURCES.map((s) => (
+              <li class="border-l-2 border-accent pl-4">
+                <p class="text-sm font-bold text-head">{s.topic}</p>
+                <p class="mt-0.5 text-sm text-muted">{s.who}</p>
+                <p class="mt-0.5 text-xs leading-relaxed text-muted">{s.what}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 收尾 -->
+  <section class="bg-band text-white on-dark">
+    <div class="mx-auto max-w-3xl px-5 py-14 sm:py-16">
+      <h2 class="text-2xl font-black">受傷是可以先準備的</h2>
+      <p class="mt-4 text-sm leading-relaxed text-body">
+        這頁列出的每一種傷，預防方式最後都回到同樣幾件事：出發前把肌力與平衡練起來、租板時把設定講清楚、護具戴齊、累了就收。
+        第一次滑雪的人，可以從新手指南開始看。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="/ski-beginner-guide" class="inline-block rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent">
+          🎿 滑雪初學者注意事項 →
+        </a>
+        <a href={T.fitness.href} class="inline-block rounded-xl border border-white/30 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10">
+          {T.fitness.emoji} 先測自己的體能 →
+        </a>
+      </div>
+      <p class="mt-10 text-xs leading-relaxed text-muted">
+        本文為一般性衛教資訊，由復健科專科醫師依現有文獻與學會報告整理，不能取代個別診療。
+        文中的數字來自特定族群的研究，不等於你個人的風險。若已經受傷、或有舊傷與手術史，請就醫由醫師評估。
+      </p>
+    </div>
+  </section>
+</BaseLayout>
