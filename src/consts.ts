@@ -342,13 +342,13 @@ export const TOOLS = [
     href: '/tools/concussion',
     id: 'SMT-T-07',
     version: TOOLS_VERSION,
-    updated: '2026-09-13',
+    updated: '2026-09-25',
     category: 'injury',
     name: '腦震盪：看不見的傷',
     emoji: '🧠',
     time: '約 5 分鐘',
     summary:
-      '撞到頭之後該注意什麼？症狀、嚴重度分級、現場可以做的觀察，以及為什麼「短時間內再撞一次」是最危險的事。',
+      '撞到頭之後該注意什麼？在人形圖上勾選現在有的症狀，依結果告訴你接下來該做什麼；另有嚴重度分級、現場觀察方式，以及為什麼「短時間內再撞一次」是最危險的事。',
     who: '撞到頭、或同行者撞到頭的人',
   },
   {
