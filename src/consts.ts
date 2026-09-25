@@ -289,7 +289,7 @@ export const TOOLS = [
     href: '/tools/taiwan-indoor-ski',
     id: 'SMT-T-09',
     version: TOOLS_VERSION,
-    updated: '2026-09-15',
+    updated: '2026-09-25',
     category: 'prep',
     name: '台灣室內滑雪場館搜尋',
     emoji: '📍',
