@@ -8,6 +8,8 @@
  * 只有一個數字，不記錄 IP、不放 cookie、不做任何追蹤。
  */
 
+import { isBotRequest } from './_bot.js';
+
 const KEY = 'visits:total';
 
 function json(data, status = 200, cache = 'no-store') {
@@ -26,8 +28,15 @@ export async function onRequestGet({ env }) {
   return json({ count: Number.parseInt(raw ?? '0', 10) || 0 }, 200, 'public, max-age=60');
 }
 
-export async function onRequestPost({ env }) {
+export async function onRequestPost({ request, env }) {
   if (!env.VIEWS) return json({ count: null });
+
+  // 爬蟲每次來都是全新的瀏覽器狀態，不擋的話造訪人數會被灌爆
+  if (isBotRequest(request)) {
+    const cur = await env.VIEWS.get(KEY);
+    return json({ count: Number.parseInt(cur ?? '0', 10) || 0 });
+  }
+
   const raw = await env.VIEWS.get(KEY);
   const next = (Number.parseInt(raw ?? '0', 10) || 0) + 1;
   await env.VIEWS.put(KEY, String(next));

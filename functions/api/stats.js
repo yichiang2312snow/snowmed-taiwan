@@ -13,6 +13,8 @@
  * 所以網站上「不收集個資、不做追蹤」的說明依然成立。
  */
 
+import { isBotRequest } from './_bot.js';
+
 /**
  * 只存「每日」計數，月報表在讀取時由每日資料加總。
  * 以前每個事件會同時寫當日鍵與當月鍵，等於每次瀏覽寫 KV 兩次；
@@ -68,6 +70,9 @@ async function bump(env, key, ttl) {
 
 export async function onRequestPost({ request, env }) {
   if (!env.VIEWS) return json({ ok: false }, 503);
+
+  // 會執行 JS 的爬蟲也會送統計，這裡擋掉（回 200，不讓對方靠狀態碼判斷）
+  if (isBotRequest(request)) return json({ ok: true });
 
   let body;
   try {
