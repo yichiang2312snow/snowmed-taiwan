@@ -1,0 +1,95 @@
+---
+/**
+ * 首頁 HERO 的背景輪播
+ *
+ * 幾個刻意的決定：
+ * - 第一張沿用原本的 hero 照片，而且維持 eager + fetchpriority=high。
+ *   它是首頁的 LCP 元素，換成輪播不該讓第一次載入變慢，所以其餘幾張都 lazy。
+ * - 照片是純裝飾（真正的內容是上面的標題與文案），所以 alt 一律留空，
+ *   不要讓讀螢幕軟體每 7 秒念一次風景描述。授權標示在頁尾的圖片出處區。
+ * - 沒有 JS 也要能看：預設第一張就是可見的，輪播只是加上去的行為。
+ * - prefers-reduced-motion 的人不自動輪播，分頁切到背景時也暫停。
+ *
+ * 換照片請一併更新 consts.ts 的 IMAGE_CREDITS —— CC 授權要求標明作者與來源。
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+import heroKyrgyzstan from '../assets/hero-ski-slope.jpg';
+import heroHakuba from '../assets/hero/hero-hakuba-bluebird.jpg';
+import heroTsugaike from '../assets/hero/hero-tsugaike-dawn.jpg';
+import heroGornergrat from '../assets/hero/hero-gornergrat.jpg';
+import heroCourchevel from '../assets/hero/hero-courchevel.jpg';
+
+/** 每張停留的時間（毫秒） */
+const INTERVAL = 7000;
+
+const SLIDES: { src: ImageMetadata; credit: string }[] = [
+  { src: heroKyrgyzstan, credit: '吉爾吉斯的滑雪道' },
+  { src: heroHakuba, credit: '長野白馬' },
+  { src: heroTsugaike, credit: '長野栂池高原' },
+  { src: heroGornergrat, credit: '瑞士策馬特 Gornergrat' },
+  { src: heroCourchevel, credit: '法國 Courchevel' },
+];
+---
+
+<div class="absolute inset-0 -z-10" data-hero-carousel data-interval={INTERVAL}>
+  {
+    SLIDES.map((slide, i) => (
+      <Image
+        src={slide.src}
+        alt=""
+        widths={[768, 1280, 1920, 2400]}
+        sizes="100vw"
+        data-slide
+        data-credit={slide.credit}
+        class:list={[
+          'absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-1000',
+          i === 0 ? 'opacity-100' : 'opacity-0',
+        ]}
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : 'auto'}
+        decoding={i === 0 ? 'sync' : 'async'}
+      />
+    ))
+  }
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-hero-carousel]');
+  const slides = root ? Array.from(root.querySelectorAll<HTMLElement>('[data-slide]')) : [];
+
+  if (root && slides.length > 1) {
+    const interval = Number(root.dataset.interval ?? 7000);
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let current = 0;
+    let timer: number | undefined;
+
+    const show = (next: number) => {
+      slides[current]?.classList.replace('opacity-100', 'opacity-0');
+      slides[next]?.classList.replace('opacity-0', 'opacity-100');
+      current = next;
+
+      // 先把下一張讀進來，輪到它的時候才不會先閃一下空白
+      const after = slides[(next + 1) % slides.length] as HTMLImageElement | undefined;
+      if (after?.loading === 'lazy') after.loading = 'eager';
+    };
+
+    const stop = () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+    };
+
+    const start = () => {
+      stop();
+      // 尊重使用者的減少動態設定：停在第一張就好
+      if (calm.matches || document.hidden) return;
+      timer = window.setInterval(() => show((current + 1) % slides.length), interval);
+    };
+
+    document.addEventListener('visibilitychange', start);
+    calm.addEventListener('change', start);
+    start();
+  }
+</script>

@@ -1,9 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolGrid from '../components/ToolGrid.astro';
 import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
-import heroImage from '../assets/hero-ski-slope.jpg';
+import HeroCarousel from '../components/HeroCarousel.astro';
 import VisitCounter from '../components/VisitCounter.astro';
 import HeroPoll from '../components/HeroPoll.astro';
 import PopularTools from '../components/PopularTools.astro';
@@ -15,15 +14,7 @@ import PopularTools from '../components/PopularTools.astro';
   <section class="relative isolate overflow-hidden bg-band text-head on-dark-photo light:bg-snow">
     <VisitCounter threshold={1000} />
 
-    <Image
-      src={heroImage}
-      alt="高山雪場的滑雪道與纜車，遠方是連綿的雪山稜線"
-      widths={[768, 1280, 1920, 2400]}
-      sizes="100vw"
-      class="absolute inset-0 -z-10 h-full w-full object-cover"
-      loading="eager"
-      fetchpriority="high"
-    />
+    <HeroCarousel />
     {/*
       夜間模式蓋深藍色濾鏡；白天模式改成白色薄霧 ——
       雪地照片本來就是白的，不套藍色濾鏡才看得到雪原本的顏色，
