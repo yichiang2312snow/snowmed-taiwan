@@ -1,7 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import Faq from '../../components/Faq.astro';
-import { CHECKLIST, PHASES } from '../../data/checklist';
+import { CHECKLIST, PARTS, PHASES } from '../../data/checklist';
 
 const filters = [
   {
@@ -60,11 +60,11 @@ const FAQ = [
 
 <ToolLayout
   title="出發前注意事項互動檢核表"
-  seoTitle="滑雪新手行前準備清單：出發前、抵達雪場、滑行期間的注意事項"
+  seoTitle="滑雪新手行前準備清單：在台灣要準備的、到雪場要注意的，分兩段各自計分"
   emoji="✅"
-  time="約 3 分鐘 · 勾選狀態會自動保存"
-  summary="選擇你的板種、程度和舊傷狀況，產生一份專屬於你的清單，分成「在台灣出發前」「抵達雪場、滑行前」「滑行期間」三個階段。每一項都寫了「為什麼」，你可以自己決定要不要採納。勾選狀態存在你的瀏覽器裡，關掉再回來還在。"
-  description="滑雪行前檢核表：分成在台灣出發前、抵達雪場滑行前、滑行期間三階段，依單板／雙板、新手／老手、有無舊傷動態產生個人化清單，可列印或存成 PDF。"
+  time="每段約 2 分鐘 · 勾選狀態會自動保存"
+  summary="選擇你的板種、程度和舊傷狀況，產生一份專屬於你的清單。清單分成兩段：「還在台灣就要做的事」與「到了雪場之後要注意的事」，各自獨立計分到 100 分，可以只填其中一段 —— 出發前填第一段，到了雪場再回來填第二段。每一項都寫了「為什麼」，你可以自己決定要不要採納。勾選狀態存在你的瀏覽器裡，關掉再回來還在。"
+  description="滑雪行前檢核表：拆成「在台灣準備」與「到雪場之後」兩段，各自計分到 100 分，可以分開填。依單板／雙板、新手／老手、有無舊傷動態產生個人化清單，可列印或存成 PDF。"
 >
   <!-- 篩選 -->
   <form id="cl-filters" class="space-y-5 print:hidden">
@@ -91,51 +91,38 @@ const FAQ = [
     }
   </form>
 
-  <!-- 進度 -->
+  <!--
+    兩段切換：一次 40 幾題太長，拆成「還在台灣」與「已經到雪場」。
+    一次只顯示一段，各自算各自的分數，分數就直接寫在按鈕上，
+    不用切過去也知道另一段填到哪了。
+  -->
   <div
-    id="cl-progress"
-    class="on-dark mt-8 rounded-2xl border border-line bg-band p-5 text-white sm:p-6"
+    id="cl-tabs"
+    role="tablist"
+    aria-label="檢核表段落"
+    class="mt-8 grid grid-cols-2 gap-2 rounded-2xl border border-line bg-surface p-2 print:hidden"
   >
-    <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-      <p class="text-sm font-bold">你的清單完成度</p>
-      <p class="tabular-nums" aria-live="polite">
-        <span id="cl-pct" data-bump class="inline-block text-4xl font-black text-accent">0%</span>
-        <span class="ml-2 text-sm text-muted">
-          <span id="cl-done">0</span> / <span id="cl-total">0</span> 項
-        </span>
-      </p>
-    </div>
-    <div
-      id="cl-track"
-      class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-tint3"
-      role="progressbar"
-      aria-label="清單完成度"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      aria-valuenow="0"
-    >
-      <div
-        id="cl-bar"
-        class="h-full rounded-full bg-accent transition-all duration-500"
-        style="width:0%"
-      >
-      </div>
-    </div>
-    <p id="cl-critical" class="mt-3 text-xs text-body/85"></p>
-  </div>
-
-  <div class="mt-5 flex flex-wrap gap-3 print:hidden">
-    <button
-      type="button"
-      id="cl-print"
-      class="rounded-xl bg-cta px-5 py-3 text-sm font-bold text-ctatext hover:bg-accent">列印 / 存成 PDF</button
-    >
-    <button
-      type="button"
-      id="cl-clear"
-      class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
-      >清除所有勾選</button
-    >
+    {
+      PARTS.map((part, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`cl-tab-${part.id}`}
+          data-part-tab={part.id}
+          aria-controls={`cl-panel-${part.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          class="min-w-0 cursor-pointer rounded-xl px-3 py-3 text-left transition-colors hover:bg-tint1 aria-selected:bg-cta aria-selected:font-bold aria-selected:text-ctatext"
+        >
+          <span class="flex items-baseline gap-2">
+            <span aria-hidden="true">{part.emoji}</span>
+            <span class="min-w-0 truncate text-sm font-bold">{part.short}</span>
+          </span>
+          <span class="mt-1 block text-xs tabular-nums opacity-80">
+            <span data-tab-pct>0</span> 分 · <span data-tab-done>0</span>/<span data-tab-total>0</span> 項
+          </span>
+        </button>
+      ))
+    }
   </div>
 
   <!--
@@ -157,11 +144,14 @@ const FAQ = [
             id="cl-float-pct"
             data-bump
             class="inline-block w-16 shrink-0 text-2xl font-black text-accent tabular-nums"
-            >0%</span
+            >0 分</span
           >
           <div class="min-w-0 flex-1">
             <div class="flex items-baseline justify-between gap-2 text-xs">
-              <span id="cl-float-msg" class="truncate font-bold text-head"></span>
+              <span class="truncate font-bold text-head">
+                <span id="cl-float-part" class="text-accent"></span>
+                <span id="cl-float-msg"></span>
+              </span>
               <span class="shrink-0 text-body tabular-nums">
                 <span id="cl-float-done">0</span> / <span id="cl-float-total">0</span> 項
               </span>
@@ -181,9 +171,61 @@ const FAQ = [
   </div>
 
   <!-- 清單 -->
-  <div id="cl-list" class="mt-10 space-y-12">
+  <div id="cl-list" class="mt-6">
     {
-      PHASES.map((phase) => (
+      PARTS.map((part, pi) => (
+        <div
+          data-part={part.id}
+          id={`cl-panel-${part.id}`}
+          role="tabpanel"
+          aria-labelledby={`cl-tab-${part.id}`}
+          hidden={pi > 0}
+          class="min-w-0"
+        >
+          {/* 這一段自己的分數 */}
+          <div
+            data-progress
+            class="on-dark rounded-2xl border border-line bg-band p-5 text-white sm:p-6"
+          >
+            <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+              <p class="text-sm font-bold">{part.title}</p>
+              <p class="shrink-0 tabular-nums" aria-live="polite">
+                <span data-pct data-bump class="inline-block text-4xl font-black text-accent">
+                  0
+                </span>
+                <span class="text-lg font-black text-accent"> 分</span>
+                <span class="ml-2 text-sm text-muted">
+                  <span data-done>0</span> / <span data-total>0</span> 項
+                </span>
+              </p>
+            </div>
+            <p class="mt-1.5 text-sm leading-relaxed break-words text-body/85">{part.subtitle}</p>
+            <div
+              data-track
+              class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-tint3"
+              role="progressbar"
+              aria-label={`${part.short}完成度`}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div
+                data-bar
+                class="h-full rounded-full bg-accent transition-all duration-500"
+                style="width:0%"
+              />
+            </div>
+            <p data-critical class="mt-3 text-xs text-body/85" />
+            <div data-celebrate hidden class="mt-4 rounded-xl border border-accent bg-accent/15 p-4">
+              <p class="text-sm font-black text-head">🎉 這一段 100 分</p>
+              <p class="mt-1 text-sm leading-relaxed break-words text-body">{part.done}</p>
+            </div>
+          </div>
+
+          <div class="mt-8 space-y-12">
+            {part.phases
+              .map((id) => PHASES.find((p) => p.id === id)!)
+              .map((phase) => (
         <div data-phase={phase.id} class="min-w-0">
           <div class="rounded-2xl border border-line bg-band px-5 py-4 text-white on-dark sm:px-6">
             <div class="flex items-baseline gap-2.5">
@@ -245,8 +287,46 @@ const FAQ = [
             ))}
           </div>
         </div>
+              ))}
+          </div>
+
+          <div class="mt-10 print:hidden">
+            {pi === 0 ? (
+              <button
+                type="button"
+                data-goto-part="resort"
+                class="cursor-pointer rounded-xl bg-cta px-5 py-3 text-sm font-bold text-ctatext hover:bg-accent"
+              >
+                🎿 接著看第二段：到了雪場之後 →
+              </button>
+            ) : (
+              <button
+                type="button"
+                data-goto-part="taiwan"
+                class="cursor-pointer rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
+              >
+                ← 回到第一段：在台灣準備
+              </button>
+            )}
+          </div>
+        </div>
       ))
     }
+  </div>
+
+  <!-- 列印是把兩段都印出來，所以放在整份清單的最後面 -->
+  <div class="mt-5 flex flex-wrap gap-3 print:hidden">
+    <button
+      type="button"
+      id="cl-print"
+      class="rounded-xl bg-cta px-5 py-3 text-sm font-bold text-ctatext hover:bg-accent">列印 / 存成 PDF</button
+    >
+    <button
+      type="button"
+      id="cl-clear"
+      class="rounded-xl border border-line bg-panel px-5 py-3 text-sm font-bold text-head hover:bg-tint1"
+      >清除所有勾選</button
+    >
   </div>
 
   <!-- 留一段空白，捲到最後一項時不會被底部進度條蓋住 -->
@@ -315,16 +395,25 @@ const FAQ = [
     :global(footer) {
       display: none !important;
     }
+
+    /* 列印是要帶著走的紙本，兩段都要印出來，不管畫面上開著哪一段 */
+    [data-part][hidden] {
+      display: block !important;
+    }
   }
 </style>
 
 <script>
   const STORAGE_KEY = 'snowmed:pretrip-checklist';
   const FILTER_KEY = 'snowmed:pretrip-filters';
+  /** 記住上次看到哪一段，回來時直接開在那一段 */
+  const PART_KEY = 'snowmed:pretrip-part';
 
   const filtersForm = document.getElementById('cl-filters') as HTMLFormElement | null;
   const items = Array.from(document.querySelectorAll<HTMLElement>('[data-item]'));
   const boxes = Array.from(document.querySelectorAll<HTMLInputElement>('[data-check]'));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-part]'));
+  const tabs = Array.from(document.querySelectorAll<HTMLElement>('[data-part-tab]'));
 
   if (filtersForm && items.length) {
     const read = <T,>(key: string, fallback: T): T => {
@@ -380,7 +469,8 @@ const FAQ = [
       updateProgress();
     };
 
-    let lastPct = -1;
+    /** 每一段各自記上次的分數，只有往上跳才播放動畫 */
+    const lastPct: Record<string, number> = {};
 
     /** 依進度給一句短短的鼓勵，讓人知道自己有在前進 */
     const progressMessage = (pct: number) =>
@@ -394,53 +484,100 @@ const FAQ = [
               ? '已經過一半了'
               : pct < 100
                 ? '快完成了'
-                : '全部完成 🎉';
+                : '這一段完成 🎉';
 
+    const activePart = () =>
+      tabs.find((t) => t.getAttribute('aria-selected') === 'true')?.dataset.partTab ??
+      panels[0]?.dataset.part ??
+      '';
+
+    /**
+     * 兩段各自計分。刻意不做「總分」—— 使用者可能只填其中一段，
+     * 硬湊一個跨段的總分只會讓人以為自己還沒填完。
+     */
     const updateProgress = () => {
-      const visibleBoxes = boxes.filter((b) => !b.closest('[data-item]')?.hidden);
-      const done = visibleBoxes.filter((b) => b.checked).length;
-      const total = visibleBoxes.length;
-      const pct = total ? Math.round((done / total) * 100) : 0;
+      const current = activePart();
 
-      const set = (id: string, text: string) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = text;
-      };
-      set('cl-done', String(done));
-      set('cl-total', String(total));
-      set('cl-pct', `${pct}%`);
-      set('cl-float-done', String(done));
-      set('cl-float-total', String(total));
-      set('cl-float-pct', `${pct}%`);
-      set('cl-float-msg', progressMessage(pct));
+      for (const panel of panels) {
+        const id = panel.dataset.part ?? '';
+        const partBoxes = Array.from(
+          panel.querySelectorAll<HTMLInputElement>('[data-check]')
+        ).filter((b) => !b.closest('[data-item]')?.hidden);
+        const done = partBoxes.filter((b) => b.checked).length;
+        const total = partBoxes.length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        const finished = total > 0 && done === total;
 
-      for (const id of ['cl-bar', 'cl-float-bar']) {
-        const bar = document.getElementById(id);
-        if (bar) bar.style.width = pct + '%';
-      }
-      document.getElementById('cl-track')?.setAttribute('aria-valuenow', String(pct));
+        const tab = tabs.find((t) => t.dataset.partTab === id);
+        const fill = (root: ParentNode | null, sel: string, text: string) => {
+          if (!root) return;
+          for (const el of root.querySelectorAll(sel)) el.textContent = text;
+        };
 
-      // 數字往上跳的時候輕輕放大一下（第一次載入不跳）
-      if (lastPct >= 0 && pct > lastPct) {
-        for (const el of document.querySelectorAll<HTMLElement>('[data-bump]')) {
-          el.classList.remove('cl-bump');
-          void el.offsetWidth;
-          el.classList.add('cl-bump');
+        fill(panel, '[data-pct]', String(pct));
+        fill(panel, '[data-done]', String(done));
+        fill(panel, '[data-total]', String(total));
+        fill(tab ?? null, '[data-tab-pct]', String(pct));
+        fill(tab ?? null, '[data-tab-done]', String(done));
+        fill(tab ?? null, '[data-tab-total]', String(total));
+
+        for (const bar of panel.querySelectorAll<HTMLElement>('[data-bar]')) {
+          bar.style.width = pct + '%';
+        }
+        panel.querySelector('[data-track]')?.setAttribute('aria-valuenow', String(pct));
+
+        const celebrate = panel.querySelector<HTMLElement>('[data-celebrate]');
+        if (celebrate) celebrate.hidden = !finished;
+
+        const criticalLeft = partBoxes.filter(
+          (b) => !b.checked && b.closest('[data-item]')?.textContent?.includes('重點')
+        ).length;
+        const note = panel.querySelector<HTMLElement>('[data-critical]');
+        if (note) {
+          note.textContent = criticalLeft
+            ? `還有 ${criticalLeft} 個「重點」項目沒完成 —— 這些是這一段最不該漏掉的。`
+            : finished
+              ? ''
+              : '重點項目都完成了，剩下的是加分項。';
+        }
+
+        // 數字往上跳的時候輕輕放大一下（第一次載入不跳）
+        const prev = lastPct[id];
+        if (prev !== undefined && pct > prev) {
+          for (const el of panel.querySelectorAll<HTMLElement>('[data-bump]')) {
+            el.classList.remove('cl-bump');
+            void el.offsetWidth;
+            el.classList.add('cl-bump');
+          }
+        }
+        lastPct[id] = pct;
+
+        // 底部浮動條只反映目前這一段
+        if (id === current) {
+          const set = (elId: string, text: string) => {
+            const el = document.getElementById(elId);
+            if (el) el.textContent = text;
+          };
+          set('cl-float-done', String(done));
+          set('cl-float-total', String(total));
+          set('cl-float-pct', `${pct} 分`);
+          set('cl-float-msg', progressMessage(pct));
+          set('cl-float-part', tab?.querySelector('.truncate')?.textContent?.trim() ?? '');
+          const bar = document.getElementById('cl-float-bar');
+          if (bar) bar.style.width = pct + '%';
         }
       }
-      lastPct = pct;
+    };
 
-      const criticalBoxes = visibleBoxes.filter((b) =>
-        b.closest('[data-item]')?.textContent?.includes('重點')
-      );
-      const criticalLeft = criticalBoxes.filter((b) => !b.checked).length;
-      const note = document.getElementById('cl-critical');
-      if (note) {
-        note.textContent = criticalLeft
-          ? `還有 ${criticalLeft} 個「重點」項目沒完成 —— 這些是出發前最不該漏掉的。`
-          : total === done && total > 0
-            ? '全部完成了，祝你有個安全又盡興的雪季。'
-            : '重點項目都完成了，剩下的是加分項。';
+    /** 切換段落。不捲動到最上面 —— 使用者按的按鈕就在他眼前，跳走會失去位置感 */
+    const showPart = (id: string, scrollToTop = false) => {
+      if (!panels.some((p) => p.dataset.part === id)) return;
+      for (const p of panels) p.hidden = p.dataset.part !== id;
+      for (const t of tabs) t.setAttribute('aria-selected', String(t.dataset.partTab === id));
+      write(PART_KEY, id);
+      updateProgress();
+      if (scrollToTop) {
+        document.getElementById('cl-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
@@ -479,11 +616,19 @@ const FAQ = [
       updateProgress();
     });
 
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => showPart(tab.dataset.partTab ?? ''));
+    }
+    for (const btn of document.querySelectorAll<HTMLElement>('[data-goto-part]')) {
+      btn.addEventListener('click', () => showPart(btn.dataset.gotoPart ?? '', true));
+    }
+
+    showPart(read<string>(PART_KEY, panels[0]?.dataset.part ?? ''));
     applyFilters();
 
-    // 底部進度條：上面的完成度捲出畫面、而且清單還在畫面上時才顯示
+    // 底部進度條：上面的分數捲出畫面、而且清單還在畫面上時才顯示
     const floatBar = document.getElementById('cl-float');
-    const progressCard = document.getElementById('cl-progress');
+    const progressCard = document.getElementById('cl-tabs');
     const list = document.getElementById('cl-list');
     if (floatBar && progressCard && list && 'IntersectionObserver' in window) {
       let cardVisible = true;

@@ -54,6 +54,44 @@ export const PHASES: { id: Phase; title: string; subtitle: string; emoji: string
   },
 ];
 
+/**
+ * 兩個大段落：一次 40 幾題太多，拆成「還在台灣」與「已經到雪場」兩份，
+ * 各自獨立計分到 100%。使用者可以只填其中一段，出發前填第一段、
+ * 到了雪場再回來填第二段 —— 這也比較貼近實際使用的時間點。
+ */
+export type Part = 'taiwan' | 'resort';
+
+export const PARTS: {
+  id: Part;
+  /** 分頁按鈕上的短標籤 */
+  short: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  phases: Phase[];
+  /** 這一段全部完成時給的一句話 */
+  done: string;
+}[] = [
+  {
+    id: 'taiwan',
+    short: '在台灣準備',
+    title: '第一段：還在台灣就要做的事',
+    subtitle: '打包、身體準備、保險與文件。這一段做好，到了雪場會輕鬆很多。',
+    emoji: '🏠',
+    phases: ['home'],
+    done: '出發前的準備都到位了，可以安心上飛機。到了雪場再回來填第二段。',
+  },
+  {
+    id: 'resort',
+    short: '到雪場之後',
+    title: '第二段：到了雪場之後要注意的事',
+    subtitle: '租借與裝備設定、當地資訊，以及滑行當天的判斷。建議抵達當天再打開這一段。',
+    emoji: '🎿',
+    phases: ['resort', 'riding'],
+    done: '該確認的都確認了。剩下的就是玩得開心，還有 —— 累了就收。',
+  },
+];
+
 export const CHECKLIST: ChecklistSection[] = [
   // ══════════ 一、在台灣出發前 ══════════
   {
