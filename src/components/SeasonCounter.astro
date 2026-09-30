@@ -1,0 +1,211 @@
+---
+/**
+ * 本季瀏覽人次的視覺化區塊（首頁，HERO 正下方）
+ *
+ * 數字從 /api/season 拿，所以每次打開都是最新的，不會因為沒重新建置就停在舊值。
+ *
+ * 幾個刻意的決定：
+ * - 拿不到資料、或這一季還沒有任何瀏覽，就整塊不顯示。
+ *   數字很小的時候秀出來反而扣分（跟 VisitCounter 同一個原則）。
+ * - 伺服器端不預先渲染數字：這個站是靜態輸出，寫死的數字一建置完就過期了。
+ * - 長條圖用 CSS 寬度與 keyframes，沒有圖表函式庫；資料就幾個月，不值得多載 40KB。
+ * - 動畫一律只是「加分」，不能影響正確性：分頁在背景時瀏覽器不會跑
+ *   requestAnimationFrame，如果把數字交給它填，使用者用「在新分頁開啟」
+ *   再切回來就會看到永遠的 0。所以最終值一定先寫進去，動畫只在看得見時才跑。
+ */
+
+/** 累積到這個數字才顯示，免得剛上線時秀出個位數 */
+const THRESHOLD = 300;
+---
+
+<section id="season-stats" data-threshold={THRESHOLD} class="hidden bg-surface">
+  <div class="mx-auto max-w-6xl px-5 py-12 sm:py-16">
+    <div class="rounded-3xl border border-line bg-panel p-6 sm:p-9">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:gap-12">
+        <!-- 左：本季總數 -->
+        <div class="min-w-0">
+          <p class="flex items-center gap-2 text-xs font-black tracking-widest text-accent uppercase">
+            <span aria-hidden="true">❄️</span>
+            <span data-season-label>雪季</span>
+          </p>
+          <p class="mt-3 flex items-baseline gap-2">
+            <span
+              data-season-views
+              class="text-5xl leading-none font-black text-head tabular-nums sm:text-6xl">0</span
+            >
+            <span class="text-lg font-black text-muted">次瀏覽</span>
+          </p>
+          <p class="mt-4 text-sm leading-relaxed break-words text-muted">
+            已有 <strong data-season-visitors class="text-head tabular-nums">0</strong> 位雪友造訪這個站，
+            一起把出發前的準備做得更完整。
+          </p>
+          <p class="mt-3 text-xs leading-relaxed break-words text-muted" data-season-range></p>
+        </div>
+
+        <!-- 右：逐月長條圖 -->
+        <div class="min-w-0">
+          <p class="text-xs font-black tracking-widest text-muted uppercase">逐月瀏覽次數</p>
+          <ul class="mt-4 space-y-3" data-season-bars></ul>
+          <p class="mt-5 text-xs leading-relaxed break-words text-muted">
+            只記「哪一天、哪一頁被看了幾次」這種數字，不放 cookie、不記錄 IP、不串接第三方分析服務。
+            已知的爬蟲不計入。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--
+  is:global 是必要的：長條是 JS 用 innerHTML 建出來的，拿不到 Astro scoped style
+  會加上的 data-astro-cid 屬性，用 scoped 選擇器會完全選不到。
+  寬度寫在 inline style（一定正確），這裡只負責「長出來」的動畫。
+-->
+<style is:global>
+  @media (prefers-reduced-motion: no-preference) {
+    .season-bar {
+      transform-origin: left center;
+      animation: season-grow 900ms ease-out both;
+    }
+  }
+
+  @keyframes season-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>
+
+<script>
+  interface SeasonMonth {
+    month: string;
+    views: number;
+  }
+  interface Season {
+    season?: string;
+    from?: string;
+    to?: string;
+    views?: number;
+    visitors?: number;
+    byMonth?: SeasonMonth[];
+  }
+
+  const section = document.getElementById('season-stats');
+
+  if (section) {
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fmt = (n: number) => n.toLocaleString('zh-TW');
+
+    /**
+     * 先把最終數字寫進去，再視情況跑滾動動畫。
+     * 順序很重要：動畫跑不起來（分頁在背景、rAF 被凍結）時，畫面上留下的是正確的數字。
+     */
+    const show = (el: HTMLElement | null, target: number, animate: boolean) => {
+      if (!el) return;
+      el.textContent = fmt(target);
+      if (!animate || calm || target === 0) return;
+
+      const DURATION = 1100;
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / DURATION);
+        // easeOutCubic：一開始快、最後慢慢停住
+        el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    /** 2026-09 → 2026 年 9 月；同一年的後續月份只寫「10 月」 */
+    const monthLabel = (m: string, prevYear: string | null) => {
+      const [y, mm] = m.split('-');
+      return y === prevYear ? `${Number(mm)} 月` : `${y} 年 ${Number(mm)} 月`;
+    };
+
+    (async () => {
+      let data: Season;
+      try {
+        const res = await fetch('/api/season');
+        data = await res.json();
+      } catch {
+        return; // 讀不到就安靜地不顯示
+      }
+
+      const views = data.views ?? 0;
+      const visitors = data.visitors ?? 0;
+      const months = data.byMonth ?? [];
+      if (views < Number(section.dataset.threshold ?? '0') || months.length === 0) return;
+
+      const label = section.querySelector<HTMLElement>('[data-season-label]');
+      if (label && data.season) label.textContent = `${data.season.replace('-', '–')} 雪季`;
+
+      const range = section.querySelector<HTMLElement>('[data-season-range]');
+      if (range && data.from && data.to) {
+        const pretty = (d: string) => {
+          const [y, m] = d.split('-');
+          return `${y} 年 ${Number(m)} 月`;
+        };
+        range.textContent = `統計期間：${pretty(data.from)} 至 ${pretty(data.to)}`;
+      }
+
+      // 長條圖：以最大的那個月為滿版
+      const list = section.querySelector<HTMLElement>('[data-season-bars]');
+      if (list) {
+        const max = Math.max(...months.map((m) => m.views), 1);
+        let prevYear: string | null = null;
+        list.innerHTML = '';
+        for (const m of months) {
+          const pct = Math.max(2, Math.round((m.views / max) * 100));
+          const li = document.createElement('li');
+          li.className = 'min-w-0';
+          li.innerHTML = `
+            <div class="flex items-baseline justify-between gap-3 text-sm">
+              <span class="min-w-0 truncate font-bold text-head">${monthLabel(m.month, prevYear)}</span>
+              <span class="shrink-0 tabular-nums text-muted">${fmt(m.views)}</span>
+            </div>
+            <div class="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-tint2">
+              <div class="season-bar h-full rounded-full bg-accent" style="width:${pct}%"></div>
+            </div>`;
+          list.appendChild(li);
+          prevYear = m.month.split('-')[0];
+        }
+      }
+
+      section.classList.remove('hidden');
+
+      const viewsEl = section.querySelector<HTMLElement>('[data-season-views]');
+      const visitorsEl = section.querySelector<HTMLElement>('[data-season-visitors]');
+
+      /** @param animate 只有「分頁看得見」時才值得跑動畫 */
+      const reveal = (animate: boolean) => {
+        show(viewsEl, views, animate);
+        show(visitorsEl, visitors, animate);
+      };
+
+      if (document.hidden) {
+        // 背景分頁：先把正確數字放上去；等使用者切回來再補動畫
+        reveal(false);
+        document.addEventListener('visibilitychange', () => reveal(true), { once: true });
+        return;
+      }
+
+      // 捲到看得見才跑動畫，不然使用者滑到時數字早就跑完了
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((e) => e.isIntersecting)) return;
+            io.disconnect();
+            reveal(true);
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(section);
+      } else {
+        reveal(true);
+      }
+    })();
+  }
+</script>

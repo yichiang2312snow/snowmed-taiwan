@@ -5,6 +5,7 @@ import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
 import HeroCarousel from '../components/HeroCarousel.astro';
 import VisitCounter from '../components/VisitCounter.astro';
 import HeroPoll from '../components/HeroPoll.astro';
+import SeasonCounter from '../components/SeasonCounter.astro';
 import PopularTools from '../components/PopularTools.astro';
 
 ---
@@ -66,6 +67,9 @@ import PopularTools from '../components/PopularTools.astro';
       </div>
     </div>
   </section>
+
+  <!-- 本季瀏覽人次：擺在 HERO 正下方，捲一下就看得到 -->
+  <SeasonCounter />
 
   <!-- 工具 -->
   <section id="tools" class="scroll-mt-20 bg-surface">
