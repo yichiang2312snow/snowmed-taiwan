@@ -8,6 +8,9 @@
  *
  * 次數來自 /api/popular（近 30 天，跟熱門排行同一份資料，所以只多一次快取命中）。
  * 還沒有人用過的工具維持原本的順序排在後面，不會因為沒數據就被丟到最前面。
+ *
+ * 排完之後會在這一類的第一名掛上「這類最多人用」的徽章。比較範圍只限同一類 ——
+ * 受傷後才用的工具本來就不會跟行前工具一樣多次，拿全站來比的話這一區永遠不會有標記。
  */
 import ToolCard from './ToolCard.astro';
 import { TOOLS } from '../consts';
@@ -56,6 +59,13 @@ const tools = TOOLS.filter((t) => t.category === category);
           .map((x) => x.el);
 
         if (sorted.some((el, i) => el !== cards[i])) grid.append(...sorted);
+
+        // 這一類的第一名掛徽章；整類都還沒有人用過就不掛
+        const first = sorted[0];
+        if (first && score(first) > 0) {
+          const badge = first.querySelector<HTMLElement>('[data-top-badge]');
+          if (badge) badge.hidden = false;
+        }
       }
     })();
   }
