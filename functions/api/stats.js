@@ -4,6 +4,7 @@
  * POST /api/stats   前端回報一個事件，對應的計數 +1
  * GET  /api/stats   讀取彙總資料（需要 Bearer token）
  *                   ?month=YYYY-MM 某月、?day=YYYY-MM-DD 某天、?range=all 全部月份（含逐月明細）
+ *                   ?days=N 最近 N 天（含逐日明細 byDay），給後台畫每日長條圖用
  *
  * ── 這裡「不」做的事 ───────────────────────────────────────
  * 不放 cookie、不記錄 IP（連雜湊都不存）、不產生任何 session 或訪客識別碼。
@@ -62,6 +63,12 @@ function taipeiParts(now = new Date()) {
   return { day: `${y}-${m}-${d}`, month: `${y}-${m}` };
 }
 
+/** 台北時間往前 offset 天的 YYYY-MM-DD */
+function taipeiDayAgo(offset) {
+  const t = new Date(Date.now() + 8 * 60 * 60 * 1000 - offset * 24 * 60 * 60 * 1000);
+  return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`;
+}
+
 async function bump(env, key, ttl) {
   const cur = Number.parseInt((await env.VIEWS.get(key)) ?? '0', 10) || 0;
   const opts = ttl ? { expirationTtl: ttl } : undefined;
@@ -112,6 +119,51 @@ export async function onRequestGet({ request, env }) {
   const month = url.searchParams.get('month');
   const day = url.searchParams.get('day');
   const all = url.searchParams.get('range') === 'all';
+  // ?days=30 取最近 30 天，另外回傳逐日明細。
+  // 刻意逐日下前綴，而不是掃整個 st:d: ——
+  // list 的次數才會固定是 N 次，不會隨著資料累積越來越貴。
+  const daysParam = Number.parseInt(url.searchParams.get('days') ?? '', 10);
+  const recentDays = Number.isFinite(daysParam) ? Math.min(Math.max(daysParam, 1), 90) : 0;
+
+  if (recentDays) {
+    const counts = {};
+    const byDay = {};
+    const wanted = Array.from({ length: recentDays }, (_, i) => taipeiDayAgo(recentDays - 1 - i));
+
+    await Promise.all(
+      wanted.map(async (d) => {
+        byDay[d] = {};
+        let cursor;
+        do {
+          const list = await env.VIEWS.list({ prefix: `st:d:${d}:`, cursor });
+          await Promise.all(
+            list.keys.map(async (key) => {
+              const parts = key.name.split(':');
+              if (parts.length < 5) return;
+              const event = parts[3];
+              const label = parts.slice(4).join(':');
+              const n = Number.parseInt((await env.VIEWS.get(key.name)) ?? '0', 10) || 0;
+              if (n === 0) return;
+              byDay[d][event] ??= {};
+              byDay[d][event][label] = (byDay[d][event][label] ?? 0) + n;
+              counts[event] ??= {};
+              counts[event][label] = (counts[event][label] ?? 0) + n;
+            })
+          );
+          cursor = list.list_complete ? undefined : list.cursor;
+        } while (cursor);
+      })
+    );
+
+    const visits = Number.parseInt((await env.VIEWS.get('visits:total')) ?? '0', 10) || 0;
+    return json({
+      scope: { days: recentDays, from: wanted[0], to: wanted[wanted.length - 1] },
+      totalVisitorsAllTime: visits,
+      counts,
+      byDay,
+      note: '純彙總資料，不含任何個人識別資訊。',
+    });
+  }
   // 三種範圍都從每日鍵 st:d:YYYY-MM-DD:event:label 彙總：
   //   全部 → 前綴 st:d:；某月 → st:d:YYYY-MM-；某天 → st:d:YYYY-MM-DD:
   const prefix = all ? 'st:d:' : day ? `st:d:${day}:` : `st:d:${month ?? taipeiParts().month}-`;
