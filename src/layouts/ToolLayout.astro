@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import { SITE, TOOLS } from '../consts';
+import { SITE, SITE_A, TOOLS } from '../consts';
+import { RELATED_ARTICLES } from '../data/relatedArticles';
 
 interface Props {
   title: string;
@@ -17,6 +18,8 @@ const { title, seoTitle, emoji, summary, time, description } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '');
 const tool = TOOLS.find((t) => t.href === path);
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+// 這個工具對應到個人網站的哪幾篇文章（沒有對應就不顯示整塊）
+const related = RELATED_ARTICLES[path] ?? [];
 const siteUrl = Astro.site?.toString() ?? 'https://snowmed-taiwan.com/';
 
 // 引用格式：仿學術引用，讓「標明出處」有一個現成的、可以直接貼的樣子
@@ -107,6 +110,30 @@ const toolLd = tool
       <div class="mt-10">
         <slot name="faq" />
       </div>
+
+      {related.length > 0 && (
+        <div class="mt-10 rounded-2xl border border-line bg-panel p-6">
+          <h2 class="text-base font-black text-head">想知道背後的原因？</h2>
+          <p class="mt-1.5 text-sm leading-relaxed break-words text-muted">
+            工具給你答案，文章給你理由。以下是楊醫師在個人網站上寫的相關文章。
+          </p>
+          <ul class="mt-4 space-y-3">
+            {related.map((a) => (
+              <li class="min-w-0">
+                <a
+                  href={`${SITE_A.url}articles/${a.slug}`}
+                  target="_blank"
+                  rel="noopener"
+                  class="block min-w-0 rounded-xl border border-line bg-surface px-4 py-3 transition-colors hover:border-accent hover:bg-tint1"
+                >
+                  <p class="text-sm leading-snug font-bold break-words text-head">📄 {a.title} ↗</p>
+                  <p class="mt-1 text-xs leading-relaxed break-words text-muted">{a.why}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {
         tool && citation && (
