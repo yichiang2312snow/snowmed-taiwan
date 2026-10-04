@@ -101,6 +101,17 @@ const FAQ = [
     </p>
   </div>
 
+  <p class="mt-4 text-sm leading-relaxed break-words text-muted">
+    📄 這個工具的內容整理自楊醫師的文章
+    <a
+      href={ARTICLE_URL}
+      target="_blank"
+      rel="noopener"
+      class="font-bold text-accent hover:underline"
+    >滑雪安全帽怎麼挑？美國維吉尼亞理工「頭盔實驗室」的 48 頂測試告訴你 ↗</a>
+    ，想看完整的中文整理與數據可以直接讀那一篇。
+  </p>
+
   <div id="quiz" class="mt-8 space-y-4">
     {QUESTIONS.map((item, i) => (
       <fieldset
@@ -214,7 +225,7 @@ const FAQ = [
   <Fragment slot="basis">
     <p>
       題目與解說全部出自 <strong>Nicole Stark 博士（Virginia Tech Helmet Lab）於 2026 年 3 月韓國平昌國際滑雪安全學會（ISSS 2026）年會的口頭報告</strong>，
-      以及該實驗室公開的評等網站。楊醫師在現場聽講後整理成中文，
+      以及該實驗室公開的評等網站。楊醫師在現場聽講後<a href={ARTICLE_URL} target="_blank" rel="noopener">整理成一篇完整的中文文章</a>，
       本工具再把其中最容易被誤解的幾點做成是非題。
     </p>
     <p>
