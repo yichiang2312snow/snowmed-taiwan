@@ -1,0 +1,150 @@
+---
+/**
+ * 媒體報導
+ *
+ * 分兩區：上面是內文確實提到本平台的報導，下面是同一批採訪裡沒有提到平台、
+ * 但同樣在講滑雪運動醫學門診的報導。清單與分組依據在 src/data/mediaCoverage.ts。
+ *
+ * 分兩區而不是混在一起，是因為這兩件事的意義不同：第一區證明的是「這個平台被
+ * 媒體引用過」，第二區證明的是「這個主題受到關注」。混在一起會讓第一區的份量
+ * 被稀釋，也不夠誠實。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PLATFORM_COVERAGE, OTHER_COVERAGE } from '../data/mediaCoverage';
+
+const title = '媒體報導';
+const seoTitle = '媒體報導｜台灣滑雪運動醫學科學平台';
+const description =
+  '收錄提到「台灣滑雪運動醫學科學平台」的媒體報導，以及臺北榮總滑雪運動醫學門診的相關新聞，包含聯合新聞網、民視新聞網、中央社、ETtoday 等。每一筆都附原文連結。';
+
+const fmt = (d: string) => `${d.slice(0, 4)}/${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
+const total = PLATFORM_COVERAGE.length + OTHER_COVERAGE.length;
+---
+
+<BaseLayout title={title} seoTitle={seoTitle} description={description} eyebrow="Media">
+  <section class="bg-band text-white on-dark">
+    <div class="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p class="text-xs font-black tracking-widest text-accent uppercase">媒體報導</p>
+      <h1 class="mt-3 text-2xl leading-tight font-black break-words sm:text-4xl">媒體怎麼報導</h1>
+      <p class="mt-4 text-sm leading-relaxed break-words text-body sm:text-base">
+        2026 年 10 月，臺北榮總發表全國首創的「滑雪運動醫學門診」，共有 {total} 則報導。
+        其中<strong class="text-head">{PLATFORM_COVERAGE.length} 則的內文直接提到這個平台</strong>。
+        每一筆都附原文連結，可以自己點進去查證。
+      </p>
+    </div>
+  </section>
+
+  <!-- 第一區：有提到平台 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 py-10 sm:py-14">
+      <h2 class="text-xl font-black text-head sm:text-2xl">📣 提到本平台的報導</h2>
+      <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+        這幾則的內文直接寫到「台灣滑雪運動醫學科學平台」，下面附上實際提到的那一段。
+      </p>
+
+      <ul class="mt-6 space-y-6">
+        {
+          PLATFORM_COVERAGE.map((m) => (
+            <li class="min-w-0 rounded-2xl border border-accent/40 bg-panel p-6 sm:p-7">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="rounded-full bg-cta px-2.5 py-1 text-xs font-black text-ctatext">
+                  {m.outlet}
+                </span>
+                <span class="text-xs tabular-nums text-muted">{fmt(m.date)}</span>
+              </div>
+
+              <h3 class="mt-3 text-lg leading-snug font-black break-words text-head">
+                <a href={m.url} target="_blank" rel="noopener" class="hover:text-accent hover:underline">
+                  {m.title} ↗
+                </a>
+              </h3>
+
+              {m.quote && (
+                <blockquote class="mt-4 border-l-4 border-accent bg-tint1 py-3 pr-4 pl-4">
+                  <p class="text-sm leading-relaxed break-words text-body">「{m.quote}」</p>
+                </blockquote>
+              )}
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <a
+                  href={m.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="rounded-xl bg-cta px-4 py-2.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
+                >
+                  讀原文 ↗
+                </a>
+                {(m.mirrors ?? []).map((mir) => (
+                  <a
+                    href={mir.url}
+                    target="_blank"
+                    rel="noopener"
+                    class="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-bold text-head transition-colors hover:border-accent hover:bg-tint1"
+                  >
+                    {mir.label} ↗
+                  </a>
+                ))}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 第二區：同一批採訪的其他報導 -->
+  {
+    OTHER_COVERAGE.length > 0 && (
+      <section class="bg-panel">
+        <div class="mx-auto max-w-3xl px-5 py-10 sm:py-14">
+          <h2 class="text-xl font-black text-head sm:text-2xl">📰 相關媒體報導</h2>
+          <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+            同一批採訪中其他媒體的報導。這些篇幅聚焦在門診本身，內文沒有提到這個平台。
+          </p>
+
+          <ul class="mt-6 space-y-3">
+            {OTHER_COVERAGE.map((m) => (
+              <li class="min-w-0">
+                <a
+                  href={m.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="block min-w-0 rounded-xl border border-line bg-surface px-5 py-4 transition-colors hover:border-accent hover:bg-tint1"
+                >
+                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="rounded-full bg-tint2 px-2 py-0.5 text-[11px] font-black text-head">
+                      {m.outlet}
+                    </span>
+                    <span class="text-xs tabular-nums text-muted">{fmt(m.date)}</span>
+                  </div>
+                  <p class="mt-2 text-sm leading-snug font-bold break-words text-head">
+                    {m.title} ↗
+                  </p>
+                </a>
+                {(m.mirrors ?? []).map((mir) => (
+                  <a
+                    href={mir.url}
+                    target="_blank"
+                    rel="noopener"
+                    class="mt-1.5 ml-5 inline-block text-xs text-muted hover:text-accent hover:underline"
+                  >
+                    └ {mir.label} ↗
+                  </a>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="bg-surface">
+    <div class="mx-auto max-w-3xl px-5 pb-12 sm:pb-16">
+      <p class="text-xs leading-relaxed break-words text-muted">
+        連結指向各媒體的原始網頁，著作權屬於各該媒體。本頁只摘錄提到本平台的段落，供讀者查證。
+        報導內容為各媒體自行採訪撰寫，不代表本平台立場。
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -38,6 +38,7 @@ export const NAV = [
   { href: '/tools', label: '實用小工具' },
   { href: '/ski-beginner-guide', label: '新手指南' },
   { href: '/ski-injuries', label: '運動傷害' },
+  { href: '/media', label: '媒體報導' },
   { href: '/emergency', label: '海外受傷' },
   // 衛教文章都在楊醫師的個人網站上，這裡直接外連過去
   { href: SITE_A.articlesUrl, label: '知識庫', external: true },
