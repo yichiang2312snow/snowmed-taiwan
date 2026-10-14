@@ -7,6 +7,7 @@ import VisitCounter from '../components/VisitCounter.astro';
 import HeroPoll from '../components/HeroPoll.astro';
 import SeasonCounter from '../components/SeasonCounter.astro';
 import PopularTools from '../components/PopularTools.astro';
+import { QUIZ_QUESTIONS } from '../data/quizQuestions';
 
 ---
 
@@ -122,6 +123,34 @@ import PopularTools from '../components/PopularTools.astro';
           href="/emergency"
           class="shrink-0 rounded-xl bg-red-600 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-red-700"
           >立刻查看 →</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- 複習測驗 -->
+  <section class="bg-surface">
+    <div class="mx-auto max-w-6xl px-5 py-10 sm:py-12">
+      <div
+        class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-accent/50 bg-panel p-6 sm:p-8"
+      >
+        <div class="flex min-w-0 items-start gap-4">
+          <span class="shrink-0 text-4xl leading-none" aria-hidden="true">🎯</span>
+          <div class="min-w-0">
+            <p class="text-xs font-black tracking-widest text-accent uppercase">Quiz</p>
+            <h2 class="mt-2 text-xl font-black break-words text-head sm:text-2xl">
+              想考核看看自己的雪地知識程度嗎？歡迎挑戰
+            </h2>
+            <p class="mt-2 max-w-xl text-sm leading-relaxed break-words text-muted">
+              從 {QUIZ_QUESTIONS.length} 題題庫隨機抽 10 題，答完一題立刻給詳解，
+              並告訴你這個觀念出自哪一頁，可以直接點回去再看一次。免費、免註冊。
+            </p>
+          </div>
+        </div>
+        <a
+          href="/quiz"
+          class="shrink-0 rounded-xl bg-cta px-6 py-3.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent"
+          >開始測驗 →</a
         >
       </div>
     </div>
