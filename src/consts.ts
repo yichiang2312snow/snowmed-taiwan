@@ -36,6 +36,7 @@ export const SITE_A = {
 
 export const NAV = [
   { href: '/tools', label: '實用小工具' },
+  { href: '/quiz', label: '複習測驗' },
   { href: '/ski-beginner-guide', label: '新手指南' },
   { href: '/ski-injuries', label: '運動傷害' },
   { href: '/media', label: '媒體報導' },

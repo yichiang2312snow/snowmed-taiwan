@@ -50,7 +50,7 @@ const isActive = (href: string) =>
                 aria-controls="tools-dropdown"
                 aria-haspopup="true"
                 class:list={[
-                  'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
                   isActive(item.href)
                     ? 'bg-tint2 text-head'
                     : 'text-muted hover:bg-tint1 hover:text-head',
@@ -117,7 +117,7 @@ const isActive = (href: string) =>
             <a
               href={item.href}
               class:list={[
-                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
                 isActive(item.href)
                   ? 'bg-tint2 text-head'
                   : 'text-muted hover:bg-tint1 hover:text-head',
