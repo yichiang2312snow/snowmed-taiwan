@@ -1,0 +1,118 @@
+---
+/**
+ * 首頁 HERO 右側、快問快答下面的「試一題」小卡
+ *
+ * 目的不是考人，是讓人先嘗到一題、答完被勾起興趣，再點去 /quiz 做完整的十題。
+ * 所以只放一題、答完立刻給答案與一句話解釋，然後就是去完整測驗的按鈕。
+ *
+ * 只嵌入少數幾題（不是整個題庫），首頁才不會為了一張小卡多載幾十 KB；
+ * 由前端隨機挑一題，重新整理會換一題，回訪的人不會每次看到同一題。
+ *
+ * 跟 HeroPoll 一樣永遠落在深色的 HERO 上，所以顏色直接寫白色系，
+ * 不用主題 token，淺色模式另外用 light: 覆蓋。
+ */
+import { QUIZ_QUESTIONS } from '../data/quizQuestions';
+
+/**
+ * 挑來當誘餌的題目：要嘛答案出乎意料、要嘛一看就想知道答案。
+ * 不用整個題庫是刻意的 —— 這張卡只要夠勾人，不需要涵蓋所有主題。
+ */
+const TEASER_IDS = ['f2', 'e5', 'a1', 's4', 'e2', 'b1'];
+
+const picked = TEASER_IDS.map((id) => {
+  const q = QUIZ_QUESTIONS.find((x) => x.id === id);
+  if (!q) throw new Error(`首頁試一題指到不存在的題目：${id}`);
+  return {
+    q: q.q,
+    o: q.options,
+    a: q.answer,
+    // 卡片很小，詳解只取第一句，完整的留在 /quiz
+    e: (q.explain.split('。')[0] ?? q.explain) + '。',
+  };
+});
+
+const total = QUIZ_QUESTIONS.length;
+---
+
+<div
+  id="quiz-teaser"
+  class="relative min-w-0 rounded-2xl border border-white/20 bg-band/75 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6 light:border-sky-200 light:bg-white/95 light:shadow-sky-900/15"
+  aria-label="複習測驗試一題"
+>
+  <div class="flex items-center justify-between gap-3">
+    <p class="text-[11px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
+      🎯 先試一題
+    </p>
+    <p class="text-xs text-body/80 light:text-slate-500">答完看看自己的程度</p>
+  </div>
+
+  <p
+    id="quiz-teaser-q"
+    class="mt-3 text-sm leading-relaxed font-bold break-words text-white light:text-slate-900"
+  >
+  </p>
+
+  <div id="quiz-teaser-options" class="mt-4 space-y-2"></div>
+
+  <!-- 答完才出現：答案 + 一句話解釋 + 去完整測驗 -->
+  <div id="quiz-teaser-after" hidden class="mt-4">
+    <p id="quiz-teaser-verdict" class="text-sm font-black"></p>
+    <p
+      id="quiz-teaser-explain"
+      class="mt-1.5 text-xs leading-relaxed break-words text-body/90 light:text-slate-600"
+    >
+    </p>
+    <a
+      href="/quiz"
+      class="mt-4 block rounded-xl bg-cta px-4 py-3 text-center text-sm font-bold text-ctatext transition-colors hover:bg-accent"
+    >
+      完整測驗有 {total} 題，隨機抽 10 題 →
+    </a>
+  </div>
+</div>
+
+<script type="application/json" id="quiz-teaser-data" set:html={JSON.stringify(picked)} />
+
+<script>
+  const root = document.getElementById('quiz-teaser');
+
+  if (root) {
+    const bank = JSON.parse(document.getElementById('quiz-teaser-data')!.textContent!);
+    const q = bank[Math.floor(Math.random() * bank.length)];
+
+    const el = (id: string) => document.getElementById(id)!;
+    el('quiz-teaser-q').textContent = q.q;
+
+    const box = el('quiz-teaser-options');
+    q.o.forEach((text: string, i: number) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className =
+        'quiz-teaser-opt block w-full cursor-pointer rounded-xl border border-white/25 bg-white/10 px-3.5 py-2.5 text-left text-sm leading-snug break-words text-white transition-colors hover:border-accent hover:bg-white/20 light:border-slate-300 light:bg-white light:text-slate-900 light:hover:border-sky-500 light:hover:bg-sky-50';
+      btn.textContent = text;
+      btn.addEventListener('click', () => answer(i));
+      box.appendChild(btn);
+    });
+
+    const answer = (chosen: number) => {
+      const ok = chosen === q.a;
+
+      // 鎖住選項並標出對錯 —— 跟 /quiz 的行為一致，使用者過去之後不會覺得陌生
+      document.querySelectorAll<HTMLButtonElement>('.quiz-teaser-opt').forEach((b, i) => {
+        b.disabled = true;
+        b.classList.remove('cursor-pointer', 'hover:border-accent', 'hover:bg-white/20');
+        if (i === q.a) b.classList.add('border-emerald-400', 'bg-emerald-500/25');
+        else if (i === chosen) b.classList.add('border-red-400', 'bg-red-500/25');
+        else b.classList.add('opacity-50');
+      });
+
+      const verdict = el('quiz-teaser-verdict');
+      verdict.textContent = ok ? '✅ 答對了' : '❌ 答錯了';
+      verdict.className =
+        'text-sm font-black ' +
+        (ok ? 'text-emerald-300 light:text-emerald-700' : 'text-red-300 light:text-red-700');
+      el('quiz-teaser-explain').textContent = q.e;
+      el('quiz-teaser-after').hidden = false;
+    };
+  }
+</script>

@@ -5,6 +5,7 @@ import { SITE, SITE_A, TOOLS, TOOL_CATEGORIES } from '../consts';
 import HeroCarousel from '../components/HeroCarousel.astro';
 import VisitCounter from '../components/VisitCounter.astro';
 import HeroPoll from '../components/HeroPoll.astro';
+import QuizTeaser from '../components/QuizTeaser.astro';
 import SeasonCounter from '../components/SeasonCounter.astro';
 import PopularTools from '../components/PopularTools.astro';
 import { QUIZ_QUESTIONS } from '../data/quizQuestions';
@@ -62,9 +63,10 @@ import { QUIZ_QUESTIONS } from '../data/quizQuestions';
       </div>
       </div>
 
-      <!-- 一按進來就能玩的小投票 -->
-      <div class="min-w-0 lg:justify-self-end lg:w-full">
+      <!-- 一按進來就能玩的小投票，下面接「先試一題」把人帶去完整測驗 -->
+      <div class="min-w-0 space-y-4 lg:w-full lg:justify-self-end">
         <HeroPoll />
+        <QuizTeaser />
       </div>
     </div>
   </section>
