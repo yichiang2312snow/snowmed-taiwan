@@ -26,6 +26,18 @@ export interface MediaItem {
   quote?: string;
   /** 同一篇報導的其他轉載位置 */
   mirrors?: { label: string; url: string }[];
+  /**
+   * 這則報導的新聞影片。頁面上是「點了才載入」的設計 ——
+   * 直接放 iframe 的話，使用者還沒按播放，YouTube 就已經知道他來過這一頁了，
+   * 跟這個站「不串接第三方追蹤」的說法不一致。
+   */
+  video?: {
+    /** YouTube 影片 id */
+    id: string;
+    title: string;
+    /** Shorts 之類的直式影片，版面比例不同 */
+    vertical?: boolean;
+  };
 }
 
 export const MEDIA_COVERAGE: MediaItem[] = [
@@ -49,7 +61,11 @@ export const MEDIA_COVERAGE: MediaItem[] = [
     verified: 'yes',
     quote:
       '從受傷診斷、治療、復健一路把關，楊醫師也自發性設計滑雪運動醫學科學平台，讓愛滑雪的雪友們或是無經驗的新手，都能精準找到適合自己的場地、提供注意事項、受傷後如何尋求協助等資訊。',
-    mirrors: [{ label: '民視新聞 YouTube', url: 'https://www.youtube.com/shorts/pNiVm9hZ_IQ' }],
+    video: {
+      id: 'pNiVm9hZ_IQ',
+      title: '獨！海外滑雪風氣盛！北榮首創滑雪運動醫學門診為雪友照護把關',
+      vertical: true,
+    },
   },
 
   {
@@ -61,6 +77,21 @@ export const MEDIA_COVERAGE: MediaItem[] = [
     // 不是像其他幾筆那樣由程式抓全文比對出來的。
     mentionsPlatform: true,
     verified: 'yes',
+  },
+
+  {
+    outlet: '台視新聞',
+    title: '不是AI片！這位醫師太「秀」了　院長室前「滑」起來',
+    url: 'https://www.youtube.com/watch?v=qxUuPfgABBY',
+    date: '2026-10-14',
+    // 影片內容沒有逐字稿可以比對，所以沒有放進「提到本平台」那一區。
+    // 若醫師確認影片中有提到平台，把這裡改成 true 就會移到第一區。
+    mentionsPlatform: false,
+    verified: 'unknown',
+    video: {
+      id: 'qxUuPfgABBY',
+      title: '不是AI片！這位醫師太「秀」了　院長室前「滑」起來',
+    },
   },
 
   // ── 以下報導的內文沒有提到本平台，依醫師指定的條件預設不顯示 ──

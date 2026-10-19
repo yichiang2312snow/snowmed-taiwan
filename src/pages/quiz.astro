@@ -292,11 +292,20 @@ const categories = Object.values(CATEGORY_LABELS);
 
       el('quiz-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      // 統計：完成一次測驗
+      // 統計：完成一次測驗。
+      // 整份作答結果收成一個請求送出，不是每題送一次 ——
+      // 每題一個事件的話一次測驗要寫 11 次 KV，免費方案一天只有 1,000 次。
       try {
         navigator.sendBeacon?.(
           '/api/stats',
           new Blob([JSON.stringify({ e: 'done', l: 'quiz' })], { type: 'application/json' })
+        );
+        navigator.sendBeacon?.(
+          '/api/quiz',
+          new Blob(
+            [JSON.stringify({ score: correct, answers: answered.map((r) => ({ id: r.q.i, ok: r.ok })) })],
+            { type: 'application/json' }
+          )
         );
       } catch {
         /* 統計失敗不影響使用者 */

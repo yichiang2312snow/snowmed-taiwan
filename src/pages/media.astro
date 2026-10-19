@@ -11,6 +11,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PLATFORM_COVERAGE, OTHER_COVERAGE } from '../data/mediaCoverage';
+import NewsVideo from '../components/NewsVideo.astro';
 
 const title = '媒體報導';
 const seoTitle = '媒體報導｜台灣滑雪運動醫學科學平台';
@@ -63,6 +64,10 @@ const total = PLATFORM_COVERAGE.length + OTHER_COVERAGE.length;
                 <blockquote class="mt-4 border-l-4 border-accent bg-tint1 py-3 pr-4 pl-4">
                   <p class="text-sm leading-relaxed break-words text-body">「{m.quote}」</p>
                 </blockquote>
+              )}
+
+              {m.video && (
+                <NewsVideo id={m.video.id} title={m.video.title} vertical={m.video.vertical} outlet={m.outlet} />
               )}
 
               <div class="mt-4 flex flex-wrap gap-2">
@@ -121,6 +126,9 @@ const total = PLATFORM_COVERAGE.length + OTHER_COVERAGE.length;
                     {m.title} ↗
                   </p>
                 </a>
+                {m.video && (
+                  <NewsVideo id={m.video.id} title={m.video.title} vertical={m.video.vertical} outlet={m.outlet} />
+                )}
                 {(m.mirrors ?? []).map((mir) => (
                   <a
                     href={mir.url}

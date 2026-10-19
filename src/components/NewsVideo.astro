@@ -1,0 +1,84 @@
+---
+/**
+ * 新聞影片：點了才載入的 YouTube 播放器
+ *
+ * 為什麼不直接放 iframe：那樣使用者只要打開這一頁，還沒按播放，
+ * YouTube 就已經收到他的 IP 與來訪紀錄了 —— 跟本站「不串接第三方追蹤服務」
+ * 的說法不一致，而且每個 iframe 都會拖慢頁面。
+ *
+ * 所以預設只畫一張自家的封面卡（沒有任何外部請求，連縮圖都不從 Google 拿），
+ * 使用者按了播放才建立 iframe，而且用 youtube-nocookie.com。
+ * 沒有 JavaScript 時，封面本身就是連到 YouTube 的連結，照樣看得到影片。
+ */
+interface Props {
+  id: string;
+  title: string;
+  /** Shorts 之類的直式影片 */
+  vertical?: boolean;
+  /** 影片來源，顯示在封面上 */
+  outlet?: string;
+}
+
+const { id, title, vertical = false, outlet } = Astro.props;
+const watchUrl = `https://www.youtube.com/watch?v=${id}`;
+---
+
+<div
+  class:list={[
+    'relative mt-4 w-full min-w-0 overflow-hidden rounded-xl border border-line bg-band',
+    vertical ? 'mx-auto max-w-[280px]' : '',
+  ]}
+  data-news-video
+  data-id={id}
+  data-vertical={vertical ? '1' : '0'}
+  style={`aspect-ratio:${vertical ? '9 / 16' : '16 / 9'}`}
+>
+  <!--
+    沒有 JS 時這就是一個連到 YouTube 的連結；有 JS 時 click 會被接走，改成原地播放。
+    兩種情況下使用者都看得到影片。
+  -->
+  <a
+    href={watchUrl}
+    target="_blank"
+    rel="noopener"
+    data-news-video-cover
+    class="group flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-band to-tint2 p-5 text-center transition-colors hover:from-tint1 hover:to-tint3"
+  >
+    <span
+      class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-transform group-hover:scale-110"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" class="ml-1 h-7 w-7" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+    </span>
+    <span class="min-w-0">
+      {outlet && <span class="block text-[11px] font-black tracking-widest text-accent uppercase">{outlet}</span>}
+      <span class="mt-1 block text-sm leading-snug font-bold break-words text-head">{title}</span>
+      <span class="mt-2 block text-[11px] text-muted">點擊播放．播放後才會連線到 YouTube</span>
+    </span>
+  </a>
+</div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-news-video]')) {
+    const cover = box.querySelector<HTMLAnchorElement>('[data-news-video-cover]');
+    if (!cover) continue;
+
+    cover.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = box.dataset.id;
+      if (!id) return;
+
+      const frame = document.createElement('iframe');
+      // nocookie 網域：在使用者真的按下播放之前，不會有任何 YouTube 的請求
+      frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      frame.title = cover.textContent?.trim().slice(0, 100) ?? '新聞影片';
+      frame.loading = 'lazy';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.allowFullscreen = true;
+      frame.className = 'absolute inset-0 h-full w-full border-0';
+
+      box.replaceChildren(frame);
+    });
+  }
+</script>
