@@ -138,3 +138,24 @@ export async function onRequestGet({ request, env }) {
     note: '純彙總資料，不含任何個人識別資訊。',
   });
 }
+
+/**
+ * DELETE /api/quiz   把統計歸零（需要 Bearer token）
+ *
+ * 存在的理由：上線前自己試玩的那幾局會混進真實數字裡，要有辦法清掉。
+ * 只能整份歸零，不能只刪某一局 —— 這裡從頭到尾只存計數（某題被答幾次、
+ * 幾分的人有幾個），沒有逐筆紀錄可以挑出來刪，這是刻意的隱私設計。
+ */
+export async function onRequestDelete({ request, env }) {
+  const expected = env.WISH_ADMIN_TOKEN;
+  if (!expected) return json({ error: 'admin token not configured' }, 503);
+
+  const header = request.headers.get('authorization') ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+  if (!safeEqual(token, expected.trim())) return json({ error: 'unauthorized' }, 401);
+
+  if (!env.VIEWS) return json({ error: 'storage unavailable' }, 503);
+
+  await env.VIEWS.delete(KEY);
+  return json({ ok: true, reset: true });
+}
