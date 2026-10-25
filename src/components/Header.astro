@@ -1,6 +1,15 @@
 ---
-import { SITE, SITE_A, NAV, TOOLS, TOOL_CATEGORIES } from '../consts';
+import { SITE, SITE_A, SITE_TESA, NAV, TOOLS, TOOL_CATEGORIES } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
+
+/**
+ * 選單第二列的站外連結（桌機一行一個，手機收在漢堡選單裡）。
+ * 要再加第三個就在這裡多一筆，兩邊的版面都會自動跟上。
+ */
+const SIDE_LINKS = [
+  { note: '醫師個人網站', label: SITE_A.introLabel, url: SITE_A.url },
+  { note: SITE_TESA.note, label: SITE_TESA.label, url: SITE_TESA.url },
+];
 
 const path = Astro.url.pathname;
 const isExternal = (href: string) => href.startsWith('http');
@@ -159,17 +168,23 @@ const isActive = (href: string) =>
     手機版不顯示：吸頂列再多一排會吃掉可視高度，改放在漢堡選單的最下面。
   -->
   <div class="hidden border-t border-line bg-panel/60 sm:block">
-    <div class="mx-auto flex h-9 max-w-6xl items-center justify-end gap-2 px-4 sm:px-5">
-      <span class="text-[11px] font-medium tracking-wider text-muted">醫師個人網站</span>
-      <a
-        href={SITE_A.url}
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-bold whitespace-nowrap text-head transition-colors hover:border-accent hover:bg-tint1"
-      >
-        {SITE_A.introLabel}
-        <span aria-hidden="true">↗</span>
-      </a>
+    <div class="mx-auto max-w-6xl px-4 py-1.5 sm:px-5">
+      {
+        SIDE_LINKS.map((link) => (
+          <div class="flex h-7 items-center justify-end gap-2">
+            <span class="text-[11px] font-medium tracking-wider text-muted">{link.note}</span>
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-bold whitespace-nowrap text-head transition-colors hover:border-accent hover:bg-tint1"
+            >
+              {link.label}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        ))
+      }
     </div>
   </div>
 
@@ -223,15 +238,19 @@ const isActive = (href: string) =>
         )
       }
 
-      <!-- 桌機版放在第二列的那一顆，手機版收在這裡 -->
-      <a
-        href={SITE_A.url}
-        target="_blank"
-        rel="noopener"
-        class="mt-2 block rounded-lg border border-line px-3 py-3 text-sm font-bold text-head hover:bg-tint2"
-      >
-        {SITE_A.introLabel}<span aria-hidden="true"> ↗</span>
-      </a>
+      <!-- 桌機版放在第二列的那幾個，手機版收在這裡 -->
+      {
+        SIDE_LINKS.map((link) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener"
+            class="mt-2 block rounded-lg border border-line px-3 py-3 text-sm font-bold text-head hover:bg-tint2"
+          >
+            {link.label}<span aria-hidden="true"> ↗</span>
+          </a>
+        ))
+      }
     </div>
   </nav>
 </header>

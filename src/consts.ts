@@ -36,6 +36,13 @@ export const SITE_A = {
   labelLong: '楊怡強醫師個人網站的衛教專文',
 } as const;
 
+/** 台灣極限運動學院：楊醫師板類運動講座的合作單位 */
+export const SITE_TESA = {
+  url: 'https://tesa-academy.com/#/',
+  label: '台灣極限運動學院',
+  note: '板類運動講座',
+} as const;
+
 export const NAV = [
   { href: '/tools', label: '實用小工具' },
   { href: '/quiz', label: '複習測驗' },
