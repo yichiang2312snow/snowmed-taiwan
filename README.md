@@ -105,36 +105,6 @@ curl -X POST https://snowmed-taiwan.com/api/wishes/admin \
 npx wrangler pages secret put WISH_ADMIN_TOKEN --project-name snowmed-taiwan
 ```
 
-### 有新留言時寄 email 通知
-
-留言進來會寄一封信到指定的信箱。**沒有設定就不會寄，留言功能照常運作** ——
-通知是附加功能，寄信失敗不會影響網友送出留言（實作在 `functions/api/_notify.js`）。
-
-走的是 [Resend](https://resend.com) 的 HTTP API。為什麼不是 SMTP：Cloudflare Workers
-不能開 TCP 連線；MailChannels 2024 年中起不再對 Workers 免費；Cloudflare 自家的
-`send_email` binding 只支援 Workers，不支援 Pages Functions。
-
-需要三個 Secret：
-
-```bash
-npx wrangler pages secret put RESEND_API_KEY --project-name snowmed-taiwan
-npx wrangler pages secret put NOTIFY_FROM    --project-name snowmed-taiwan   # 寄件人，例如 notify@snowmed-taiwan.com
-npx wrangler pages secret put NOTIFY_EMAIL   --project-name snowmed-taiwan   # 收件人（醫師的信箱）
-```
-
-也可以在 Cloudflare Pages 的 Settings → Environment variables 介面裡設定，記得選
-Production（要的話 Preview 也設一份）。設定完要**重新部署一次**才會生效。
-
-`NOTIFY_FROM` 有兩種選擇：
-
-| 作法 | 寄件人 | 要不要設 DNS | 限制 |
-| --- | --- | --- | --- |
-| 先試用 | `onboarding@resend.dev` | 不用 | 只能寄到 Resend 帳號本人的信箱 |
-| 正式用 | `notify@snowmed-taiwan.com` | 要（Resend 會給 3 筆記錄，加到 Cloudflare DNS） | 無 |
-
-信裡只有分類、暱稱、內文與時間，**不含 IP 或任何來源識別碼**；收件人地址只存在
-Secret 裡，不寫在程式碼裡。
-
 ### 隱私設計
 - 不收集 email，暱稱可留空
 - 送出者的 IP **只存雜湊值**（做防灌水用），不存原文
