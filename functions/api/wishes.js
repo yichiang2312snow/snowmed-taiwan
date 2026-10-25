@@ -8,6 +8,8 @@
  * 刻意不收集 email、不記錄 IP 原文（只存雜湊後的值做防灌水用）。
  */
 
+import { notifyConfigured, sendWishNotification } from './_notify.js';
+
 const PREFIX = 'wish:';
 const RATE_PREFIX = 'rate:';
 
@@ -83,7 +85,7 @@ export async function onRequestGet({ env }) {
   }
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost({ request, env, waitUntil }) {
   if (!env.VIEWS) return json({ error: 'storage unavailable' }, 503);
 
   let body;
@@ -134,6 +136,12 @@ export async function onRequestPost({ request, env }) {
   };
 
   await env.VIEWS.put(`${PREFIX}${now}:${id}`, JSON.stringify(wish));
+
+  // 通知醫師。放到背景跑，不讓寄信的往返時間拖慢網友按下送出後的回應，
+  // 也不讓寄信失敗影響到「留言已經收下了」這件事。
+  if (notifyConfigured(env)) {
+    waitUntil?.(sendWishNotification(env, wish));
+  }
 
   return json({ ok: true, queued: true });
 }
