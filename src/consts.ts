@@ -31,6 +31,8 @@ export const SITE_A = {
   aboutUrl: 'https://dr.snowmed-taiwan.com/about',
   articlesUrl: 'https://dr.snowmed-taiwan.com/articles',
   label: '楊怡強醫師衛教專文',
+  /** 選單第二列那顆按鈕：連到個人網站首頁 */
+  introLabel: '認識楊醫師（滑雪及板類運動醫學）',
   labelLong: '楊怡強醫師個人網站的衛教專文',
 } as const;
 

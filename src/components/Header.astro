@@ -1,5 +1,5 @@
 ---
-import { SITE, NAV, TOOLS, TOOL_CATEGORIES } from '../consts';
+import { SITE, SITE_A, NAV, TOOLS, TOOL_CATEGORIES } from '../consts';
 import ThemeToggle from './ThemeToggle.astro';
 
 const path = Astro.url.pathname;
@@ -152,6 +152,27 @@ const isActive = (href: string) =>
     </div>
   </div>
 
+  <!--
+    第二列：連到醫師個人網站。跟姊妹站的作法對稱 —— 那邊的第二列連過來這裡，
+    兩站互相指認，不是單向導流。
+
+    手機版不顯示：吸頂列再多一排會吃掉可視高度，改放在漢堡選單的最下面。
+  -->
+  <div class="hidden border-t border-line bg-panel/60 sm:block">
+    <div class="mx-auto flex h-9 max-w-6xl items-center justify-end gap-2 px-4 sm:px-5">
+      <span class="text-[11px] font-medium tracking-wider text-muted">醫師個人網站</span>
+      <a
+        href={SITE_A.url}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-bold whitespace-nowrap text-head transition-colors hover:border-accent hover:bg-tint1"
+      >
+        {SITE_A.introLabel}
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+
   <!-- 行動版選單 -->
   <nav id="mobile-nav" class="hidden border-t border-line bg-bg lg:hidden" aria-label="行動版選單">
     <div class="mx-auto max-h-[75vh] max-w-6xl overflow-y-auto px-4 py-3 sm:px-5">
@@ -201,6 +222,16 @@ const isActive = (href: string) =>
           )
         )
       }
+
+      <!-- 桌機版放在第二列的那一顆，手機版收在這裡 -->
+      <a
+        href={SITE_A.url}
+        target="_blank"
+        rel="noopener"
+        class="mt-2 block rounded-lg border border-line px-3 py-3 text-sm font-bold text-head hover:bg-tint2"
+      >
+        {SITE_A.introLabel}<span aria-hidden="true"> ↗</span>
+      </a>
     </div>
   </nav>
 </header>
