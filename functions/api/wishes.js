@@ -100,6 +100,8 @@ export async function onRequestPost({ request, env }) {
   const category = String(body.category ?? '').trim();
   const nickname = String(body.nickname ?? '').trim().slice(0, LIMITS.nickname);
   const resort = String(body.resort ?? '').trim().slice(0, LIMITS.resort);
+  // 從哪一頁送出來的。只認得這兩個值，其他一律當成許願區，避免被塞任意字串
+  const from = body.from === 'home' ? 'home' : 'wishlist';
 
   if (text.length < 4) return json({ error: '內容太短了，多寫一點吧' }, 400);
   if (text.length > LIMITS.text) return json({ error: `內容請控制在 ${LIMITS.text} 字以內` }, 400);
@@ -124,6 +126,7 @@ export async function onRequestPost({ request, env }) {
     text,
     nickname: nickname || '匿名雪友',
     status: 'pending',
+    from,
     createdAt: now,
     reviewedAt: null,
     reply: null,

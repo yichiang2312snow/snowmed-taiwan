@@ -1,0 +1,140 @@
+---
+/**
+ * 首頁 HERO 右側、「先試一題」下面的留言框
+ *
+ * 想收的是兩種東西：希望被做出來的工具，以及對網站本身的建議。
+ *
+ * 刻意不另外開一套儲存：直接送進既有的許願區（/api/wishes），
+ * 所以這些留言會跟許願區的留言一起進後台待審，不會變成第二個需要
+ * 另外記得去看的信箱。差別只在 from 欄位標成 home，後台看得出來是從
+ * 首頁留的。
+ *
+ * 跟 HeroPoll、QuizTeaser 一樣永遠落在深色的 HERO 上，所以顏色直接寫
+ * 白色系，淺色模式另外用 light: 覆蓋。
+ */
+const MAX = 500;
+---
+
+<div
+  id="suggest-box"
+  class="relative min-w-0 rounded-2xl border border-white/20 bg-band/75 p-5 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-6 light:border-sky-200 light:bg-white/95 light:shadow-sky-900/15"
+>
+  <p class="text-[11px] font-black tracking-[0.18em] text-accent uppercase light:text-sky-700">
+    💡 許願與建議
+  </p>
+
+  <h2 class="mt-2 text-sm leading-relaxed font-bold break-words text-white light:text-slate-900">
+    想到什麼好用的工具，希望楊醫師生出來嗎？
+  </h2>
+  <p class="mt-1.5 text-xs leading-relaxed break-words text-body/90 light:text-slate-600">
+    或是對網站有任何建議，歡迎於底下空白處留言喔
+  </p>
+
+  <form id="suggest-form" class="mt-4">
+    <label class="sr-only" for="suggest-text">你的想法</label>
+    <textarea
+      id="suggest-text"
+      name="text"
+      rows="3"
+      maxlength={MAX}
+      required
+      placeholder="例如：想要一個算雪票與交通費的工具／某一頁在手機上看不清楚"
+      class="block w-full resize-y rounded-xl border border-white/25 bg-white/10 px-3.5 py-2.5 text-sm leading-relaxed break-words text-white placeholder:text-white/45 focus:border-accent focus:outline-none light:border-slate-300 light:bg-white light:text-slate-900 light:placeholder:text-slate-400"
+    ></textarea>
+
+    <!-- 蜜罐：真人看不到，機器人會填 -->
+    <input
+      type="text"
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      class="absolute left-[-9999px] h-px w-px opacity-0"
+    />
+
+    <div class="mt-2 flex items-center justify-between gap-3">
+      <p id="suggest-count" class="text-[11px] tabular-nums text-body/70 light:text-slate-500">
+        0 / {MAX}
+      </p>
+      <button
+        type="submit"
+        class="rounded-xl bg-cta px-4 py-2.5 text-sm font-bold text-ctatext transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        送出
+      </button>
+    </div>
+
+    <p id="suggest-msg" class="mt-2 text-xs leading-relaxed break-words" hidden></p>
+  </form>
+
+  <p class="mt-3 text-[11px] leading-relaxed text-body/70 light:text-slate-500">
+    不用留下任何個人資料。送出後由楊醫師本人看過，公開的會出現在
+    <a href="/wishlist" class="font-bold text-accent hover:underline light:text-sky-700">許願區</a>。
+  </p>
+</div>
+
+<script>
+  const form = document.getElementById('suggest-form') as HTMLFormElement | null;
+
+  if (form) {
+    const text = document.getElementById('suggest-text') as HTMLTextAreaElement;
+    const count = document.getElementById('suggest-count')!;
+    const msg = document.getElementById('suggest-msg')!;
+    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const max = text.maxLength;
+
+    const say = (t: string, ok: boolean) => {
+      msg.textContent = t;
+      msg.hidden = false;
+      msg.className =
+        'mt-2 text-xs leading-relaxed break-words font-bold ' +
+        (ok ? 'text-emerald-300 light:text-emerald-700' : 'text-red-300 light:text-red-700');
+    };
+
+    text.addEventListener('input', () => {
+      count.textContent = `${text.value.length} / ${max}`;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const value = text.value.trim();
+      if (value.length < 4) {
+        say('再多寫一點點，讓醫師知道你想要什麼', false);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '送出中…';
+
+      try {
+        const res = await fetch('/api/wishes', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            text: value,
+            // 許願區既有的分類，後台用 from 區分是從首頁還是許願區來的
+            category: '工具許願',
+            from: 'home',
+            website: (form.elements.namedItem('website') as HTMLInputElement).value,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          say(data.error ?? '送出失敗，請稍後再試', false);
+          btn.disabled = false;
+          btn.textContent = '送出';
+          return;
+        }
+
+        // 送出成功就把表單收起來，避免同一個人重複送
+        form.hidden = true;
+        say('收到了！醫師看過之後會出現在許願區。謝謝你的建議 🙏', true);
+      } catch {
+        say('網路好像怪怪的，請稍後再試一次', false);
+        btn.disabled = false;
+        btn.textContent = '送出';
+      }
+    });
+  }
+</script>
