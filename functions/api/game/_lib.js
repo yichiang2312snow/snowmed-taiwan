@@ -260,6 +260,8 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
     const sub = current ? submissions.find((s) => s.team_id === t.id && s.round === current.round) : null;
     const log = computed.get(t.id).log;
     const currentLog = current && revealed ? log.find((l) => l.round === current.round) : null;
+    // 最近一次評分回合的總分變化（含特殊規則）：結果頁看的是這一回合，討論中看的是上一回合
+    const lastLog = log.length ? log[log.length - 1] : null;
     // 回合進行中：看這一回合開始前的脈絡；評分後：看下一回合的脈絡（所以 round 要 +1）
     const base = teams.find((x) => x.id === t.id);
     const ctx = roundContext(base, rounds, submissions, inRound ? game.round : game.round + 1);
@@ -268,6 +270,7 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
       name: t.name,
       scores: t.scores,
       total: t.total,
+      lastRound: lastLog ? { round: lastLog.round, total: total(lastLog.after) - total(lastLog.before) } : null,
       eligible: t.eligible,
       allAbove60: t.allAbove60,
       spread: t.spread,
