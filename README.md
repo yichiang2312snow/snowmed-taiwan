@@ -161,3 +161,65 @@ npx wrangler pages secret put REPORT_ADMIN_TOKEN --project-name snowmed-taiwan
 
 `src/data/resorts.ts` 裡的每一筆地址與電話，**必須附上 `source` 官方來源連結和 `checkedAt` 查證日期**。
 不確定的資訊寧可不放。使用者可能在受傷、著急、語言不通的狀況下依賴這份資料。
+
+---
+
+## 台灣醫療決策者體驗（醫療政策模擬遊戲）
+
+遊戲的**畫面在楊醫師的個人網站**：入口 <https://dr.snowmed-taiwan.com/game>、投影計分板 `/game/board`、
+主持人台在個人網站的後台 `/admin/game`（登入儀表板就能用）。這裡（工具站）只放**資料與 AI 評分的 API**，
+舊的 `/game` 連結會自動轉到個人網站（`public/_redirects`）。
+
+| 項目 | 位置 |
+| --- | --- |
+| 二十張事件卡（情境、三個參考方向、典故、評分提示、預算換算） | `src/data/policyGameCards.ts`（審核用的可讀版：`docs/醫療決策遊戲-事件卡審核.md`） |
+| 資源名稱、起始分數、字數上限、組數上限、特殊規則說明文字 | `src/data/policyGameResources.ts`（個人網站有一份相同的複本） |
+| 六條特殊規則的計算 | `functions/api/game/_rules.js` |
+| 後端 API | `functions/api/game/`（`host.js` 主持人、`join.js` 加入、`state.js` 讀狀態、`submit.js` 交政策、`_scorer.js` AI 評分、`_middleware.js` 放行個人網站的跨站請求） |
+| 資料庫 | Cloudflare D1 `snowmed-game`，資料表在 `db/game-schema.sql` |
+
+### 第一次上線前要做的事
+
+1. **設定主持人金鑰**（這裡和個人網站的 Vercel 要設同一組）：
+   ```bash
+   npx wrangler pages secret put GAME_HOST_TOKEN --project-name snowmed-taiwan
+   ```
+   沒設的話會沿用 `WISH_ADMIN_TOKEN`（個人網站那邊對應 `SNOWMED_ADMIN_TOKEN`，兩邊本來就相同，所以不設也能用）。
+2. **設定 Anthropic API 金鑰**（AI 評分用，從 <https://platform.claude.com> 取得）：
+   ```bash
+   npx wrangler pages secret put ANTHROPIC_API_KEY --project-name snowmed-taiwan
+   ```
+   沒設的話評分會失敗，但主持人仍可用「手動評分」把遊戲玩完。
+3. 資料表已經建好；如果日後改了 `db/game-schema.sql`，重跑：
+   ```bash
+   npx wrangler d1 execute snowmed-game --remote --file db/game-schema.sql
+   ```
+
+### 上課流程
+
+1. 登入個人網站後台 → 儀表板 → 「🎲 開啟醫療決策遊戲」→ 設定本回合入場密碼（4～12 個英數字）與每回合討論幾分鐘 → 「開啟遊戲大廳」。
+2. 把 `dr.snowmed-taiwan.com/game/board` 投影出來。各組組長到 `dr.snowmed-taiwan.com/game` 輸入入場密碼和組名加入（最多 10 組）。
+3. 按「開始第 1 回合」（可指定事件卡，預設隨機抽沒用過的）。各組看到情境、預算換算、三個參考方向與倒數，寫 50 字內的政策送出；你在主持人台可以即時看到每組寫了什麼，也可以延長時間。
+4. 按「AI 評分」：沒交的組會被當成「沒有決策」扣分；AI 一次評完全部組別（約 30 秒～1 分鐘，請不要關閉分頁），之後各組看到加減分、觸發的特殊規則、解釋與歷史典故。
+5. 重複 3～4，想停就按「結束遊戲」結算名次。AI 失敗或你覺得分數不合理，用主持人台下方的「手動評分」改。
+
+分數不是存起來的，而是「起始 60 分 + 每回合加減分 + 特殊規則效果」算出來的，所以重新評分、手動改分都不會把分數弄壞。
+每項資源每回合加減上限 ±20；亂答或沒交固定扣 預算-5／護理-5／醫師-5／選票-12／健康-8。
+每張卡有「預算換算」（例如 1 分 = 1 億元）：政策寫明花多少錢就照換算扣預算，寫明每年多收多少就照換算加預算。
+
+### 六條特殊規則（每回合政策分數套用後自動觸發，畫面會提醒玩家與主持人）
+
+1. 每回合預算 +5（年度預算）。
+2. 回合結束時醫師奉獻度 < 30 → 護理人力 −5；護理人力 < 30 → 醫師奉獻度 −5（每回合累計）。
+3. 選票與民眾健康連續兩回合都加分 → 預算 +（兩回合選票加分 + 兩回合健康加分）÷ 2。
+4. 選票 < 30 之後，下一回合預算最多只能動用 5 分，直到選票回到 30 以上。
+5. 回合結束時民眾健康 < 30 → 五項全部 −5（每回合累計）。
+6. 回合結束時醫師奉獻度 < 30 → 民眾健康 −5（每回合累計）。
+
+### 本機測試
+
+```bash
+npm run build
+npx wrangler pages dev        # API 在 http://127.0.0.1:8788，用本機 D1；.dev.vars 的 GAME_MOCK_AI=1 可以不用 API 金鑰跑完流程
+```
+個人網站那邊把 `.env` 的 `PUBLIC_GAME_API`、`GAME_HOST_TOKEN`、`ADMIN_DEV_BYPASS` 三行打開，`npm run dev` 後就能在本機跑完整流程。

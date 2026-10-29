@@ -1,9 +1,18 @@
 # Cloudflare Pages 設定
 name = "snowmed-taiwan"
 compatibility_date = "2026-09-01"
+# Anthropic SDK 在 Workers 環境需要 Node 相容層
+compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "./dist"
 
 # 瀏覽計數器用的 KV 儲存空間（不需要 API 金鑰，Pages Functions 直接透過 binding 存取）
 [[kv_namespaces]]
 binding = "VIEWS"
 id = "13f11aca05d548908393b8c73e65a136"
+
+# 「台灣醫療決策者體驗」遊戲的資料庫（D1，強一致性，多人同時輪詢也不會讀到舊資料）
+# 資料表定義在 db/game-schema.sql
+[[d1_databases]]
+binding = "GAME_DB"
+database_name = "snowmed-game"
+database_id = "ea92f0e1-3c19-410f-9e01-275fbf8c5c43"
