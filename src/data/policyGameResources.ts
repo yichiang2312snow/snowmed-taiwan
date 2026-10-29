@@ -24,8 +24,8 @@ export const START_SCORE = 60;
 export const DELTA_SCALE = 1.5;
 /** AI 評審給分的範圍（放大之前） */
 export const AI_MAX_DELTA = 20;
-/** 單一回合、單一資源實際套用的加減分上限（放大之後） */
-export const MAX_DELTA = Math.round(AI_MAX_DELTA * DELTA_SCALE);
+/** 單一回合、單一資源實際套用的加減分上限：放大之後再封頂 ±10（創作者設定） */
+export const MAX_DELTA = 10;
 /** 醫師奉獻度、護理人力低於這個分數會觸發「醫療環境惡性循環」 */
 export const LOW_SCORE = 45;
 
