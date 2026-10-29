@@ -164,12 +164,83 @@ export async function onRequestGet({ request, env }) {
       note: '純彙總資料，不含任何個人識別資訊。',
     });
   }
-  // 三種範圍都從每日鍵 st:d:YYYY-MM-DD:event:label 彙總：
-  //   全部 → 前綴 st:d:；某月 → st:d:YYYY-MM-；某天 → st:d:YYYY-MM-DD:
-  const prefix = all ? 'st:d:' : day ? `st:d:${day}:` : `st:d:${month ?? taipeiParts().month}-`;
+  // ?range=all：逐月彙總。
+  // 以前是一次掃完所有 st:d: 鍵、每把鍵各 get 一次，資料一多就要十幾秒，
+  // 後台（Vercel 函式預設 10 秒）等不到就會收到 "terminated"。
+  // 已經結束的月份數字不會再變，算過一次就存成 st:agg:YYYY-MM 永久快取；
+  // 只有本月每次即時計算，整體時間跟 ?month= 差不多。
+  if (all) {
+    const curMonth = taipeiParts().month;
+    const months = new Set();
+    let cursor;
+    do {
+      // 只列鍵名、不讀值，用來找出有哪些月份；list 一次可拿 1000 把鍵，很便宜
+      const list = await env.VIEWS.list({ prefix: 'st:d:', cursor });
+      for (const key of list.keys) {
+        const m = key.name.slice('st:d:'.length, 'st:d:'.length + 7);
+        if (/^\d{4}-\d{2}$/.test(m)) months.add(m);
+      }
+      cursor = list.list_complete ? undefined : list.cursor;
+    } while (cursor);
 
+    const byMonth = {};
+    await Promise.all(
+      [...months].sort().map(async (m) => {
+        const cacheKey = `st:agg:${m}`;
+        if (m < curMonth) {
+          const cached = await env.VIEWS.get(cacheKey, 'json');
+          if (cached) {
+            byMonth[m] = cached;
+            return;
+          }
+        }
+        const agg = await aggregatePrefix(env, `st:d:${m}-`);
+        byMonth[m] = agg;
+        if (m < curMonth) {
+          // 寫入失敗（例如當天寫入額度用完）就下次再存，不影響這次回應
+          try {
+            await env.VIEWS.put(cacheKey, JSON.stringify(agg));
+          } catch {}
+        }
+      })
+    );
+
+    const counts = {};
+    for (const agg of Object.values(byMonth)) {
+      for (const [event, labels] of Object.entries(agg)) {
+        counts[event] ??= {};
+        for (const [label, n] of Object.entries(labels)) {
+          counts[event][label] = (counts[event][label] ?? 0) + n;
+        }
+      }
+    }
+
+    const visits = Number.parseInt((await env.VIEWS.get('visits:total')) ?? '0', 10) || 0;
+    return json({
+      scope: { range: 'all' },
+      totalVisitorsAllTime: visits,
+      counts,
+      byMonth,
+      note: '純彙總資料，不含任何個人識別資訊。',
+    });
+  }
+
+  // 某月 / 某天：從每日鍵 st:d:YYYY-MM-DD:event:label 彙總
+  const prefix = day ? `st:d:${day}:` : `st:d:${month ?? taipeiParts().month}-`;
+  const counts = await aggregatePrefix(env, prefix);
+  const visits = Number.parseInt((await env.VIEWS.get('visits:total')) ?? '0', 10) || 0;
+
+  return json({
+    scope: day ? { day } : { month: month ?? taipeiParts().month },
+    totalVisitorsAllTime: visits,
+    counts,
+    note: '純彙總資料，不含任何個人識別資訊。',
+  });
+}
+
+/** 把某個前綴底下的每日鍵全部加總成 { event: { label: n } } */
+async function aggregatePrefix(env, prefix) {
   const counts = {};
-  const byMonth = {};
   let cursor;
   do {
     const list = await env.VIEWS.list({ prefix, cursor });
@@ -178,31 +249,15 @@ export async function onRequestGet({ request, env }) {
         // st:d:YYYY-MM-DD:event:label
         const parts = key.name.split(':');
         if (parts.length < 5) return;
-        const keyDay = parts[2];
         const event = parts[3];
         const label = parts.slice(4).join(':');
         const n = Number.parseInt((await env.VIEWS.get(key.name)) ?? '0', 10) || 0;
         if (n === 0) return;
         counts[event] ??= {};
         counts[event][label] = (counts[event][label] ?? 0) + n;
-        if (all) {
-          const m = keyDay.slice(0, 7);
-          byMonth[m] ??= {};
-          byMonth[m][event] ??= {};
-          byMonth[m][event][label] = (byMonth[m][event][label] ?? 0) + n;
-        }
       })
     );
     cursor = list.list_complete ? undefined : list.cursor;
   } while (cursor);
-
-  const visits = Number.parseInt((await env.VIEWS.get('visits:total')) ?? '0', 10) || 0;
-
-  return json({
-    scope: all ? { range: 'all' } : day ? { day } : { month: month ?? taipeiParts().month },
-    totalVisitorsAllTime: visits,
-    counts,
-    ...(all ? { byMonth } : {}),
-    note: '純彙總資料，不含任何個人識別資訊。',
-  });
+  return counts;
 }
