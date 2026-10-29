@@ -54,7 +54,7 @@ export async function onRequestGet({ request, env }) {
   const code = (url.searchParams.get('code') ?? '').trim().toUpperCase() || null;
   const game = await loadGame(db, code);
   if (!game) return json({ ok: true, status: 'none', cards: EVENT_CARDS.map((c) => ({ id: c.id, title: c.title, emoji: c.emoji, used: false })) });
-  return json(await buildState(db, game, { host: true }));
+  return json(await buildState(db, game, { host: true, hostEnv: env }));
 }
 
 export async function onRequestPost({ request, env }) {
@@ -92,14 +92,14 @@ export async function onRequestPost({ request, env }) {
       .bind(code, 'lobby', minutes, now, now)
       .run();
     const game = await loadGame(db, code);
-    return json(await buildState(db, game, { host: true }));
+    return json(await buildState(db, game, { host: true, hostEnv: env }));
   }
 
   const game = await loadGame(db, body.code ? String(body.code).toUpperCase() : null);
   if (!game) return fail('目前沒有進行中的遊戲，請先開啟大廳', 404);
   if (game.status === 'ended' && action !== 'status') return fail('這一場已經結束，請開新的大廳', 409);
 
-  const respond = async () => json(await buildState(db, await loadGame(db, game.code), { host: true }));
+  const respond = async () => json(await buildState(db, await loadGame(db, game.code), { host: true, hostEnv: env }));
 
   switch (action) {
     case 'status':
@@ -279,5 +279,5 @@ async function scoreCurrentRound(db, env, game, now) {
   );
   await db.batch(writes);
 
-  return json(await buildState(db, await loadGame(db, game.code), { host: true }));
+  return json(await buildState(db, await loadGame(db, game.code), { host: true, hostEnv: env }));
 }

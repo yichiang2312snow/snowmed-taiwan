@@ -217,7 +217,7 @@ export function rankTeams(teams) {
  * @param {boolean} opts.host   主持人看得到還沒評分的政策內容與錯誤訊息
  * @param {string}  [opts.teamId] 哪一組在看（會附上自己的草稿）
  */
-export async function buildState(db, game, { host = false, teamId = null } = {}) {
+export async function buildState(db, game, { host = false, teamId = null, hostEnv = null } = {}) {
   const [teams, rounds, submissions] = await Promise.all([
     loadTeams(db, game.code),
     loadRounds(db, game.code),
@@ -317,6 +317,13 @@ export async function buildState(db, game, { host = false, teamId = null } = {})
   }
 
   if (host) {
+    // 診斷用：只回報「有沒有設定、長度多少」，絕不回傳金鑰內容
+    state.diagnostics = {
+      anthropicKeySet: typeof hostEnv?.ANTHROPIC_API_KEY === 'string' && hostEnv.ANTHROPIC_API_KEY.length > 0,
+      anthropicKeyLength: typeof hostEnv?.ANTHROPIC_API_KEY === 'string' ? hostEnv.ANTHROPIC_API_KEY.length : 0,
+      mockAi: hostEnv?.GAME_MOCK_AI === '1',
+      bindings: hostEnv ? Object.keys(hostEnv).sort() : [],
+    };
     state.scoringError = game.scoring_error ?? null;
     state.scoringStartedAt = game.scoring_started_at ?? null;
     const used = new Set(rounds.map((r) => r.card_id));
