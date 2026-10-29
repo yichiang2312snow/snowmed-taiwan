@@ -9,17 +9,15 @@
  */
 
 import { EVENT_CARDS, CARD_BY_ID } from '../../../src/data/policyGameCards';
-import { RESOURCES, START_SCORE, MAX_POLICY_CHARS, MAX_TEAMS, MAX_DELTA } from '../../../src/data/policyGameResources';
+import { RESOURCES, START_SCORE, MAX_POLICY_CHARS, MAX_TEAMS, MAX_DELTA, AI_MAX_DELTA, DELTA_SCALE } from '../../../src/data/policyGameResources';
 import { roundEffects, budgetCap, warningsFor } from './_rules.js';
 
-export { EVENT_CARDS, CARD_BY_ID, RESOURCES, START_SCORE, MAX_POLICY_CHARS, MAX_TEAMS, MAX_DELTA };
+export { EVENT_CARDS, CARD_BY_ID, RESOURCES, START_SCORE, MAX_POLICY_CHARS, MAX_TEAMS, MAX_DELTA, AI_MAX_DELTA, DELTA_SCALE };
 
 export const RESOURCE_KEYS = RESOURCES.map((r) => r.key);
 /** AI 評分卡住超過這麼久，主持人就可以重新按評分 */
 export const SCORING_STALE_MS = 3 * 60 * 1000;
 
-/** 亂答、沒交：判定「政府無能、沒有決策力」，民心下滑 */
-export const PENALTY_DELTAS = { budget: -5, nurses: -5, doctors: -5, votes: -12, health: -8 };
 
 export function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -75,6 +73,20 @@ export function randomToken(bytes = 24) {
 export const charCount = (s) => Array.from(String(s ?? '')).length;
 
 export const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+
+/** 把 AI（或懲罰表）的加減分乘上放大倍率，夾在實際上限內 */
+export function scaleDeltas(input) {
+  const out = {};
+  for (const key of RESOURCE_KEYS) {
+    const raw = Number(input?.[key] ?? 0) * DELTA_SCALE;
+    const n = Math.sign(raw) * Math.round(Math.abs(raw)); // 正負對稱：-7.5 → -8，7.5 → 8
+    out[key] = Number.isFinite(n) ? clamp(n, -MAX_DELTA, MAX_DELTA) : 0;
+  }
+  return out;
+}
+
+/** 亂答、沒交：判定「政府無能、沒有決策力」，民心下滑（基準 -5/-5/-5/-12/-8，再乘放大倍率） */
+export const PENALTY_DELTAS = scaleDeltas({ budget: -5, nurses: -5, doctors: -5, votes: -12, health: -8 });
 
 /** 把任何輸入整理成合法的加減分物件 */
 export function normalizeDeltas(input) {
@@ -330,6 +342,8 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
     state.cards = EVENT_CARDS.map((c) => ({ id: c.id, title: c.title, emoji: c.emoji, used: used.has(c.id) }));
     // 評分後的完整典故與評分提示給主持人參考
     if (card) state.judgeNotes = card.judgeNotes;
+    // 背景新聞影片只給主持人台（學生頁面不顯示，避免分心）
+    if (card) state.video = card.video;
   }
 
   return state;

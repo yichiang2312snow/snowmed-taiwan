@@ -17,8 +17,15 @@ export type Scores = Record<ResourceKey, number>;
 
 /** 每種資源的起始分數 */
 export const START_SCORE = 60;
-/** 單一回合、單一資源的加減分上限 */
-export const MAX_DELTA = 20;
+/**
+ * 加減分的放大倍率：AI 依照評分提示給 -20～+20 的分數，系統再乘上這個倍率，
+ * 讓每回合的起伏更有感（創作者設定 1.5 倍）。
+ */
+export const DELTA_SCALE = 1.5;
+/** AI 評審給分的範圍（放大之前） */
+export const AI_MAX_DELTA = 20;
+/** 單一回合、單一資源實際套用的加減分上限（放大之後） */
+export const MAX_DELTA = Math.round(AI_MAX_DELTA * DELTA_SCALE);
 /** 低於這個分數會觸發特殊規則 */
 export const LOW_SCORE = 30;
 

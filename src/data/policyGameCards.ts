@@ -32,6 +32,8 @@ export interface EventCard {
   budgetUnit: number;
   /** 出題後給玩家參考的三個回答方向（刻意寫得不完整，鼓勵各組補上配套） */
   hints: string[];
+  /** 主持人台嵌入的背景新聞影片（YouTube），討論時播給學生看 */
+  video: { youtubeId: string; title: string; source: string };
   /** 評分後揭曉的歷史典故 */
   reference: {
     title: string;
@@ -73,7 +75,34 @@ const HINTS: Record<string, string[]> = {
   plasticizer: ['立即公開、全面下架、限期檢驗證明並修法', '先讓業者自行回收，暫不公開', '只下架問題產品，不修法不補助'],
 };
 
-const CARDS_BASE: Omit<EventCard, 'hints'>[] = [
+/**
+ * 每張卡搭配一支真實新聞影片（主持人台嵌入，討論時播放補充背景）。
+ * 2026-10-30 逐一用 YouTube oEmbed 驗證過連結有效；影片若日後被下架，換一支即可。
+ */
+const VIDEOS: Record<string, EventCard['video']> = {
+  lockdown: { youtubeId: 'upV8B8os3Sk', title: '2003年4月24日 台北和平醫院封院 上千人被隔離｜防疫之戰 華視全紀錄', source: '華視新聞雜誌' },
+  vaccine: { youtubeId: 'goKue21rR9c', title: '高端通過EUA！抗體平均效價比AZ高3.4倍（2021.07.19）', source: '華視新聞' },
+  premium: { youtubeId: 'GDTuxnXZehc', title: '110年健保費率漲至5.17% 陳時中跨年前記者會宣布（2020.12.31）', source: '寰宇新聞' },
+  surgeons: { youtubeId: 'onboATsuFig', title: '內外婦兒急診五大皆空 台灣未來沒醫師？（2015.04.15）', source: '中視新聞' },
+  nurses: { youtubeId: '4nqolqLPfFk', title: '護理師大缺工！鬧人力荒醫院掀關床潮（2023.09.06）', source: 'TVBS 十點不一樣' },
+  burns: { youtubeId: 'gIJeK2Gd6rw', title: '熱線追蹤：八仙塵燃 十年之後', source: '台視新聞節目' },
+  masks: { youtubeId: 'amESyq8R9Ek', title: '中廠商向台叫貨口罩 蘇揆下令「禁止出口」', source: '民視新聞' },
+  enterovirus: { youtubeId: 'SEZpQ4pk0zk', title: '熱線追蹤：腸病毒71型 疫苗研發之路（從 1998 年大流行談起）', source: '台視新聞節目' },
+  ractopamine: { youtubeId: '2pp33MkzdFI', title: '台灣公投在即，國民黨及民間團體遊行反「萊豬」', source: 'BBC News 中文' },
+  workhours: { youtubeId: 'X7qPgBVVw5E', title: '住院醫師納勞基法保障 9/1 正式上路（2019.08.27）', source: '原視新聞' },
+  rural: { youtubeId: 'oEKiV4XcZBA', title: '南投3衛生所醫師從缺 衛福部協助媒合公費醫師下鄉（2023.02.22）', source: '公視晚間新聞' },
+  triage: { youtubeId: 'k6k76xRXj5A', title: '區域醫院也現急診壅塞 醫護人員坦言身心俱疲（2025.02.25）', source: '公視晚間新聞' },
+  priority: { youtubeId: 'pprhOpSU50U', title: '好心肝診所打AZ疫苗惹議 陳時中：比對接種人是誰', source: '聯合新聞網 udn video' },
+  coexist: { youtubeId: 'qO9hhLw0owA', title: '台灣走向「與病毒共存」 美專家建議善用科技防疫才能開放（2022.04.13）', source: 'TVBS 十點不一樣' },
+  newdrug: { youtubeId: '_9ydPx942t4', title: '癌友福音 近千萬 CAR-T 細胞治療納健保', source: '台視新聞' },
+  longcare: { youtubeId: 'Sk4Dps7sQ_0', title: '高齡化解決財源 每月多付「長照保險」你願意嗎？（2025.05.13）', source: 'TVBS 十點不一樣' },
+  nhidata: { youtubeId: 'rYKl442zuNQ', title: '健保資料庫侵犯隱私權 憲法法庭判健保法應3年內修法（2022.08.12）', source: '公視晚間新聞' },
+  vaping: { youtubeId: 'tdLezl8r4KY', title: '「菸害防制法」新制上路 全面禁電子煙、納管加熱菸（2023.03.22）', source: '華視新聞' },
+  violence: { youtubeId: 'ffnbleDYMUY', title: '基隆長庚傳醫療暴力 2護理師遭急診病患掌摑、踢踹（2025.04.10）', source: '公視晚間新聞' },
+  plasticizer: { youtubeId: 'vyVTbTIKb0s', title: '起雲劑含塑化劑 知名飲料受害（2011）', source: '民視新聞' },
+};
+
+const CARDS_BASE: Omit<EventCard, 'hints' | 'video'>[] = [
   {
     id: 'lockdown',
     title: '封院抉擇',
@@ -415,7 +444,7 @@ const CARDS_BASE: Omit<EventCard, 'hints'>[] = [
     title: '一年三百萬的新藥',
     emoji: '💊',
     scenario:
-      '一種治療晚期肝癌的新藥上市，臨床試驗顯示可以延長存活期約八個月，但一個病人一年藥費 300 萬元，全台符合條件的病人約 4,000 人。病友團體在衛福部前請願，媒體拍下病人下跪；藥廠表示價格沒有談判空間。健保新藥預算一年只剩 40 億可用，還有十幾種新藥在排隊。你們要不要把這個藥納入健保？怎麼納？',
+      '一種治療晚期肝癌的新藥上市，第三期臨床試驗（大規模隨機對照試驗）顯示可以延長存活期約八個月，但一個病人一年藥費 300 萬元，全台符合條件的病人約 4,000 人。病友團體在衛福部前請願，媒體拍下病人下跪；藥廠表示價格沒有談判空間。健保新藥預算一年只剩 40 億可用，還有十幾種新藥在排隊。你們要不要把這個藥納入健保？怎麼納？',
     stakes: '預算、民眾健康、選票',
     budgetUnit: 2,
     reference: {
@@ -556,6 +585,6 @@ const CARDS_BASE: Omit<EventCard, 'hints'>[] = [
   },
 ];
 
-export const EVENT_CARDS: EventCard[] = CARDS_BASE.map((c) => ({ ...c, hints: HINTS[c.id] ?? [] }));
+export const EVENT_CARDS: EventCard[] = CARDS_BASE.map((c) => ({ ...c, hints: HINTS[c.id] ?? [], video: VIDEOS[c.id] }));
 
 export const CARD_BY_ID = new Map(EVENT_CARDS.map((c) => [c.id, c]));

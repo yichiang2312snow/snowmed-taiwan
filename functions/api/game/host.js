@@ -31,6 +31,7 @@ import {
   buildState,
   randomCode,
   normalizeDeltas,
+  scaleDeltas,
   scoresBeforeRound,
   budgetCap,
   clamp,
@@ -249,7 +250,8 @@ async function scoreCurrentRound(db, env, game, now) {
       summary = scored.summary;
       for (const p of pending) {
         const r = scored.results.get(p.teamId);
-        const deltas = r.irrelevant ? PENALTY_DELTAS : { ...r.deltas };
+        // AI 給的是 ±20 的基準分，這裡乘上放大倍率（創作者設定 1.5 倍）
+        const deltas = r.irrelevant ? { ...PENALTY_DELTAS } : scaleDeltas(r.deltas);
         // 規則 3：選票低於 30 的組，預算支出不能超過上限（AI 已被告知，這裡再保險一次）
         const cap = caps.get(p.teamId)?.cap;
         if (!r.irrelevant && cap !== null && cap !== undefined && deltas.budget < -cap) deltas.budget = -cap;
