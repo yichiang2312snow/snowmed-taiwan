@@ -5,7 +5,7 @@
  *   Authorization: Bearer <組長 token>
  *
  * 討論階段都可以改，主持人按下評分之後就鎖定。
- * 字數上限 80 字（以 Unicode 字元計，見 policyGameResources.ts 的 MAX_POLICY_CHARS）。
+ * 字數上限 100 字（以 Unicode 字元計，見 policyGameResources.ts 的 MAX_POLICY_CHARS）。
  */
 
 import { json, fail, bearer, readBody, loadGame, charCount, MAX_POLICY_CHARS } from './_lib.js';

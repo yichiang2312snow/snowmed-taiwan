@@ -282,6 +282,22 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
       budgetCap: ctx.cap,
       warnings: ctx.warnings,
     };
+    // 遊戲結束：頒獎畫面要回顧每一組每回合寫了什麼、那一回合總分變化多少
+    if (game.status === 'ended') {
+      out.journey = log.map((l) => {
+        const c = CARD_BY_ID.get(rounds.find((r) => r.round === l.round)?.card_id);
+        const s = submissions.find((x) => x.team_id === t.id && x.round === l.round);
+        return {
+          round: l.round,
+          cardId: c?.id ?? null,
+          title: c?.title ?? `第 ${l.round} 回合`,
+          emoji: c?.emoji ?? '',
+          text: s?.text ?? '',
+          irrelevant: !!s?.irrelevant,
+          total: total(l.after) - total(l.before),
+        };
+      });
+    }
     // 評分前只有主持人看得到各組寫了什麼；評分後大家都看得到（方便討論）
     if (sub && (host || revealed)) {
       out.result = {

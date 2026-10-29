@@ -35,7 +35,7 @@ export const LOW_SCORE = 45;
  * 「連續兩回合」看的是政策本身的加減分，不含規則效果。
  */
 export const RULES = [
-  { id: 'annual', title: '預算提撥', text: '每回合衛福部固定獲得 5 億年度預算：預算 +5。' },
+  { id: 'annual', title: '預算提撥', text: '每回合衛福部固定獲得 3 億年度預算：預算 +3。' },
   {
     id: 'spill',
     title: '醫療環境惡性循環',
@@ -73,6 +73,6 @@ export const RULES = [
   },
 ] as const;
 /** 政策說明的字數上限 */
-export const MAX_POLICY_CHARS = 80;
+export const MAX_POLICY_CHARS = 100;
 /** 同一場遊戲最多幾組 */
 export const MAX_TEAMS = 10;

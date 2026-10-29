@@ -4,7 +4,7 @@
  * 每一回合評分之後，先把政策的加減分套到分數上，再依照「套完之後的分數」與「連續兩回合的政策加減分」觸發規則。
  * 規則本身不存資料庫，而是每次算分時重新推導，所以重新評分、手動改分都會一起更新。
  *
- * 1. 預算提撥：每回合預算 +5（政府固定年度預算）
+ * 1. 預算提撥：每回合預算 +3（政府固定年度預算）
  * 2. 醫療環境惡性循環：醫師奉獻度 < 45 → 護理人力 −5；護理人力 < 45 → 醫師奉獻度 −5（每回合累計）
  * 3. 民心化成預算：選票與民眾健康連續兩回合都加分 → 預算 +（兩回合選票加分 + 兩回合健康加分）÷ 2
  * 4. 選舉失利：選票連續兩回合被扣分 → 接下來那一回合預算最多只能動用 5 分
@@ -20,7 +20,7 @@ import { RESOURCES, RULES, LOW_SCORE } from '../../../src/data/policyGameResourc
 
 export { RULES };
 export const LOW = LOW_SCORE; // 45
-export const ANNUAL_BUDGET = 5;
+export const ANNUAL_BUDGET = 3;
 export const BUDGET_CAP_AFTER_LOSING_VOTES = 5;
 export const BUDGET_WARN = 50;
 export const BUDGET_LOW = 40;
@@ -58,7 +58,7 @@ export function roundEffects(scoresBefore, policy, prevPolicy) {
   };
 
   // 1. 預算提撥
-  push('annual', '年度預算撥款 5 億。', { budget: ANNUAL_BUDGET });
+  push('annual', `年度預算撥款 ${ANNUAL_BUDGET} 億。`, { budget: ANNUAL_BUDGET });
 
   // 2. 醫療環境惡性循環
   if (after.doctors < LOW) push('spill', `醫師奉獻度 ${after.doctors} 分低於 ${LOW}，醫師流失讓護理人員扛更多：護理人力 −5。`, { nurses: -5 });
