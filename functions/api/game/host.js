@@ -261,11 +261,14 @@ async function scoreCurrentRound(db, env, game, now) {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      // 留在 Cloudflare 的即時日誌裡（wrangler pages deployment tail），方便查原因
+      console.error('AI scoring failed:', message);
       await db
         .prepare("UPDATE game_games SET status = 'discussing', scoring_error = ?, updated_at = ? WHERE code = ?")
         .bind(message.slice(0, 500), Date.now(), game.code)
         .run();
-      return fail(`AI 評分失敗：${message}`, 502);
+      // 不用 502：Cloudflare 會把 502／504 換成它自己的錯誤頁，瀏覽器就只看得到「Failed to fetch」
+      return fail(`AI 評分失敗：${message}`, 500);
     }
   }
 

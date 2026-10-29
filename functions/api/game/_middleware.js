@@ -41,6 +41,17 @@ export async function onRequest({ request, env, next }) {
   if (request.method === 'OPTIONS') {
     return origin ? withCors(new Response(null, { status: 204 }), origin) : new Response(null, { status: 204 });
   }
-  const response = await next();
+  let response;
+  try {
+    response = await next();
+  } catch (err) {
+    // 程式炸掉時也要回 JSON（帶 CORS 標頭），主持人台才看得到原因，而不是「Failed to fetch」
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('game api crashed:', message);
+    response = new Response(JSON.stringify({ ok: false, error: `伺服器錯誤：${message}` }), {
+      status: 500,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+    });
+  }
   return origin ? withCors(response, origin) : response;
 }
