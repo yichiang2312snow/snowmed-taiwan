@@ -32,8 +32,7 @@ import {
   randomCode,
   normalizeDeltas,
   scaleDeltas,
-  scoresBeforeRound,
-  budgetCap,
+  roundContext,
   clamp,
   EVENT_CARDS,
   CARD_BY_ID,
@@ -225,8 +224,9 @@ async function scoreCurrentRound(db, env, game, now) {
   for (const t of teams) {
     const sub = subs.find((s) => s.team_id === t.id);
     if (sub?.deltas) continue; // 已經有分數（AI 評過或主持人手動給過）
-    const before = scoresBeforeRound(t, rounds, allSubs, game.round);
-    caps.set(t.id, { budget: before.budget, cap: budgetCap(before) });
+    const ctx = roundContext(t, rounds, allSubs, game.round);
+    const before = ctx.before;
+    caps.set(t.id, { budget: before.budget, cap: ctx.cap });
     const text = sub?.text?.trim() ?? '';
     if (!text) {
       writes.push(
@@ -239,7 +239,7 @@ async function scoreCurrentRound(db, env, game, now) {
           .bind(game.code, game.round, t.id, JSON.stringify(PENALTY_DELTAS), '這一組在期限內沒有提出任何政策。面對危機卻沒有決策，民眾會認為政府無能、沒有方向，各項資源都因此受損，選票與民眾健康掉得最多。')
       );
     } else {
-      pending.push({ teamId: t.id, name: t.name, text, budget: before.budget, budgetCap: budgetCap(before) });
+      pending.push({ teamId: t.id, name: t.name, text, budget: before.budget, budgetCap: ctx.cap });
     }
   }
 
@@ -252,7 +252,7 @@ async function scoreCurrentRound(db, env, game, now) {
         const r = scored.results.get(p.teamId);
         // AI 給的是 ±20 的基準分，這裡乘上放大倍率（創作者設定 1.5 倍）
         const deltas = r.irrelevant ? { ...PENALTY_DELTAS } : scaleDeltas(r.deltas);
-        // 規則 3：選票低於 30 的組，預算支出不能超過上限（AI 已被告知，這裡再保險一次）
+        // 規則 4：選票連續兩回合被扣分的組，預算支出不能超過上限（AI 已被告知，這裡再保險一次）
         const cap = caps.get(p.teamId)?.cap;
         if (!r.irrelevant && cap !== null && cap !== undefined && deltas.budget < -cap) deltas.budget = -cap;
         writes.push(

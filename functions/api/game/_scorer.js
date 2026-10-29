@@ -62,7 +62,7 @@ const OUTPUT_SCHEMA = {
 function buildUserPrompt({ round, card, entries }) {
   const answers = entries
     .map((e, i) => {
-      const cap = e.budgetCap !== null && e.budgetCap !== undefined ? `${e.budgetCap} 分（選票低於 30，失去執政正當性）` : `${e.budget} 分（全部預算）`;
+      const cap = e.budgetCap !== null && e.budgetCap !== undefined ? `${e.budgetCap} 分（選票連續兩回合被扣分，失去執政正當性）` : `${e.budget} 分（全部預算）`;
       return `【第 ${i + 1} 組】teamId: ${e.teamId}\n組名：${e.name}\n目前預算：${e.budget} 分（約 ${e.budget * card.budgetUnit} 億元）\n本回合支出上限：${cap}\n政策：${e.text}`;
     })
     .join('\n\n');

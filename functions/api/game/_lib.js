@@ -181,10 +181,21 @@ export function computeTeam(team, rounds, submissions) {
 
 export const computeScores = (team, rounds, submissions) => computeTeam(team, rounds, submissions).scores;
 
-/** 某一回合開始前的分數（給 AI 評分與預算上限用）；round 還沒評分時就是目前分數 */
-export function scoresBeforeRound(team, rounds, submissions, round) {
+/**
+ * 某一回合開始前的脈絡：分數、前兩回合的政策加減分、這一回合的預算上限與警示。
+ * round 還沒評分時，before 就是目前分數；規則 4～8 都要看前兩回合，所以一起算。
+ */
+export function roundContext(team, rounds, submissions, round) {
   const earlier = rounds.filter((r) => r.round < round);
-  return computeTeam(team, earlier, submissions).scores;
+  const { scores, log } = computeTeam(team, earlier, submissions);
+  const prev1 = log.length >= 1 ? log[log.length - 1].policy : null;
+  const prev2 = log.length >= 2 ? log[log.length - 2].policy : null;
+  return { before: scores, prev1, prev2, cap: budgetCap(prev1, prev2), warnings: warningsFor(scores, prev1, prev2) };
+}
+
+/** 某一回合開始前的分數（舊介面，保留給其他地方用） */
+export function scoresBeforeRound(team, rounds, submissions, round) {
+  return roundContext(team, rounds, submissions, round).before;
 }
 
 export { budgetCap, warningsFor };
@@ -249,9 +260,9 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
     const sub = current ? submissions.find((s) => s.team_id === t.id && s.round === current.round) : null;
     const log = computed.get(t.id).log;
     const currentLog = current && revealed ? log.find((l) => l.round === current.round) : null;
-    // 回合進行中：以回合開始時的分數算預算上限與警示（這時 scores 就是回合開始時的分數）
+    // 回合進行中：看這一回合開始前的脈絡；評分後：看下一回合的脈絡（所以 round 要 +1）
     const base = teams.find((x) => x.id === t.id);
-    const before = inRound ? scoresBeforeRound(base, rounds, submissions, game.round) : t.scores;
+    const ctx = roundContext(base, rounds, submissions, inRound ? game.round : game.round + 1);
     const out = {
       id: t.id,
       name: t.name,
@@ -265,8 +276,8 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
       // 這一回合觸發的特殊規則（評分後才看得到）
       effects: currentLog ? currentLog.effects : [],
       // 下一回合（或進行中這一回合）的限制與警示
-      budgetCap: budgetCap(before),
-      warnings: warningsFor(before),
+      budgetCap: ctx.cap,
+      warnings: ctx.warnings,
     };
     // 評分前只有主持人看得到各組寫了什麼；評分後大家都看得到（方便討論）
     if (sub && (host || revealed)) {
