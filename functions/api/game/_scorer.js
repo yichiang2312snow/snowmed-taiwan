@@ -6,12 +6,90 @@
  * 需要在 Cloudflare Pages 專案設定 Secret：ANTHROPIC_API_KEY
  *   npx wrangler pages secret put ANTHROPIC_API_KEY --project-name snowmed-taiwan
  * 本機測試沒有金鑰時，可以在 .dev.vars 設 GAME_MOCK_AI=1，用假的評分跑流程。
+ *
+ * 連線路徑：Pages Function 會在「使用者連到的那個 Cloudflare 機房」執行，對外請求也從那裡出去。
+ * 台灣的校園／行動網路常被導到香港機房，而香港不在 Anthropic 支援的地區，
+ * Anthropic 會回 403 {"type":"forbidden","message":"Request not allowed"}（2026-10-30 上課時就是這樣）。
+ * 所以直連被 403 擋下時，自動改走個人網站（Vercel，美國機房）的中繼路由 /api/anthropic 再試一次。
+ *   ANTHROPIC_VIA   = auto（預設：先直連、403 才走中繼）| direct | relay
+ *   ANTHROPIC_RELAY = 中繼網址（預設 https://dr.snowmed-taiwan.com/api/anthropic）
+ * 中繼端用 x-relay-token（＝GAME_HOST_TOKEN）驗證，金鑰仍由這裡的 ANTHROPIC_API_KEY 帶過去。
  */
 
 import Anthropic from '@anthropic-ai/sdk';
 import { RESOURCES, RESOURCE_KEYS, AI_MAX_DELTA, MAX_POLICY_CHARS, clamp } from './_lib.js';
 
 const MODEL = 'claude-opus-5-5';
+const DEFAULT_RELAY = 'https://dr.snowmed-taiwan.com/api/anthropic';
+
+function relayUrl(env) {
+  return String(env.ANTHROPIC_RELAY || DEFAULT_RELAY).replace(/\/$/, '');
+}
+
+function makeClient(env, via) {
+  const base = { apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, timeout: 170_000 };
+  if (via === 'relay') {
+    return new Anthropic({ ...base, baseURL: relayUrl(env), defaultHeaders: { 'x-relay-token': env.GAME_HOST_TOKEN ?? env.WISH_ADMIN_TOKEN ?? '' } });
+  }
+  return new Anthropic(base);
+}
+
+/** 送一個請求：先試伺服器端拒答備援的 beta，環境不接受就退回一般請求 */
+async function createMessage(client, request) {
+  try {
+    // 預設開啟伺服器端的拒答備援：萬一安全分類器誤判，自動改用備援模型完成同一個請求
+    return await client.beta.messages.create({ ...request, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
+  } catch (err) {
+    // 備援參數若在這個環境不被接受，退回一般請求再試一次；其他錯誤原樣往上丟
+    if (err instanceof Anthropic.BadRequestError) return client.messages.create(request);
+    throw err;
+  }
+}
+
+/**
+ * 直連 Anthropic；被 403 擋下（機房所在地區不支援）就改走中繼再試一次。
+ * @returns {Promise<{message: object, via: 'direct'|'relay'}>}
+ */
+export async function callClaude(env, request) {
+  if (!env.ANTHROPIC_API_KEY) {
+    throw new Error('尚未設定 ANTHROPIC_API_KEY，無法使用 AI 評分（可先用手動評分）');
+  }
+  const mode = String(env.ANTHROPIC_VIA || 'auto');
+  if (mode === 'relay') return { message: await createMessage(makeClient(env, 'relay'), request), via: 'relay' };
+  try {
+    return { message: await createMessage(makeClient(env, 'direct'), request), via: 'direct' };
+  } catch (err) {
+    if (mode === 'direct' || !(err instanceof Anthropic.PermissionDeniedError)) throw err;
+    console.warn('Anthropic direct call got 403, retrying via relay:', err.message);
+    try {
+      return { message: await createMessage(makeClient(env, 'relay'), request), via: 'relay' };
+    } catch (err2) {
+      const m2 = err2 instanceof Error ? err2.message : String(err2);
+      throw new Error(`直連被擋（${err.message}），改走中繼也失敗：${m2}`);
+    }
+  }
+}
+
+/**
+ * 主持人台的「AI 連線測試」：用最小的請求確認金鑰與線路都通，回報走的是直連還是中繼。
+ * @returns {Promise<{ok: boolean, via?: string, ms: number, error?: string}>}
+ */
+export async function testConnection(env) {
+  const started = Date.now();
+  if (env.GAME_MOCK_AI === '1') return { ok: true, via: 'mock', ms: 0 };
+  try {
+    const { message, via } = await callClaude(env, {
+      model: MODEL,
+      max_tokens: 20,
+      messages: [{ role: 'user', content: '請只回覆「連線正常」四個字。' }],
+      output_config: { effort: 'low' },
+    });
+    const text = (message.content ?? []).filter((b) => b.type === 'text').map((b) => b.text).join('');
+    return { ok: true, via, ms: Date.now() - started, reply: text.slice(0, 40) };
+  } catch (err) {
+    return { ok: false, ms: Date.now() - started, error: (err instanceof Error ? err.message : String(err)).slice(0, 300) };
+  }
+}
 
 const resourceList = RESOURCES.map((r) => `${r.key}＝${r.label}`).join('、');
 
@@ -131,10 +209,6 @@ export async function scoreRound(env, input) {
   if (env.GAME_MOCK_AI === '1') {
     raw = mockScore(input.entries);
   } else {
-    if (!env.ANTHROPIC_API_KEY) {
-      throw new Error('尚未設定 ANTHROPIC_API_KEY，無法使用 AI 評分（可先用手動評分）');
-    }
-    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, timeout: 170_000 });
     const request = {
       model: MODEL,
       max_tokens: 16000,
@@ -142,22 +216,7 @@ export async function scoreRound(env, input) {
       messages: [{ role: 'user', content: buildUserPrompt(input) }],
       output_config: { effort: 'high', format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
     };
-    let message;
-    try {
-      // 預設開啟伺服器端的拒答備援：萬一安全分類器誤判，自動改用備援模型完成同一個請求
-      message = await client.beta.messages.create({
-        ...request,
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
-      });
-    } catch (err) {
-      // 備援參數若在這個環境不被接受，退回一般請求再試一次；其他錯誤原樣往上丟
-      if (err instanceof Anthropic.BadRequestError) {
-        message = await client.messages.create(request);
-      } else {
-        throw err;
-      }
-    }
+    const { message } = await callClaude(env, request);
     raw = extractJson(message);
   }
 

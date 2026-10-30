@@ -190,6 +190,7 @@ npx wrangler pages secret put REPORT_ADMIN_TOKEN --project-name snowmed-taiwan
    npx wrangler pages secret put ANTHROPIC_API_KEY --project-name snowmed-taiwan
    ```
    沒設的話評分會失敗，但主持人仍可用「手動評分」把遊戲玩完。
+   - **403「Request not allowed」**：Pages Function 在「使用者連到的機房」執行，台灣的校園／行動網路常被導到香港機房，而香港不在 Anthropic 支援地區（2026-10-30 上課就卡在這）。直連被 403 擋下時會自動改走個人網站（Vercel，美國）的 `/api/anthropic` 中繼再試一次；主持人台開大廳的表單裡有「🔌 AI 連線測試」按鈕，上課前先按一下。可用變數 `ANTHROPIC_VIA`（auto／direct／relay）與 `ANTHROPIC_RELAY`（中繼網址）調整。
 3. 資料表已經建好；如果日後改了 `db/game-schema.sql`，重跑：
    ```bash
    npx wrangler d1 execute snowmed-game --remote --file db/game-schema.sql

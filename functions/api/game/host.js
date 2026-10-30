@@ -39,7 +39,7 @@ import {
   PENALTY_DELTAS,
   SCORING_STALE_MS,
 } from './_lib.js';
-import { scoreRound } from './_scorer.js';
+import { scoreRound, testConnection } from './_scorer.js';
 
 const DEFAULT_MINUTES = 4;
 const CODE_RE = /^[A-Z0-9]{4,12}$/;
@@ -93,6 +93,12 @@ export async function onRequestPost({ request, env }) {
       .run();
     const game = await loadGame(db, code);
     return json(await buildState(db, game, { host: true, hostEnv: env }));
+  }
+
+  // AI 連線測試：不需要有進行中的遊戲，上課前先按一下確認金鑰與線路都通
+  if (action === 'ai_test') {
+    const result = await testConnection(env);
+    return json({ ok: true, test: { ...result, colo: request.cf?.colo ?? null, country: request.cf?.country ?? null } });
   }
 
   const game = await loadGame(db, body.code ? String(body.code).toUpperCase() : null);
