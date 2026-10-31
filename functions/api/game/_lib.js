@@ -314,7 +314,7 @@ export async function buildState(db, game, { host = false, teamId = null, hostEn
 
   const state = {
     ok: true,
-    code: game.code,
+    code: String(game.code).split('@')[0],
     status: game.status,
     round: game.round,
     totalCards: EVENT_CARDS.length,

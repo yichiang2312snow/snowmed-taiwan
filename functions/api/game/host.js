@@ -5,7 +5,8 @@
  *
  *   GET  /api/game/host                      讀目前這一場的完整狀態（含各組尚未評分的政策）
  *   POST /api/game/host  { action, ... }
- *     open         { minutes, code? }        開新大廳（舊的一場會被標成結束）；code 是自訂的入場密碼，沒給就隨機 4 碼
+ *     open         { minutes, code? }        開新大廳（舊的一場會被標成結束）；code 是自訂的入場密碼，沒給就隨機 4 碼。
+ *                                            密碼可以跟之前的場次一樣：舊場次的資料會改用「密碼@開場時間」保存，不會被蓋掉
  *     start_round  { cardId? }               開始下一回合；不指定就隨機抽一張沒用過的卡
  *     extend       { minutes }               延長這一回合的討論時間
  *     score                                  AI 評分（沒交的組視為「沒有決策」）
@@ -44,6 +45,24 @@ import { scoreRound, testConnection } from './_scorer.js';
 const DEFAULT_MINUTES = 4;
 const CODE_RE = /^[A-Z0-9]{4,12}$/;
 
+/**
+ * 讓新的一場可以沿用舊密碼：把舊場次（連同組別、回合、政策）的 code 改成「密碼@開場時間」封存起來。
+ * 「@」不是密碼允許的字元，所以封存後的 code 永遠不會跟組長輸入的密碼撞到。
+ */
+async function archiveGamesWithCode(db, code, now) {
+  const olds = await db.prepare('SELECT code, created_at FROM game_games WHERE code = ?').bind(code).all();
+  for (const old of olds.results ?? []) {
+    let archived = `${code}@${old.created_at}`;
+    if (await db.prepare('SELECT 1 FROM game_games WHERE code = ?').bind(archived).first()) archived = `${code}@${now}`;
+    await db.batch([
+      db.prepare('UPDATE game_submissions SET code = ? WHERE code = ?').bind(archived, code),
+      db.prepare('UPDATE game_rounds SET code = ? WHERE code = ?').bind(archived, code),
+      db.prepare('UPDATE game_teams SET code = ? WHERE code = ?').bind(archived, code),
+      db.prepare("UPDATE game_games SET code = ?, status = 'ended', updated_at = ? WHERE code = ?").bind(archived, now, code),
+    ]);
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   const denied = authorizeHost(request, env);
   if (denied) return denied;
@@ -70,12 +89,12 @@ export async function onRequestPost({ request, env }) {
   if (action === 'open') {
     const minutes = clamp(Math.round(Number(body.minutes) || DEFAULT_MINUTES), 1, 30);
 
-    // 入場密碼：主持人自訂（4～12 個英數字，不分大小寫），沒給就隨機產生 4 碼
+    // 入場密碼：主持人自訂（4～12 個英數字，不分大小寫），沒給就隨機產生 4 碼。
+    // 可以跟上一場一樣：舊場次先封存（code 改成「密碼@開場時間」），新的一場才用這個密碼。
     let code = String(body.code ?? '').trim().toUpperCase();
     if (code) {
       if (!CODE_RE.test(code)) return fail('入場密碼請用 4～12 個英文字母或數字');
-      const exists = await db.prepare('SELECT 1 FROM game_games WHERE code = ?').bind(code).first();
-      if (exists) return fail('這組入場密碼之前用過了，換一組吧（例如加上日期）', 409);
+      await archiveGamesWithCode(db, code, now);
     } else {
       code = randomCode(4);
       for (let i = 0; i < 5; i++) {
