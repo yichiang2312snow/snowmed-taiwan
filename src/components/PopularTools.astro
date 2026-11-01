@@ -1,9 +1,9 @@
 ---
 /**
- * 近 30 天熱門工具排行。
+ * 熱門工具排行（網站上線至今）。
  *
  * 跟造訪人數一樣，數字太小的時候秀出來反而扣分，所以：
- * - 近 30 天總使用次數 < showAt：整塊不出現
+ * - 總使用次數 < showAt：整塊不出現
  * - 總次數 < countsAt：只顯示名次，不顯示次數
  * 全部 8 個工具都先印在 HTML 裡（隱藏），JS 拿到數字後排序、只留前幾名。
  * 想預覽長什麼樣子：網址加上 #popular-preview 會把門檻降到 0。
@@ -13,7 +13,7 @@ import { TOOLS } from '../consts';
 interface Props {
   /** 顯示前幾名 */
   top?: number;
-  /** 近 30 天總使用次數達到多少才顯示整塊 */
+  /** 總使用次數達到多少才顯示整塊 */
   showAt?: number;
   /** 總使用次數達到多少才顯示實際次數 */
   countsAt?: number;
@@ -32,11 +32,11 @@ const { top = 5, showAt = 30, countsAt = 100, compact = false } = Astro.props;
   data-show-at={showAt}
   data-counts-at={countsAt}
   hidden
-  aria-label="近 30 天熱門工具"
+  aria-label="熱門工具排行"
 >
   <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-    <h3 class="text-base font-black text-head">🔥 近 30 天最多人用</h3>
-    <p class="text-xs text-muted">依本站匿名使用次數統計</p>
+    <h3 class="text-base font-black text-head">🔥 最多人用</h3>
+    <p class="text-xs text-muted">上線至今，依本站匿名使用次數統計</p>
   </div>
 
   <ol id="popular-list" class="mt-4 space-y-2">
