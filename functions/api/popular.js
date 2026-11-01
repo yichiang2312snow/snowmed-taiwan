@@ -136,7 +136,12 @@ export async function onRequestGet({ request, env, waitUntil }) {
   if (!env.VIEWS) return json({ tools: [], total: 0 }, ERROR_CACHE_SECONDS);
 
   const cache = caches.default;
-  const cacheKey = new Request(new URL('/api/popular', request.url).toString(), { method: 'GET' });
+  // 版本號放進快取鍵：改了回應格式之後，各機房的舊快取會立刻失效，
+  // 不用等一小時過期（否則部署完還會繼續吐舊格式，很容易誤判成沒生效）
+  const cacheKey = new Request(
+    new URL(`/api/popular?v=${SNAPSHOT_VERSION}`, request.url).toString(),
+    { method: 'GET' }
+  );
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
