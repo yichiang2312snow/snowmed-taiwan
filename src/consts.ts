@@ -50,10 +50,6 @@ export const NAV = [
   { href: '/ski-injuries', label: '運動傷害' },
   { href: '/media', label: '媒體報導' },
   { href: '/emergency', label: '海外受傷' },
-  // 衛教文章都在楊醫師的個人網站上，這裡直接外連過去
-  { href: SITE_A.articlesUrl, label: '知識庫', external: true },
-  // 醫療決策遊戲的畫面在楊醫師的個人網站上（資料與 AI 評分在這裡的 /api/game/）
-  { href: 'https://dr.snowmed-taiwan.com/game', label: '醫療決策遊戲', external: true },
   { href: '/wishlist', label: '許願區' },
   { href: '/about', label: '關於' },
 ] as const;
