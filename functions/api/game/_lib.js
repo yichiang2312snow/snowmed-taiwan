@@ -49,6 +49,44 @@ export function authorizeHost(request, env) {
   return null;
 }
 
+/** 訪客的 IP（Cloudflare 會放在 cf-connecting-ip），體驗一題與回饋的額度用 */
+export function clientIp(request) {
+  return request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+}
+
+/**
+ * 「體驗一題」與玩家回饋的資料表。
+ * 用 CREATE TABLE IF NOT EXISTS 在第一次用到時自動建立，就不必手動對正式環境跑 schema（wrangler d1 execute --remote 在這個帳號會被拒）。
+ * 定義同時也寫在 db/game-schema.sql，兩邊要一致。
+ */
+let demoTablesReady = false;
+export async function ensureDemoTables(db) {
+  if (demoTablesReady) return;
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS game_demo (
+      id TEXT PRIMARY KEY,
+      ip TEXT NOT NULL,
+      card_id TEXT NOT NULL,
+      text TEXT NOT NULL,
+      deltas TEXT,
+      explanation TEXT,
+      irrelevant INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL
+    )`),
+    db.prepare('CREATE INDEX IF NOT EXISTS game_demo_ip ON game_demo (ip, created_at)'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS game_feedback (
+      id TEXT PRIMARY KEY,
+      demo_id TEXT,
+      ip TEXT NOT NULL,
+      name TEXT NOT NULL DEFAULT '',
+      fun TEXT NOT NULL DEFAULT '',
+      improve TEXT NOT NULL DEFAULT '',
+      created_at INTEGER NOT NULL
+    )`),
+  ]);
+  demoTablesReady = true;
+}
+
 export async function readBody(request) {
   try {
     const body = await request.json();

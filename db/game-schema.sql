@@ -52,3 +52,27 @@ CREATE TABLE IF NOT EXISTS game_submissions (
   manual INTEGER NOT NULL DEFAULT 0,     -- 主持人手動給的分數
   PRIMARY KEY (code, round, team_id)
 );
+
+-- 「體驗一題」（主持人沒開場時訪客自己玩一題）與玩家回饋。
+-- 這兩張表由程式在第一次用到時自動建立（functions/api/game/_lib.js 的 ensureDemoTables），這裡只是文件。
+CREATE TABLE IF NOT EXISTS game_demo (
+  id TEXT PRIMARY KEY,
+  ip TEXT NOT NULL,                      -- 額度用（同一 IP 每小時 GAME_DEMO_IP_LIMIT 次）
+  card_id TEXT NOT NULL,
+  text TEXT NOT NULL,                    -- 玩家寫的政策
+  deltas TEXT,                           -- JSON：AI 給的加減分（已乘放大倍率）
+  explanation TEXT,
+  irrelevant INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS game_demo_ip ON game_demo (ip, created_at);
+
+CREATE TABLE IF NOT EXISTS game_feedback (
+  id TEXT PRIMARY KEY,
+  demo_id TEXT,                          -- 對應 game_demo.id（可為空）
+  ip TEXT NOT NULL,
+  name TEXT NOT NULL DEFAULT '',         -- 暱稱（選填）
+  fun TEXT NOT NULL DEFAULT '',          -- 好玩的地方
+  improve TEXT NOT NULL DEFAULT '',      -- 可以改進的地方
+  created_at INTEGER NOT NULL
+);

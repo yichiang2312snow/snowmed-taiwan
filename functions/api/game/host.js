@@ -4,6 +4,7 @@
  * 全部需要 Authorization: Bearer <GAME_HOST_TOKEN>
  *
  *   GET  /api/game/host                      讀目前這一場的完整狀態（含各組尚未評分的政策）
+ *   GET  /api/game/host?view=feedback        「體驗一題」的玩家回饋（最近 200 則）與體驗次數
  *   POST /api/game/host  { action, ... }
  *     open         { minutes, code? }        開新大廳（舊的一場會被標成結束）；code 是自訂的入場密碼，沒給就隨機 4 碼。
  *                                            密碼可以跟之前的場次一樣：舊場次的資料會改用「密碼@開場時間」保存，不會被蓋掉
@@ -39,6 +40,7 @@ import {
   CARD_BY_ID,
   PENALTY_DELTAS,
   SCORING_STALE_MS,
+  ensureDemoTables,
 } from './_lib.js';
 import { scoreRound, testConnection } from './_scorer.js';
 
@@ -70,6 +72,31 @@ export async function onRequestGet({ request, env }) {
   if (!db) return fail('遊戲資料庫尚未設定', 503);
 
   const url = new URL(request.url);
+
+  // 「體驗一題」的玩家回饋：連同他們當時寫的政策一起列出
+  if (url.searchParams.get('view') === 'feedback') {
+    await ensureDemoTables(db);
+    const rows = await db
+      .prepare(
+        `SELECT f.id, f.name, f.fun, f.improve, f.created_at, d.text AS policy, d.card_id, d.irrelevant
+         FROM game_feedback f LEFT JOIN game_demo d ON d.id = f.demo_id
+         ORDER BY f.created_at DESC LIMIT 200`
+      )
+      .all();
+    const demoCount = (await db.prepare('SELECT COUNT(*) AS c FROM game_demo').first())?.c ?? 0;
+    const feedback = (rows.results ?? []).map((r) => ({
+      id: r.id,
+      name: r.name,
+      fun: r.fun,
+      improve: r.improve,
+      createdAt: r.created_at,
+      policy: r.policy ?? null,
+      irrelevant: !!r.irrelevant,
+      card: r.card_id ? CARD_BY_ID.get(r.card_id) ?? null : null,
+    })).map((r) => ({ ...r, card: r.card ? { id: r.card.id, title: r.card.title, emoji: r.card.emoji } : null }));
+    return json({ ok: true, feedback, demoCount });
+  }
+
   const code = (url.searchParams.get('code') ?? '').trim().toUpperCase() || null;
   const game = await loadGame(db, code);
   if (!game) return json({ ok: true, status: 'none', cards: EVENT_CARDS.map((c) => ({ id: c.id, title: c.title, emoji: c.emoji, used: false })) });
