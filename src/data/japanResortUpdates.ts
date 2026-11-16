@@ -27,6 +27,29 @@ export interface ResortUpdate {
 }
 
 export const RESORT_UPDATES: ResortUpdate[] = [
+  // ── 2026-11-16 ──────────────────────────────────────
+  {
+    date: '2026-11-16',
+    resortId: null,
+    kind: 'price',
+    title: '10 座雪場的 2026-27 票價全部重新查證，4 座漲價',
+    summary:
+      '逐一打開 10 座雪場的官方票價頁重新核對。四座原本還掛著 2025-26 的價格，已更新為 2026-27：GALA 湯澤 ¥6,500→¥8,000、苗場 ¥7,800→¥9,800、富良野 ¥8,000→¥9,000、TOMAMU ¥8,000→¥9,500（窗口價）。白馬八方、志賀高原、野澤溫泉、二世谷、留壽都的票價查證後沒有變動。輕井澤的票價沒變，但原本註記寫的「最繁忙日 ¥13,000」有誤，官網的トップシーズン特定日是 ¥12,000，已更正。',
+    source: 'https://www.princehotels.co.jp/ski/naeba/winter/lift/',
+    sourceLabel: '各雪場官方票價頁（苗場為其中之一）',
+    sourceLevel: 'official',
+  },
+  {
+    date: '2026-11-16',
+    resortId: 'shigakogen',
+    kind: 'facility',
+    title: '志賀高原官網改版，原本的票價網址已失效',
+    summary:
+      '原本引用的 shigakogen-ski.or.jp/winter/ticket/ 現在回 403，票價頁搬到 /ticket/index.html。本站引用的網址已更新。2026-27 共通券一日券大人 ¥9,500、兒童 ¥4,000，全 18 座雪場 45 條纜車通用，價格與先前查證一致。',
+    source: 'https://shigakogen-ski.or.jp/ticket/index.html',
+    sourceLabel: '志賀高原 官方 リフト券窓口販売料金',
+    sourceLevel: 'official',
+  },
   // ── 2026-09-21 ──────────────────────────────────────
   {
     date: '2026-09-21',
@@ -45,7 +68,7 @@ export const RESORT_UPDATES: ResortUpdate[] = [
     kind: 'price',
     title: '輕井澤王子：2026-27 票價與雪季日期公布',
     summary:
-      '正規期（12/19–3/22）大人一日券 ¥10,000，與上季同價；特定日 ¥12,000、年末年始與 2 月連假 ¥13,000。開季期（10/31–12/18）與春滑（3/23–3/31）¥8,000。小學生以下仍然免費。10/31 開季，是這 10 座裡最早開的。',
+      '正規期（12/19–3/22）大人一日券 ¥10,000，與上季同價；年末年始與 2 月連假等「トップシーズン」特定日 ¥12,000（本則原寫 ¥13,000，2026-11-16 回官網核對後更正）。開季期（10/31–12/18）與春滑（3/23–3/31）¥8,000。小學生以下仍然免費。10/31 開季，是這 10 座裡最早開的。',
     source: 'https://www.princehotels.co.jp/ski/karuizawa/winter/lift/',
     sourceLabel: '軽井沢プリンス 官方リフト券頁',
     sourceLevel: 'official',
@@ -145,7 +168,7 @@ export const RESORT_UPDATES: ResortUpdate[] = [
     title: '志賀高原：2026-27 營業期間公布（12/5 開季）',
     summary:
       '2026/12/5–2027/5/5。共通券大人 ¥9,500、兒童（0–12 歲）¥4,000、60 歲以上 ¥8,000，與上次查證相同。未就學兒每位付費大人可免費帶 1 名；12/20、1/17、2/21、3/21、4/18 五個「滑雪兒童日」小學生一日券免費。',
-    source: 'https://shigakogen-ski.or.jp/winter/ticket/',
+    source: 'https://shigakogen-ski.or.jp/ticket/index.html',
     sourceLabel: '志賀高原 官方票價頁',
     sourceLevel: 'official',
   },
@@ -200,4 +223,4 @@ export const RESORT_UPDATES: ResortUpdate[] = [
  * 最近一次「檢查」的日期（每週排程跑完就改成當天，就算沒有異動也要改）。
  * 頁面上的「上次查證」顯示這個，而不是最後一則更新的日期。
  */
-export const LAST_CHECKED = '2026-09-21';
+export const LAST_CHECKED = '2026-11-16';
