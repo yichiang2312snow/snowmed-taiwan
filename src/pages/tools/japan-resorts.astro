@@ -12,9 +12,28 @@ import {
   REFERENCE_SITES,
 } from '../../data/japanResorts';
 import { RESORT_UPDATES, LAST_CHECKED } from '../../data/japanResortUpdates';
-import { JAPAN_RESORT_DIRECTORY } from '../../data/japanResortDirectory';
+import {
+  JAPAN_RESORT_DIRECTORY,
+  DIRECTORY_RETRIEVED,
+  type DirectoryResort,
+} from '../../data/japanResortDirectory';
 
 const DIRECTORY_REGIONS = Array.from(new Set(JAPAN_RESORT_DIRECTORY.map((r) => r.region)));
+// 索引裡有規模數字的有幾座（其餘多半是沒有維基條目的地方性小雪場）
+const WITH_STATS = JAPAN_RESORT_DIRECTORY.filter(
+  (r) => r.vertical != null || r.courses != null || r.lifts != null
+).length;
+
+/** 索引每一列第二行的規模摘要。全部查無就回空字串，那一行不顯示 */
+const statLine = (r: DirectoryResort) => {
+  const bits: string[] = [];
+  if (r.vertical != null) bits.push(`標高差 ${r.vertical.toLocaleString('en-US')} m`);
+  if (r.courses != null) bits.push(`${r.courses} 條雪道`);
+  if (r.lifts != null) bits.push(`${r.lifts} 條纜車`);
+  if (r.maxGradient != null) bits.push(`最陡 ${r.maxGradient}°`);
+  if (r.longestRun != null) bits.push(`最長 ${(r.longestRun / 1000).toFixed(1)} km`);
+  return bits.join('・');
+};
 // 這 10 座有完整卡片的雪場，在總表裡標出來
 const CARDED = new Set(RESORTS.map((r) => r.id));
 const directoryCardId = (name: string) => {
@@ -505,17 +524,18 @@ const FAQ = [
       <p class="text-xs text-muted">你要去的雪場不在上面 10 座裡？先從這裡找到它的官網</p>
     </div>
     <p class="mt-3 text-sm leading-relaxed break-words text-muted">
-      上面 10 座是做過完整安全面查證的雪場。日本實際上有幾百座雪場，這份索引把<strong class="text-head">目前營業中的都列出來</strong>（含很多地方性的小雪場），附官網連結，讓你至少能自己去查巡邏隊電話與最近的醫院。
-      有完整卡片的會標「已查證」。
+      上面 10 座是做過完整安全面查證的雪場。日本實際上有幾百座雪場，這份索引把<strong class="text-head">目前營業中的都列出來</strong>（含很多地方性的小雪場），
+      其中 {WITH_STATS} 座另外附上<strong class="text-head">標高差、雪道數、纜車數、最大傾斜、最長滑走距離</strong>，可以直接排序比較規模，
+      並附官網、地圖與維基條目連結，讓你自己去查巡邏隊電話與最近的醫院。有完整卡片的會標「已查證」。
     </p>
 
-    <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+    <div class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
       <label class="sr-only" for="dir-q">搜尋雪場</label>
       <input
         id="dir-q"
         type="search"
         placeholder="輸入雪場名稱（日文最準，例如「白馬」「ニセコ」「蔵王」）或都道府県"
-        class="min-w-0 flex-1 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-head placeholder:text-muted focus:border-accent focus:outline-none"
+        class="min-w-0 rounded-xl border border-line bg-panel px-4 py-3 text-sm text-head placeholder:text-muted focus:border-accent focus:outline-none"
       />
       <select
         id="dir-region"
@@ -527,6 +547,18 @@ const FAQ = [
           <option value={g}>{g}（{JAPAN_RESORT_DIRECTORY.filter((r) => r.region === g).length}）</option>
         ))}
       </select>
+      <select
+        id="dir-sort"
+        class="rounded-xl border border-line bg-panel px-4 py-3 text-sm text-head focus:border-accent focus:outline-none"
+        aria-label="排序方式"
+      >
+        <option value="">依地區排列</option>
+        <option value="vertical">標高差最大</option>
+        <option value="courses">雪道數最多</option>
+        <option value="lifts">纜車數最多</option>
+        <option value="longest">最長滑走距離</option>
+        <option value="gradient">最大傾斜最陡</option>
+      </select>
     </div>
     <p id="dir-count" class="mt-3 text-xs text-muted">顯示 {JAPAN_RESORT_DIRECTORY.length} 座</p>
 
@@ -536,28 +568,58 @@ const FAQ = [
           const cardId = directoryCardId(r.name);
           return (
             <li
-              class="dir-row flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 text-sm"
+              class="dir-row min-w-0 px-4 py-2.5 text-sm"
               data-text={`${r.name} ${r.prefecture} ${r.region}`.toLowerCase()}
               data-region={r.region}
+              data-vertical={r.vertical ?? ''}
+              data-courses={r.courses ?? ''}
+              data-lifts={r.lifts ?? ''}
+              data-longest={r.longestRun ?? ''}
+              data-gradient={r.maxGradient ?? ''}
             >
-              <span class="min-w-0 flex-1 font-bold break-words text-head">{r.name}</span>
-              <span class="shrink-0 text-xs text-muted">{r.prefecture}</span>
-              {cardId && CARDED.has(cardId) && (
-                <a href="#jr-list" class="shrink-0 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200 light:text-emerald-800">
-                  已查證 ↑
-                </a>
-              )}
-              {r.officialUrl ? (
-                <a
-                  href={r.officialUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="shrink-0 text-xs font-bold text-accent hover:underline"
-                >
-                  官網 ↗
-                </a>
-              ) : (
-                <span class="shrink-0 text-xs text-muted">官網待查</span>
+              <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                <span class="min-w-0 flex-1 font-bold break-words text-head">{r.name}</span>
+                <span class="shrink-0 text-xs text-muted">{r.prefecture}</span>
+                {cardId && CARDED.has(cardId) && (
+                  <a href="#jr-list" class="shrink-0 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200 light:text-emerald-800">
+                    已查證 ↑
+                  </a>
+                )}
+                {r.officialUrl ? (
+                  <a
+                    href={r.officialUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 text-xs font-bold text-accent hover:underline"
+                  >
+                    官網 ↗
+                  </a>
+                ) : (
+                  <span class="shrink-0 text-xs text-muted">官網待查</span>
+                )}
+                {r.lat != null && r.lon != null && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 text-xs text-muted hover:text-accent hover:underline"
+                  >
+                    地圖 ↗
+                  </a>
+                )}
+                {r.wiki && (
+                  <a
+                    href={`https://ja.wikipedia.org/wiki/${encodeURIComponent(r.wiki)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 text-xs text-muted hover:text-accent hover:underline"
+                  >
+                    維基 ↗
+                  </a>
+                )}
+              </div>
+              {statLine(r) && (
+                <p class="mt-0.5 text-xs break-words text-muted">{statLine(r)}</p>
               )}
             </li>
           );
@@ -568,8 +630,11 @@ const FAQ = [
       找不到。試試日文名稱或只打都道府県（例如「長野」）。
     </p>
     <p class="mt-3 text-[11px] leading-relaxed break-words text-muted">
-      索引來源：日文維基百科「日本のスキー場一覧」（CC BY-SA 4.0，取得日期 2026-09-15），已排除標示為廃止・休止的雪場；官網連結取自各條目的 Wikidata「公式ウェブサイト」欄位，沒有的就寫「官網待查」而不猜。
-      索引只保證「這座雪場存在且營業中」，不代表本站查證過它的安全資訊。
+      索引名單來源：日文維基百科「日本のスキー場一覧」（CC BY-SA 4.0，取得日期 2026-09-15，{DIRECTORY_RETRIEVED} 重新比對過一次），已排除標示為廃止・休止的雪場。
+      標高差、雪道數、纜車數、最大傾斜、最長滑走距離與座標取自各雪場的維基條目資訊框（{DIRECTORY_RETRIEVED} 取得）；官網連結取自 Wikidata「公式ウェブサイト」欄位與條目資訊框，沒有的就寫「官網待查」而不猜。
+      <strong class="text-head">這些數字跟上面 10 張卡片不同等級</strong> ——
+      卡片上的每個數字都回雪場官網查證過並標了查證日期，索引這裡沒有：維基的資訊框不一定標出處，也可能過期。
+      它能幫你快速比較規模，但要實際規劃行程，請點進該雪場的官網或維基條目自己核對。索引只保證「這座雪場存在且營業中」，不代表本站查證過它的安全資訊。
     </p>
   </section>
 
@@ -800,24 +865,65 @@ const FAQ = [
     });
   }
 
-  // ── 全日本雪場索引的搜尋與地區篩選 ──
+  // ── 全日本雪場索引的搜尋、地區篩選與排序 ──
   const dq = document.getElementById('dir-q') as HTMLInputElement | null;
   const dregion = document.getElementById('dir-region') as HTMLSelectElement | null;
+  const dsort = document.getElementById('dir-sort') as HTMLSelectElement | null;
+  const dlist = document.getElementById('dir-list');
   const drows = Array.from(document.querySelectorAll<HTMLElement>('.dir-row'));
   const dcount = document.getElementById('dir-count');
   const dempty = document.getElementById('dir-empty');
+  // 原本的順序（依地區排列）要留著，才能切回「依地區排列」
+  const dorder = new Map(drows.map((row, i) => [row, i]));
+  const SORT_KEYS: Record<string, string> = {
+    vertical: 'vertical',
+    courses: 'courses',
+    lifts: 'lifts',
+    longest: 'longest',
+    gradient: 'gradient',
+  };
+
   const filterDir = () => {
     const t = (dq?.value ?? '').trim().toLowerCase();
     const g = dregion?.value ?? '';
+    const sortBy = SORT_KEYS[dsort?.value ?? ''] ?? '';
     let n = 0;
+    let withNumber = 0;
     for (const row of drows) {
       const ok = (!g || row.dataset.region === g) && (!t || (row.dataset.text ?? '').includes(t));
       row.hidden = !ok;
-      if (ok) n++;
+      if (ok) {
+        n++;
+        if (sortBy && row.dataset[sortBy]) withNumber++;
+      }
     }
-    if (dcount) dcount.textContent = `顯示 ${n} 座`;
+
+    if (dlist) {
+      const sorted = [...drows].sort((a, b) => {
+        if (sortBy) {
+          // 查無這個數字的排最後，而不是當成 0 —— 它們只是沒資料，不是最小
+          const av = a.dataset[sortBy] ? Number(a.dataset[sortBy]) : null;
+          const bv = b.dataset[sortBy] ? Number(b.dataset[sortBy]) : null;
+          if (av !== bv) {
+            if (av === null) return 1;
+            if (bv === null) return -1;
+            return bv - av;
+          }
+        }
+        return (dorder.get(a) ?? 0) - (dorder.get(b) ?? 0);
+      });
+      for (const row of sorted) dlist.appendChild(row);
+      dlist.scrollTop = 0;
+    }
+
+    if (dcount) {
+      dcount.textContent = sortBy
+        ? `顯示 ${n} 座，其中 ${withNumber} 座查得到這個數字（查無的排在最後）`
+        : `顯示 ${n} 座`;
+    }
     if (dempty) dempty.hidden = n > 0;
   };
   dq?.addEventListener('input', filterDir);
   dregion?.addEventListener('change', filterDir);
+  dsort?.addEventListener('change', filterDir);
 </script>
