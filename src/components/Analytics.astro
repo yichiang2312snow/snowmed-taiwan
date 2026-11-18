@@ -5,7 +5,7 @@
  * 只送「發生了什麼類型的事」，不送任何身分資訊：沒有 cookie、沒有訪客編號、
  * 沒有裝置資訊。後端也不記錄 IP。
  *
- * 唯一的例外是「來源類別」：每次造訪會送出一個詞（search／ai／social／own／
+ * 唯一的例外是「來源類別」：每次造訪會送出一個詞（seo／geo／social／own／
  * direct／other），讓後台知道大家是從搜尋、AI 助理、社群還是直接輸入網址來的。
  * 送出去的只有那個詞 —— referrer 原文、是哪個關鍵字、哪一篇貼文都不會離開瀏覽器，
  * 也沒有任何欄位能把兩次造訪連在一起。
@@ -61,6 +61,8 @@
   // 不能每次瀏覽都多寫一筆。
   const SRC_KEY = 'snowmed:src';
 
+  // 代號跟醫師個人網站 src/lib/traffic-source.ts 對齊：
+  //   seo = 傳統搜尋引擎、geo = AI 引擎（Generative Engine Optimization）
   // AI 助理要排在搜尋前面判斷 —— gemini.google.com 是 AI，不是 Google 搜尋
   const AI = [
     'chatgpt.com', 'chat.openai.com', 'openai.com', 'gemini.google.com', 'bard.google.com',
@@ -101,8 +103,8 @@
 
     const hit = (list: string[]) => list.some((d) => h === d || h.endsWith('.' + d));
 
-    if (hit(AI)) return 'ai';
-    if (SEARCH_RE.test(h) || hit(SEARCH)) return 'search';
+    if (hit(AI)) return 'geo';
+    if (SEARCH_RE.test(h) || hit(SEARCH)) return 'seo';
     if (hit(SOCIAL)) return 'social';
     return 'other';
   };
