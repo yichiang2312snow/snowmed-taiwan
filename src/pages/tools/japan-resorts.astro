@@ -17,8 +17,34 @@ import {
   DIRECTORY_RETRIEVED,
   type DirectoryResort,
 } from '../../data/japanResortDirectory';
+import {
+  PREFECTURE_SHAPES,
+  MAP_VIEWBOX,
+  MAP_SOURCE,
+  REGION_ORDER,
+} from '../../data/japanRegionMap';
 
 const DIRECTORY_REGIONS = Array.from(new Set(JAPAN_RESORT_DIRECTORY.map((r) => r.region)));
+
+// ── 區域地圖：各都道府県與各地方的雪場數 ──
+const prefCount = new Map<string, number>();
+const regionCount = new Map<string, number>();
+for (const r of JAPAN_RESORT_DIRECTORY) {
+  prefCount.set(r.prefecture, (prefCount.get(r.prefecture) ?? 0) + 1);
+  regionCount.set(r.region, (regionCount.get(r.region) ?? 0) + 1);
+}
+// 地圖的顏色深淺只分 5 階（0／1–5／6–20／21–50／51+），不是連續的，
+// 因為要一眼看出「哪裡雪場多」，不是要讀出精確數字 —— 精確數字在滑鼠提示與右邊清單
+const MAP_SCALE = [
+  { max: 0, label: '0' },
+  { max: 5, label: '1–5' },
+  { max: 20, label: '6–20' },
+  { max: 50, label: '21–50' },
+  { max: Infinity, label: '51+' },
+];
+const bucketOf = (n: number) => MAP_SCALE.findIndex((s) => n <= s.max);
+// 地圖上畫得出來的區域，照由北到南排；索引裡若有地方沒有對應的形狀就不畫
+const mapRegions = REGION_ORDER.filter((g) => PREFECTURE_SHAPES.some((s) => s.region === g));
 // 索引裡有規模數字的有幾座（其餘多半是沒有維基條目的地方性小雪場）
 const WITH_STATS = JAPAN_RESORT_DIRECTORY.filter(
   (r) => r.vertical != null || r.courses != null || r.lifts != null
@@ -529,6 +555,90 @@ const FAQ = [
       並附官網、地圖與維基條目連結，讓你自己去查巡邏隊電話與最近的醫院。有完整卡片的會標「已查證」。
     </p>
 
+    <!-- 區域地圖：點一區就只看那一區的雪場 -->
+    <div
+      id="jp-mapwrap"
+      class="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:items-start"
+    >
+      <div class="relative mx-auto w-full max-w-[13rem] sm:mx-0">
+        <svg
+          id="jp-map"
+          viewBox={MAP_VIEWBOX}
+          role="img"
+          aria-label={`日本雪場分布地圖。各地方的雪場數：${mapRegions
+            .map((g) => `${g} ${regionCount.get(g) ?? 0} 座`)
+            .join('、')}。`}
+          class="block w-full"
+        >
+          {
+            mapRegions.map((g) => (
+              <g class="jp-region" data-region={g}>
+                {PREFECTURE_SHAPES.filter((s) => s.region === g).map((s) => (
+                  <path
+                    class="jp-pref"
+                    d={s.d}
+                    data-pref={s.pref}
+                    data-region={g}
+                    data-count={prefCount.get(s.pref) ?? 0}
+                    style={`fill:var(--jp${bucketOf(prefCount.get(s.pref) ?? 0)})`}
+                  />
+                ))}
+              </g>
+            ))
+          }
+        </svg>
+        <div
+          id="jp-tip"
+          hidden
+          class="pointer-events-none absolute top-0 left-0 z-20 -translate-x-1/2 -translate-y-[130%] rounded-lg border border-linestrong bg-panel px-2.5 py-1.5 text-xs font-bold whitespace-nowrap text-head shadow-lg"
+        >
+        </div>
+      </div>
+
+      <div class="min-w-0">
+        <p class="text-sm leading-relaxed break-words text-muted">
+          滑鼠移到地圖上會顯示那個縣有幾座雪場，<strong class="text-head">點一下就只看那一區</strong>；
+          再點一次、或點「全部地區」就回到全部。顏色越亮代表那個縣的雪場越多。
+        </p>
+
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <button type="button" class="jp-btn" data-region="" aria-pressed="true">
+            全部地區
+            <span class="jp-n">{JAPAN_RESORT_DIRECTORY.length}</span>
+          </button>
+          {
+            mapRegions.map((g) => (
+              <button type="button" class="jp-btn" data-region={g} aria-pressed="false">
+                {g}
+                <span class="jp-n">{regionCount.get(g) ?? 0}</span>
+              </button>
+            ))
+          }
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted">
+          <span>每個縣的雪場數</span>
+          {
+            MAP_SCALE.map((s, i) => (
+              <span class="inline-flex items-center gap-1">
+                <span class="jp-key" style={`background:var(--jp${i})`} />
+                {s.label}
+              </span>
+            ))
+          }
+        </div>
+
+        <p class="mt-3 text-[11px] leading-relaxed break-words text-muted">
+          地圖是示意圖：界線取自<a
+            href={MAP_SOURCE.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-muted underline hover:text-accent">{MAP_SOURCE.label}</a
+          >並經過簡化，沒有雪場的沖縄県與面積過小的離島沒有畫出來，請不要拿它判斷行政區邊界。
+        </p>
+      </div>
+    </div>
+
     <div class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
       <label class="sr-only" for="dir-q">搜尋雪場</label>
       <input
@@ -926,4 +1036,153 @@ const FAQ = [
   dq?.addEventListener('input', filterDir);
   dregion?.addEventListener('change', filterDir);
   dsort?.addEventListener('change', filterDir);
+
+  // ── 區域地圖：滑過看數量，點一下只看那一區 ──
+  const jpMap = document.getElementById('jp-map');
+  const jpTip = document.getElementById('jp-tip');
+  const jpBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.jp-btn'));
+  const jpGroups = Array.from(document.querySelectorAll<SVGGElement>('.jp-region'));
+
+  // 地圖、區域按鈕、下拉選單三個入口共用同一個狀態，誰改都要讓另外兩個跟上
+  const syncMap = () => {
+    const g = dregion?.value ?? '';
+    for (const grp of jpGroups) {
+      if (grp.dataset.region === g && g) grp.setAttribute('data-active', '');
+      else grp.removeAttribute('data-active');
+    }
+    for (const b of jpBtns) b.setAttribute('aria-pressed', String((b.dataset.region ?? '') === g));
+  };
+
+  const pickRegion = (g: string) => {
+    if (!dregion) return;
+    // 點已經選起來的那一區就取消，回到全部
+    dregion.value = dregion.value === g ? '' : g;
+    filterDir();
+    syncMap();
+  };
+
+  for (const b of jpBtns) {
+    b.addEventListener('click', () => {
+      const g = b.dataset.region ?? '';
+      if (!dregion) return;
+      dregion.value = g;
+      filterDir();
+      syncMap();
+    });
+  }
+
+  if (jpMap) {
+    jpMap.addEventListener('click', (e) => {
+      const path = (e.target as Element | null)?.closest('.jp-pref') as HTMLElement | null;
+      if (path?.dataset.region) pickRegion(path.dataset.region);
+    });
+
+    const moveTip = (e: PointerEvent) => {
+      const path = (e.target as Element | null)?.closest('.jp-pref') as HTMLElement | null;
+      if (!jpTip || !path) {
+        if (jpTip) jpTip.hidden = true;
+        return;
+      }
+      const n = Number(path.dataset.count ?? '0');
+      jpTip.textContent = `${path.dataset.pref}（${path.dataset.region}）${n} 座`;
+      const box = jpMap.getBoundingClientRect();
+      jpTip.style.left = `${e.clientX - box.left}px`;
+      jpTip.style.top = `${e.clientY - box.top}px`;
+      jpTip.hidden = false;
+    };
+    jpMap.addEventListener('pointermove', moveTip);
+    jpMap.addEventListener('pointerleave', () => {
+      if (jpTip) jpTip.hidden = true;
+    });
+  }
+
+  syncMap();
 </script>
+
+<style>
+  /* 地圖的 5 階配色：單一色相、由淺到深（深色模式由暗到亮），不是彩虹色 */
+  #jp-mapwrap {
+    --jp0: #0f3a5c;
+    --jp1: #1d5b86;
+    --jp2: #2d86b7;
+    --jp3: #4fadd9;
+    --jp4: #9adbfa;
+    --jp-edge: rgb(255 255 255 / 0.32);
+  }
+  [data-theme='light'] #jp-mapwrap {
+    --jp0: #ffffff;
+    --jp1: #b9ddf0;
+    --jp2: #79bddd;
+    --jp3: #3a8dba;
+    --jp4: #0d6a9e;
+    --jp-edge: rgb(10 42 68 / 0.3);
+  }
+
+  #jp-map {
+    cursor: pointer;
+  }
+  /* 每個縣都描邊，所以「0 座」那一階即使填色很淡也看得出形狀 */
+  .jp-pref {
+    stroke: var(--jp-edge);
+    stroke-width: 1.1;
+    vector-effect: non-scaling-stroke;
+    transition: opacity 0.12s ease;
+  }
+  /* 滑到任何一個縣，整個地方一起亮起來，其他地方淡掉 */
+  #jp-map:hover .jp-region:not(:hover) {
+    opacity: 0.45;
+  }
+  .jp-region:hover .jp-pref {
+    stroke: var(--color-accent);
+    stroke-width: 1.6;
+  }
+  .jp-region[data-active] .jp-pref {
+    stroke: var(--color-accent);
+    stroke-width: 2;
+  }
+  #jp-map:has(.jp-region[data-active]) .jp-region:not([data-active]) {
+    opacity: 0.4;
+  }
+
+  .jp-key {
+    display: inline-block;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    border: 1px solid var(--color-line);
+  }
+
+  .jp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-panel);
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-head);
+  }
+  .jp-btn:hover {
+    border-color: var(--color-accent);
+  }
+  .jp-btn[aria-pressed='true'] {
+    border-color: var(--color-accent);
+    background: var(--color-tint2);
+  }
+  .jp-n {
+    font-weight: 400;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .jp-btn[aria-pressed='true'] .jp-n {
+    color: var(--color-head);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jp-pref {
+      transition: none;
+    }
+  }
+</style>
