@@ -3,7 +3,12 @@
  * 使用統計的前端回報。
  *
  * 只送「發生了什麼類型的事」，不送任何身分資訊：沒有 cookie、沒有訪客編號、
- * 沒有 referrer、沒有裝置資訊。後端也不記錄 IP。
+ * 沒有裝置資訊。後端也不記錄 IP。
+ *
+ * 唯一的例外是「來源類別」：每次造訪會送出一個詞（search／ai／social／own／
+ * direct／other），讓後台知道大家是從搜尋、AI 助理、社群還是直接輸入網址來的。
+ * 送出去的只有那個詞 —— referrer 原文、是哪個關鍵字、哪一篇貼文都不會離開瀏覽器，
+ * 也沒有任何欄位能把兩次造訪連在一起。
  *
  * 工具頁只要在表單送出時呼叫 window.snowmedTrack('done', '<工具代號>')
  * 或 ('result', '<工具代號>/<結果>')，就會被計入。
@@ -11,7 +16,7 @@
 ---
 
 <script>
-  type Ev = 'view' | 'tool' | 'done' | 'result' | 'wish' | 'vote';
+  type Ev = 'view' | 'tool' | 'done' | 'result' | 'wish' | 'vote' | 'src';
 
   const send = (e: Ev, l: string) => {
     const body = JSON.stringify({ e, l });
@@ -46,5 +51,70 @@
     // 如果是工具頁，另外記一筆「打開了這個工具」
     const m = label.match(/^tools\/([a-z0-9-]+)$/);
     if (m) send('tool', m[1]);
+  }
+
+  // ── 來源類別：每次造訪只送一次 ──
+  //
+  // 只把 referrer 歸成一個類別就丟掉，原文完全不離開瀏覽器。
+  // 「每次造訪只送一次」有兩個理由：一是知道「這次是從哪裡來的」就夠了，站內點來點去
+  // 不必重複算；二是 KV 免費方案一天只有 1,000 次寫入，2026-09-18 撞過一次上限，
+  // 不能每次瀏覽都多寫一筆。
+  const SRC_KEY = 'snowmed:src';
+
+  // AI 助理要排在搜尋前面判斷 —— gemini.google.com 是 AI，不是 Google 搜尋
+  const AI = [
+    'chatgpt.com', 'chat.openai.com', 'openai.com', 'gemini.google.com', 'bard.google.com',
+    'claude.ai', 'perplexity.ai', 'copilot.microsoft.com', 'you.com', 'felo.ai', 'grok.com',
+    'x.ai', 'poe.com', 'genspark.ai', 'phind.com', 'deepseek.com', 'doubao.com', 'metaso.cn',
+    'monica.im', 'kimi.com', 'notebooklm.google.com', 'aistudio.google.com',
+  ];
+  const SOCIAL = [
+    'threads.com', 'threads.net', 'facebook.com', 'fb.com', 'messenger.com', 'instagram.com',
+    'line.me', 'x.com', 'twitter.com', 't.co', 'youtube.com', 'youtu.be', 'dcard.tw', 'ptt.cc',
+    'reddit.com', 'linkedin.com', 'pinterest.com', 'plurk.com', 'tiktok.com', 'weibo.com',
+    'xiaohongshu.com', 'discord.com', 't.me', 'telegram.me',
+  ];
+  const SEARCH = [
+    'bing.com', 'duckduckgo.com', 'baidu.com', 'yandex.com', 'ecosia.org', 'naver.com',
+    'sogou.com', 'so.com', 'startpage.com', 'qwant.com', 'mojeek.com', 'ask.com', 'search.brave.com',
+  ];
+  // google 與 yahoo 有一堆國別網域（google.com.tw、search.yahoo.co.jp…），用樣式比對
+  const SEARCH_RE = /(^|\.)(google\.[a-z.]+|yahoo\.[a-z.]+)$/;
+
+  /** 把 referrer 歸成一個類別。回空字串代表不計（站內互連） */
+  const sourceOf = (): string => {
+    let host = '';
+    try {
+      host = new URL(document.referrer).hostname.toLowerCase();
+    } catch {
+      /* 沒有 referrer 或格式不合 —— 當作直接進來 */
+    }
+    if (!host) return 'direct';
+
+    const here = location.hostname.toLowerCase().replace(/^www\./, '');
+    const h = host.replace(/^www\./, '');
+
+    // 同一個網域才算站內互連、不計；
+    // dr.snowmed-taiwan.com 是子網域但屬於另一個站（醫師個人網站），要算成 own
+    if (h === here) return '';
+    if (h.endsWith('.' + here)) return 'own';
+
+    const hit = (list: string[]) => list.some((d) => h === d || h.endsWith('.' + d));
+
+    if (hit(AI)) return 'ai';
+    if (SEARCH_RE.test(h) || hit(SEARCH)) return 'search';
+    if (hit(SOCIAL)) return 'social';
+    return 'other';
+  };
+
+  try {
+    if (!sessionStorage.getItem(SRC_KEY)) {
+      // 先標記再送，就算送失敗也不會這次造訪一直重試、白白吃掉寫入額度
+      sessionStorage.setItem(SRC_KEY, '1');
+      const src = sourceOf();
+      if (src) send('src', src);
+    }
+  } catch {
+    /* 無痕模式存不了標記就乾脆不送，寧可少算也不要重複灌 */
   }
 </script>

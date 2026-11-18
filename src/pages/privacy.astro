@@ -58,6 +58,31 @@ const UPDATED = '2026-09-18';
         }
       </ul>
 
+      <div class="mt-6 min-w-0 rounded-2xl border border-line bg-surface p-5">
+        <h3 class="text-base font-black break-words text-head">那會記什麼？只有純數字</h3>
+        <p class="mt-2 text-sm leading-relaxed break-words text-body">
+          為了知道哪些內容真的有幫上忙，網站會累加幾個計數器。它們都只是數字，
+          <strong class="text-head">沒有任何欄位可以把兩次造訪連在一起，也無法回推是誰</strong>：
+        </p>
+        <ul class="mt-3 space-y-2">
+          {
+            [
+              '哪一頁被打開了幾次、哪個工具被打開與完成了幾次。',
+              '雪友投票的票數、許願區送出了幾則。',
+              '造訪人數：第一次來的瀏覽器會讓總數 +1（用瀏覽器自己的 localStorage 記住來過，那個標記只存在你的裝置上）。',
+              '這次造訪是從哪一類來源來的 —— 搜尋引擎、AI 助理、社群網站、本站自己的另一個網域、直接輸入網址，或其他。只有這個「類別」會送出來，referrer 原文、你搜了什麼關鍵字、從哪一篇貼文點進來的，都留在你的瀏覽器裡，不會送到伺服器。',
+            ].map((t) => (
+              <li class="flex min-w-0 items-start gap-2.5 text-sm leading-relaxed break-words text-body">
+                <span class="mt-0.5 shrink-0 font-bold text-accent" aria-hidden="true">
+                  ·
+                </span>
+                <span class="min-w-0">{t}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
       <h2 class="mt-12 text-xl font-black break-words text-head sm:text-2xl">二、工具裡填的內容</h2>
       <p class="mt-4 text-sm leading-relaxed break-words text-body">
         {TOOLS.length} 個工具裡填的所有內容 —— 身高體重、出發日期、勾選的症狀、單腳跳幾公分 ——

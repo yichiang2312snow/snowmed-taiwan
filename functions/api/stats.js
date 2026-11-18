@@ -11,6 +11,10 @@
  * KV 裡只有「某一天 / 某個月，某個事件發生了幾次」這種數字，
  * 沒有任何欄位可以把兩次造訪連在一起，也無法回推是誰。
  *
+ * src 事件（來源類別）也一樣：前端在瀏覽器裡就把 referrer 歸成 search／ai／social／
+ * own／direct／other 其中一個詞再送出來，referrer 原文、搜尋關鍵字、是哪一篇貼文
+ * 都沒有送到這裡，更沒有存進 KV。
+ *
  * 所以網站上「不收集個資、不做追蹤」的說明依然成立。
  */
 
@@ -32,6 +36,7 @@ const EVENTS = new Set([
   'result', // 工具的結果類別，label = 工具代號/結果
   'wish', // 送出許願
   'vote', // 雪友投票，label = 題目/選項
+  'src', // 這次造訪的來源類別，label = search / ai / social / own / direct / other
 ]);
 
 /** label 只允許這些字元，長度也限制，避免有人塞垃圾進來 */
