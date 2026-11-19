@@ -85,6 +85,16 @@ export const RELATED_ARTICLES: Record<string, RelatedArticle[]> = {
 
   '/tools/training-plan': [
     {
+      slug: 'ski-training-8-weeks',
+      title: '滑雪體能訓練：出發前 8 週課表，在家五個動作就夠',
+      why: '這個工具的四個階段與動作就是照這篇排的，想知道每個動作為什麼要做、常見錯誤是什麼，讀這篇。',
+    },
+    {
+      slug: 'snowboard-preseason-training-anti-rotation',
+      title: '單板滑雪體能訓練：出發前 6 週課表，在家五個動作練出穩定換刃',
+      why: '選「單板」時多出來的那幾個動作出自這篇，裡面有每個動作的做法與最常見的錯誤。',
+    },
+    {
       slug: 'ski-intro-20260930',
       title: '第一次滑雪要知道的事：單雙板差別、雪場怎麼挑、行前裝備與醫師的提醒',
       why: '為什麼滑雪特別需要練下肢離心肌力與平衡。',
