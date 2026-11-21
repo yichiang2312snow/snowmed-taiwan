@@ -9,6 +9,10 @@ import ThemeToggle from './ThemeToggle.astro';
 const SIDE_LINKS = [
   { note: '醫師個人網站', label: SITE_A.introLabel, url: SITE_A.url },
   { note: SITE_TESA.note, label: SITE_TESA.label, url: SITE_TESA.url },
+  // 近期活動報名。下面的 script 會去個人網站讀活動清單，把 label 換成最近一場的日期與名稱；
+  // 真的一場都沒有的時候整列會收起來（跟個人網站上那個區塊的行為一致，不會叫人去報名空氣）。
+  // 讀不到就維持這個通用標籤，連結本身永遠有效。
+  { note: '近期活動報名', label: '楊醫師近期講座與實作課', url: SITE_A.eventsUrl, key: 'events' },
 ];
 
 const path = Astro.url.pathname;
@@ -171,15 +175,16 @@ const isActive = (href: string) =>
     <div class="mx-auto max-w-6xl px-4 py-1.5 sm:px-5">
       {
         SIDE_LINKS.map((link) => (
-          <div class="flex h-7 items-center justify-end gap-2">
+          <div class="flex h-7 items-center justify-end gap-2" data-side-row={link.key}>
             <span class="text-[11px] font-medium tracking-wider text-muted">{link.note}</span>
             <a
               href={link.url}
               target="_blank"
               rel="noopener"
+              data-side-link={link.key}
               class="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-bold whitespace-nowrap text-head transition-colors hover:border-accent hover:bg-tint1"
             >
-              {link.label}
+              <span data-side-label>{link.label}</span>
               <span aria-hidden="true">↗</span>
             </a>
           </div>
@@ -245,9 +250,17 @@ const isActive = (href: string) =>
             href={link.url}
             target="_blank"
             rel="noopener"
+            data-side-row={link.key}
+            data-side-link={link.key}
             class="mt-2 block rounded-lg border border-line px-3 py-3 text-sm font-bold text-head hover:bg-tint2"
           >
-            {link.label}<span aria-hidden="true"> ↗</span>
+            {link.key === 'events' && (
+              <span class="mr-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold text-head">
+                {link.note}
+              </span>
+            )}
+            <span data-side-label>{link.label}</span>
+            <span aria-hidden="true"> ↗</span>
           </a>
         ))
       }
@@ -256,6 +269,47 @@ const isActive = (href: string) =>
 </header>
 
 <script>
+  // ── 近期活動報名：把按鈕上的字換成最近一場 ──
+  //
+  // 活動資料只存在醫師個人網站一份（那邊是 SSR，過期會自動消失）。這個站是靜態的，
+  // 建置當下的日期會被寫死在 HTML 裡，所以改成在瀏覽器端讀，隔多久沒重新部署都不會過期。
+  // 讀不到就什麼都不做，維持原本的通用標籤 —— 連結本身永遠有效。
+  (async () => {
+    const rows = document.querySelectorAll<HTMLElement>('[data-side-row="events"]');
+    if (!rows.length) return;
+
+    type Ev = { monthDay: string; weekday: string; title: string; format: string; url: string | null };
+    let events: Ev[];
+    try {
+      const res = await fetch('https://dr.snowmed-taiwan.com/api/upcoming-events.json');
+      if (!res.ok) return;
+      const data = (await res.json()) as { events?: Ev[] };
+      if (!Array.isArray(data.events)) return;
+      events = data.events;
+    } catch {
+      return; // 離線、被擋下來、或對面暫時掛了：維持原樣就好
+    }
+
+    // 一場都沒有就把整列收起來，不要叫人去報名空氣（跟個人網站那個區塊的行為一致）
+    if (events.length === 0) {
+      for (const row of rows) row.hidden = true;
+      return;
+    }
+
+    const next = events[0];
+    const title = next.title.length > 22 ? next.title.slice(0, 21) + '…' : next.title;
+    const more = events.length > 1 ? ` 等 ${events.length} 場` : '';
+    const label = `${next.monthDay}（${next.weekday}）${next.format} ${title}${more}`;
+
+    for (const row of rows) {
+      const el = row.matches('[data-side-link]') ? row : row.querySelector('[data-side-link]');
+      const labelEl = row.querySelector('[data-side-label]');
+      if (labelEl) labelEl.textContent = label;
+      // 只有一場而且報名連結已經開放時，直接連到報名頁，少一次點擊
+      if (el instanceof HTMLAnchorElement && events.length === 1 && next.url) el.href = next.url;
+    }
+  })();
+
   // 行動版選單
   const toggle = document.getElementById('nav-toggle');
   const menu = document.getElementById('mobile-nav');

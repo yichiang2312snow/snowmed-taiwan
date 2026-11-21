@@ -30,6 +30,10 @@ export const SITE_A = {
   url: 'https://dr.snowmed-taiwan.com/',
   aboutUrl: 'https://dr.snowmed-taiwan.com/about',
   articlesUrl: 'https://dr.snowmed-taiwan.com/articles',
+  /** 近期活動報名區塊（首頁與關於頁都有，過期的活動會自動消失） */
+  eventsUrl: 'https://dr.snowmed-taiwan.com/#upcoming-events',
+  /** 近期活動的公開清單，給選單第二列那顆按鈕即時顯示最近一場 */
+  eventsApi: 'https://dr.snowmed-taiwan.com/api/upcoming-events.json',
   label: '楊怡強醫師衛教專文',
   /** 選單第二列那顆按鈕：連到個人網站首頁 */
   introLabel: '認識楊醫師（滑雪及板類運動醫學）',
