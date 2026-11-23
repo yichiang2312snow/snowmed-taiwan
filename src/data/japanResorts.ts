@@ -90,10 +90,10 @@ export const RESORTS: Resort[] = [
       has: true,
       detail:
         "官網「GALA SNOW PARK」在北エリア，分三區：ステップアップパーク（初學者用的小型跳台與 jib）、地形フリーライドパーク、キッカーゾーン（中上級的高難度跳台）。春季另有コブ（蘑菇）地形。未見 half-pipe。",
-      kidsPark: "「ゆきあそびパーク」：雪橇專用道與自由雪遊區，有雪上電扶梯，與公園分開。",
-      source: "https://gala.co.jp/winter/activities",
-      sourceLabel: "GALA湯沢 官方 アクティビティ頁",
-      checkedAt: '2026-09-15',
+      kidsPark: "「ゆきあそびパーク」：中央區下方的雪橇專用區與自由雪遊區，有雪上電扶梯，與公園分開；8:30–16:00，持ゴンドラ＆バルーシュ券即可進入，雪橇租借 ¥2,500。",
+      source: "https://gala.co.jp/winter/gelande/",
+      sourceLabel: "GALA湯沢 官方 ゲレンデ頁（運行表列有スノーパーク；三區細節為 2026-09 官方活動頁記載，該頁改版後已無公園段落）",
+      checkedAt: '2026-11-23',
     },
     difficulty: {
       beginner: 35,
@@ -107,18 +107,18 @@ export const RESORTS: Resort[] = [
     family: {
       childcare: null,
       kidsFacilities: '兒童滑雪學校（雙板 4–12 歲、單板 6–12 歲）；山頂有雪橇專用的「雪遊樂園」',
-      kidsTicket: '小學生 ¥3,000；未就學兒童免費（每位大人可帶 2 名）；每月第三個週日小學生一日券免費',
+      kidsTicket: '小學生 ¥4,000（WEB 預購 ¥3,500）；未就學兒童每位大人可免費帶 2 名，第 3 名起適用小學生票價。先前記載的「每月第三個週日小學生免費」在 2026-27 票價頁未見',
       rating: 'medium',
-      source: 'https://gala.co.jp/winter/charges',
-      checkedAt: '2026-09-13',
+      source: 'https://gala.co.jp/winter/hours-pricing/',
+      checkedAt: '2026-11-23',
     },
     language: {
       siteLanguages: ['日文', '英文', '繁體中文', '簡體中文', '泰文'],
       hasTraditionalChinese: true,
-      englishService: 'CANYONS SNOW SPORTS SCHOOL 提供英語課程',
-      chineseInstructor: 'GIANT SKI SCHOOL 全中文教學（含 3–6 歲幼兒私人課）；CANYONS 提供普通話與廣東話',
-      source: 'https://gala.co.jp/winter/school',
-      checkedAt: '2026-09-13',
+      englishService: '巨人滑雪學校（Giant Ski School）與 SORA International 提供英語課程；官網 2026-27 雪校頁未再列出先前的 CANYONS',
+      chineseInstructor: '巨人滑雪學校提供英語、中文、廣東話教學；SORA International 提供英語、泰語、中文課程',
+      source: 'https://gala.co.jp/winter/examination-school/',
+      checkedAt: '2026-11-23',
     },
     skiInOut: {
       level: 'none',
@@ -170,6 +170,8 @@ export const RESORTS: Resort[] = [
         'https://www.snowjapan.com/japan-ski-resorts/nagano/karuizawa/karuizawa-prince-hotel',
       sourceLabel: 'SnowJapan',
       checkedAt: '2026-09-13',
+      missingNote:
+        '官方雪道頁只列條數不列百分比：全 14 條，初級 8、中級 3、上級 3（2026-11-23 清點），換算約 57／21／21，與 SnowJapan 的數字相符。',
     },
     family: {
       childcare: null,
@@ -202,9 +204,9 @@ export const RESORTS: Resort[] = [
       childYen: 0,
       season: '2026-27',
       tier: 'high',
-      note: '正規期（12/19–3/22）¥10,000；年末年始與 2 月連假等「トップシーズン」特定日 ¥12,000。開季期（10/31–12/18）與春滑（3/23–3/31）都是 ¥8,000。小學生以下一律免費',
+      note: '正規期（12/19–3/22）¥10,000；「トップシーズン」特定日（12/26–28、1/4 與 1–3 月多數週末等）¥12,000；「ハイトップシーズン」（12/29–1/3、1/9–11、2/6–7、2/11–14、2/20–23）¥13,000。開季期（10/31–12/18）與春滑（3/23–3/31）都是 ¥8,000。小學生以下一律免費，網路購票每位兒童收 ¥100 手續費',
       source: 'https://www.princehotels.co.jp/ski/karuizawa/winter/lift/',
-      checkedAt: '2026-11-16',
+      checkedAt: '2026-11-23',
     },
   },
   {
@@ -239,7 +241,7 @@ export const RESORTS: Resort[] = [
       sourceLabel: 'SnowJapan',
       checkedAt: '2026-09-13',
       missingNote:
-        '官方只公布雪道條數（初級 9 條、中級 6 條、上級 9 條，共 24 條），沒有公布百分比。',
+        '官方只公布雪道條數、沒有公布百分比。2026-11-23 官方雪道頁清點 24 條：初級 10、中級 6、上級 8（2026-09 清點時為 9／6／9）。',
     },
     family: {
       childcare: null,
@@ -260,11 +262,11 @@ export const RESORTS: Resort[] = [
     skiInOut: {
       level: 'full',
       detail:
-        '苗場王子大飯店官方標示「雪道直結、步行 0 分鐘」，約 1,200 間客房緊鄰雪道，是本州規模最大的雪道直結飯店之一。',
+        '苗場王子大飯店就在雪道底部，官網現行文案為「ゲレンデと隣接するホテル」（2026-09 查證時的版本寫「雪道直結、步行 0 分鐘」，改版後已不見這句）；繁中官網載明約 1,200 間客房。本州規模很大的雪道旁飯店之一。',
       sourceLevel: 'official',
       source: 'https://www.princehotels.co.jp/naeba/',
       sourceLabel: '苗場王子大飯店官方',
-      checkedAt: '2026-09-13',
+      checkedAt: '2026-11-23',
     },
     pricing: {
       adultYen: 9800,
@@ -295,11 +297,11 @@ export const RESORTS: Resort[] = [
     park: {
       has: true,
       detail:
-        "四個主要雪場都有公園：八方尾根「HAPPO PARKS」（以 bank、wave 地形為主，最多 20 個道具）、兎平・黒菱是有名的蘑菇道；五龍「GORYU PARK」（4–9 段 jib）、GORYU WAVES、常設蘑菇道 GORYU BUMPS；Hakuba47「47PARKS」（跳台、jib、cross，10 個以上道具，超初級到上級）；栂池「TG PARKS」（跳台、jib、banked，最多 40 個道具）。",
+        "四個主要雪場都有公園：八方尾根「HAPPO PARKS」（以 bank、wave 地形為主，最多 20 個道具）、兎平・黒菱是有名的蘑菇道；五龍「GORYU PARK」（4–9 段 jib）、GORYU WAVES、常設蘑菇道 GORYU BUMPS；Hakuba47「47 PARKS」（官網 2026-11 改版後列 half-pipe、跳台、jib rail、box、berm，未再載明道具數量與分級；改版前寫 10 個以上道具、超初級到上級）；栂池「TG PARKS」（跳台、jib、banked，最多 40 個道具）。",
       kidsPark: "八方「なきやまスノーランド」（雪橇＋輸送帶）；五龍「そりエリア」與「STEP UP LAND」；栂池「キッズパーク」（70×70 公尺、動く歩道）。",
-      source: "https://www.hakuba47.co.jp/winter/area/snowpark/",
-      sourceLabel: "Hakuba47 官方 スノーパーク頁（另參各雪場官網）",
-      checkedAt: '2026-09-15',
+      source: "https://hakuba47.co.jp/ja/terrain-park",
+      sourceLabel: "Hakuba47 官方 テレインパーク頁（另參各雪場官網）",
+      checkedAt: '2026-11-23',
     },
     difficulty: {
       beginner: 30,
@@ -448,12 +450,13 @@ export const RESORTS: Resort[] = [
       missingNote: '這組數字流傳很廣，但官網雪道頁只列即時運行狀況（44 條雪道、18 部纜車），沒有直接公布百分比。',
     },
     family: {
-      childcare: '日影的托兒中心收 1–6 歲，上下午分段、中午需接回，限收 20 名須預約（第三方資料，出發前請致電確認）',
-      kidsFacilities: '托兒中心正前方有 Kids Park（雪盆滑道、充氣城堡等）',
+      childcare:
+        '日影資訊中心 2 樓的托兒所「ゆ～みん」收 1–6 歲，2026/12/19–2027/3/28 營運；上午 8:30–12:00、下午 13:00–16:15，中午 12–13 時不收托、需接回。一日 ¥7,000、半日 ¥4,000、每小時 ¥2,000，約 20 名（英文頁寫 25 名）。須預約，11/16 起開放（日文公告為平日電話預約、英文頁為線上表單，兩邊說法不同，請以預約時為準）',
+      kidsFacilities: '托兒中心所在的日影雪道設有免費雪橇區、充氣遊具的 Kids Park',
       kidsTicket: '未就學兒（5 歲以下）免費，每位付費大人限帶 1 名，且不發實體票',
       rating: 'medium',
-      source: 'https://en.nozawaski.com/the-mountain/lift-ticket/ticket-prices/',
-      checkedAt: '2026-09-13',
+      source: 'https://en.nozawaski.com/the-mountain/mountain-facilities/childcare',
+      checkedAt: '2026-11-23',
     },
     language: {
       siteLanguages: ['日文', '英文'],
@@ -521,13 +524,13 @@ export const RESORTS: Resort[] = [
     },
     family: {
       childcare:
-        'HANAZONO 的 Niseko Kids Club 收 12 個月～6 歲、有多語工作人員；Niseko Village Kids Club 收 1.5～9 歲，每日限 20 人',
+        'HANAZONO 的 Niseko Kids Club 日托收 12 個月～4 歲（保母服務收新生兒～15 歲），2026/12/8–2027/3/31，全日 ¥28,000 起，工作人員全員會英語、部分會中文；Niseko Village Kids Club 收 1.5～9 歲，每日限 20 人，2026/12/1–2027/2/28，有英語與普通話教練',
       kidsFacilities:
         '3–6 歲的兒童滑雪學校、HANAZONO 室內攀爬中心與雪胎公園、Niseko Village 室內遊戲中心',
       kidsTicket: '4–12 歲旺季 ¥8,100。官方票價頁沒有標示任何免費年齡，級距從 4 歲起算',
       rating: 'medium',
-      source: 'https://www.niseko.ne.jp/en/niseko-kids/',
-      checkedAt: '2026-09-13',
+      source: 'https://hanazononiseko.com/en/winter/activities/daycare',
+      checkedAt: '2026-11-23',
     },
     language: {
       siteLanguages: ['日文', '英文', '繁體中文（比羅夫官網）', '簡體中文（比羅夫官網）'],
@@ -588,12 +591,12 @@ export const RESORTS: Resort[] = [
     },
     family: {
       childcare:
-        '度假村附設保育園收滿 1 歲到學齡前，08:30–18:30、每週二公休，每小時 ¥2,000（另計午餐 ¥1,300、點心 ¥250），完全預約制（前一日 18:00 前）。冬季開放 2026/11/28–2027/3/31',
+        '度假村附設保育園收滿 1 歲到學齡前，限 19 名，每週二公休；保育時間依時期為 9:00–17:00 至 8:30–18:30（官網同一頁兩處記載不同，預約時確認），每小時 ¥2,000（另計午餐 ¥1,300、點心 ¥250），完全預約制（前一日 18:00 前）。冬季開放 2026/11/28–2027/3/31',
       kidsFacilities: '4–7 歲兒童滑雪學校；West Mt. 的兒童雪園（2 歲以下免費）',
       kidsTicket: '3 歲以下纜車免費；4–12 歲一般季窗口 ¥8,300、線上 ¥6,400',
       rating: 'high',
       source: 'https://rusutsu.com/nursery-school/',
-      checkedAt: '2026-09-21',
+      checkedAt: '2026-11-23',
     },
     language: {
       siteLanguages: ['日文', '英文', '簡體中文', '韓文'],
@@ -617,9 +620,9 @@ export const RESORTS: Resort[] = [
       childYen: 6400,
       season: '2026-27',
       tier: 'high',
-      note: '這裡列的是線上預售價。窗口牌價高得多（大人 ¥16,700、兒童 ¥8,300），務必先線上購買',
+      note: '這裡列的是正規期（12/19–3/14）線上預售價。窗口牌價高得多（大人 ¥16,700、兒童 ¥8,300），務必先線上購買。初滑①（11/28–12/11）窗口限定 ¥7,900／¥4,100、初滑②（12/12–12/18）¥10,500／¥4,400、春滑（3/15–3/31）¥10,500／¥4,400',
       source: 'https://rusutsu.com/winter-lift-tickets/',
-      checkedAt: '2026-11-16',
+      checkedAt: '2026-11-23',
     },
   },
   {
@@ -644,15 +647,15 @@ export const RESORTS: Resort[] = [
       checkedAt: '2026-09-15',
     },
     difficulty: {
-      beginner: 50,
+      beginner: 39,
       intermediate: 36,
-      advanced: 14,
+      advanced: 25,
       level: 'official',
       source: 'https://www.princehotels.co.jp/ski/furano/winter/coursemap/',
       sourceLabel: '富良野官方雪道表',
-      checkedAt: '2026-09-13',
+      checkedAt: '2026-11-23',
       missingNote:
-        '官方沒有直接印出百分比，這是由官方雪道分類表逐條清點換算（全 28 條：初級 14、中級 10、上級 4）。專業站 SnowJapan 另給 40／40／20，與清點結果有出入。',
+        '官方沒有直接印出百分比，這是由官方雪道一覽逐條清點換算（全 28 條：初級 11、中級 10、上級 7，上級含目前因出現裂縫而封閉的プレミアムゾーン）。2026-09 清點時誤記為 14／10／4，本次重新逐條核對後更正。專業站 SnowJapan 另給 40／40／20。',
     },
     family: {
       childcare: null,
@@ -718,22 +721,22 @@ export const RESORTS: Resort[] = [
       beginner: 38,
       intermediate: 48,
       advanced: 14,
-      level: 'secondary',
+      level: 'official',
       source: 'https://www.snowtomamu.jp/winter/ski/ski-slope/',
-      sourceLabel: '由官方雪道一覽表清點',
-      checkedAt: '2026-09-13',
+      sourceLabel: '官方雪道頁（全 29 條：上級 4、中級 14、初級 10、初心 1）',
+      checkedAt: '2026-11-23',
       missingNote:
-        '官方四種語言版本都沒有公布比率，這是由官方雪道一覽表逐條清點（全 29 條）。專業站 SURF&SNOW 另給 35／45／20。可確定的是約 86% 的雪道屬中級以下，對初中級者友善。',
+        '官方雪道頁 2026-27 版直接列出各級條數（上級 4、中級 14、初級 10、初心 1，共 29 條），這裡把「初心」併入初級換算，與先前自行清點的結果一致。專業站 SURF&SNOW 另給 35／45／20。約 86% 的雪道屬中級以下，對初中級者友善。',
     },
     family: {
       childcare:
-        '托兒服務收滿 5 個月的嬰兒起，10:00–17:00 另有夜間時段，須 5 日前預約 —— 這份清單裡收托年齡最低的',
+        '托兒服務收滿 5 個月的嬰兒起，2026/12/1–2027/4/5 在 The Tower II 2 樓託兒櫃台（官網本季頁面未載明時段與預約期限；2026-09 查證時為 10:00–17:00、須 5 日前預約）—— 這份清單裡收托年齡門檻很低的一座',
       kidsFacilities:
-        '兒童雪校（團體 4–12 歲、私人 3 歲起）；日本最大級的室內造波泳池（住客免費，附水深 30 公分兒童池）；冬季限定的愛絲冰城含兒童冰迷宮',
+        '兒童雪校（團體課分 4–6 歲與 7–12 歲、私人課 4 歲起；家庭頁另載「雪ッズ」建議 3 歲起）；大型室內造波泳池（住客免費，附水深 30 公分兒童池）；冬季限定的愛絲冰城（12/20–3/10）含兒童冰迷宮',
       kidsTicket: '6 歲以下纜車免費。注意 12 歲起即算大人票，沒有青少年級距',
       rating: 'high',
       source: 'https://www.snowtomamu.jp/winter/family/',
-      checkedAt: '2026-09-13',
+      checkedAt: '2026-11-23',
     },
     language: {
       siteLanguages: ['日文', '英文', '繁體中文', '簡體中文', '韓文'],
@@ -758,9 +761,9 @@ export const RESORTS: Resort[] = [
       childYen: 7500,
       season: '2026-27',
       tier: 'mid-high',
-      note: '窗口價。線上預售便宜 ¥300（大人 ¥9,200、兒童 ¥7,200），住客另有優惠票。兒童價為 7–11 歲，6 歲以下免費',
+      note: '窗口價。線上預售便宜 ¥300（大人 ¥9,200、兒童 ¥7,200），住客優惠票 ¥9,000／¥7,000。開季期（12/1–12/20）與春滑（3/29–4/5）一日券只要 ¥5,000／¥2,500。兒童價為 7–11 歲，6 歲以下免費',
       source: 'https://www.snowtomamu.jp/winter/ski/ticket/',
-      checkedAt: '2026-11-16',
+      checkedAt: '2026-11-23',
     },
   },
 ];
