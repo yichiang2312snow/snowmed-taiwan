@@ -7,24 +7,6 @@ import { RED_FLAGS } from '../../data/concussionSymptoms';
 
 const redFlags = RED_FLAGS;
 
-const grades = [
-  {
-    level: '第一級',
-    title: '意識沒有喪失',
-    body: '僅有頭暈等症狀，人是清醒的。',
-  },
-  {
-    level: '第二級',
-    title: '意識沒有完全喪失',
-    body: '但出現暫時性的意識混亂，以及一時無法回想事發當時的情形。',
-  },
-  {
-    level: '第三級',
-    title: '典型的腦震盪',
-    body: '有一段時間完全喪失意識，而且記不得事發時的情形。',
-  },
-];
-
 // 旁邊的人看得到的徵兆：對應 SCAT6 的「Observable Signs」，改寫成雪場上的白話。
 const visibleSigns = [
   '倒在雪地上，一時之間動也不動',
@@ -185,7 +167,7 @@ const FAQ = [
   seoTitle="滑雪腦震盪：症狀、危險徵兆與撞到頭之後該怎麼觀察"
   emoji="🧠"
   time="約 8 分鐘 · 說明頁"
-  summary="腦震盪是滑雪最容易被忽略、卻最不能輕忽的傷害。這一頁說明它怎麼發生、有哪些症狀、嚴重度怎麼分，以及為什麼「短時間內再撞一次」是最危險的事。"
+  summary="腦震盪是滑雪最容易被忽略、卻最不能輕忽的傷害。這一頁說明它怎麼發生、有哪些症狀、沒有醫療人員在場時可以怎麼觀察，以及為什麼「短時間內再撞一次」是最危險的事。"
   description="滑雪腦震盪衛教說明：危險徵兆、旁人看得到的徵兆、沒有醫療人員在場時可以做的六項觀察（依 SCAT6 的評估面向簡化）、撞到頭之後先不要做的事，以及二次撞擊的危險。附 SCAT6 官方連結。"
 >
   <!-- 最重要的先講 -->
@@ -268,26 +250,6 @@ const FAQ = [
         <strong>受傷後的幾個小時內，症狀還在變化。</strong>
       </p>
     </div>
-  </section>
-
-  <!-- 分級 -->
-  <section class="mt-10">
-    <h2 class="text-xl font-black break-words text-head sm:text-2xl">嚴重度分級</h2>
-    <ol class="mt-5 space-y-3">
-      {
-        grades.map((g) => (
-          <li class="min-w-0 rounded-2xl border border-line bg-surface p-5">
-            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span class="rounded-full bg-band px-3 py-1 text-xs font-bold text-white">
-                {g.level}
-              </span>
-              <p class="font-bold break-words text-head">{g.title}</p>
-            </div>
-            <p class="mt-2 text-sm leading-relaxed break-words text-muted">{g.body}</p>
-          </li>
-        ))
-      }
-    </ol>
   </section>
 
   <!-- 影像的限制 + 二次撞擊 -->
@@ -485,7 +447,7 @@ const FAQ = [
 
   <Fragment slot="basis">
     <p>
-      這一頁的內容整理自 {SITE.doctor}（臺北榮總復健醫學部）的教學投影片，涵蓋腦震盪的成因、症狀時序、嚴重度分級、影像檢查的限制，以及二次撞擊的風險。
+      這一頁的內容整理自 {SITE.doctor}（臺北榮總復健醫學部）的教學投影片，涵蓋腦震盪的成因、症狀時序、影像檢查的限制，以及二次撞擊的風險。
     </p>
     <p>
       紅框的危險徵兆、「旁邊的人看得到的徵兆」與症狀勾選，分別對應 SCAT6 的紅旗（Red
