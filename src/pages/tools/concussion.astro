@@ -25,24 +25,111 @@ const grades = [
   },
 ];
 
+// 旁邊的人看得到的徵兆：對應 SCAT6 的「Observable Signs」，改寫成雪場上的白話。
+const visibleSigns = [
+  '倒在雪地上，一時之間動也不動',
+  '摔倒時完全沒有用手或身體保護自己，直挺挺地倒下',
+  '站起來搖搖晃晃、走路不穩，或動作變得很慢、很吃力',
+  '搞不清楚狀況、答非所問，或叫他要很久才有反應',
+  '眼神空洞、發呆',
+  '撞擊之後臉部有傷（流鼻血、嘴唇或臉頰挫傷）',
+  '撞擊力道很大：高速撞到人或樹、跳台落地失敗、後腦直接著地',
+];
+
+// 現場觀察：每一項對應 SCAT6 的一個評估面向（寫在 basis 區）。
+// 題目與詞彙是本站自己編的，不是 SCAT6 表單的翻譯 —— SCAT6 表單不能改寫或翻譯，請用官方原版。
+// 刻意不計分、不給結論：判讀需要專業訓練。
 const fieldChecks = [
   {
-    id: 'orientation',
-    title: '人事時地物',
-    how: '問對方：這裡是哪裡？今天星期幾？現在是上半場還是下半場？我們早上做了什麼？剛剛發生什麼事？',
-    watch: '回答遲疑、答錯、或需要想很久，都值得記下來。',
+    id: 'recent-memory',
+    title: '問幾個「剛剛的事」',
+    how: '先請他自己講一遍剛剛發生什麼事，再問下面這類問題。題目換成你們當天的行程，重點是你自己知道答案：',
+    steps: [
+      '我們現在在哪一個雪場？',
+      '現在是上午還是下午？',
+      '剛剛搭的是哪一座纜車、滑的是哪一條雪道？',
+      '今天早餐（或午餐）吃了什麼？',
+      '昨天我們去了哪裡？',
+    ],
+    watch: '答錯任何一題、想很久，或講不出事發經過，都要當成疑似腦震盪。',
   },
   {
-    id: 'digits',
-    title: '數字倒念',
-    how: '請對方把「13579」反過來念（9-7-5-3-1）。也可以用其他 5 個數字。',
-    watch: '念錯順序、中途卡住、或要重來，都值得記下來。',
+    id: 'orientation',
+    title: '問今天的日期和時間',
+    how: '',
+    steps: [
+      '現在是幾月？',
+      '今天幾號？',
+      '今天星期幾？',
+      '今年是哪一年？',
+      '現在大概幾點？（差一小時以內都算對）',
+    ],
+    watch: '出國旅行本來就容易記不清日期，所以重點是「跟他平常比」：平常答得出來的人突然答不出來，就要記下來。',
+  },
+  {
+    id: 'concentration',
+    title: '倒著念：數字和月份',
+    how: '',
+    steps: [
+      '你念「5-2-8」，請他倒著念「8-2-5」。念對了就加到四個、五個數字（例如 6-1-9-3、4-7-2-9-5），一秒念一個。',
+      '請他從十二月倒著念到一月，越快越好。',
+    ],
+    watch: '順序念錯、中途卡住、要重來，都值得記下來。正式評估裡，月份這一題的標準是 30 秒內念完、沒有錯誤。',
+  },
+  {
+    id: 'recall',
+    title: '記五個詞，五分鐘後再問',
+    how: '',
+    steps: [
+      '慢慢念五個不相關的詞，例如「手套、月亮、咖啡、鑰匙、火車」，請他馬上複述一次。',
+      '先做下一項的平衡測試。過五分鐘再問：「剛剛那五個詞是什麼？」',
+    ],
+    watch: '馬上複述就漏掉、五分鐘後想不起來，或講出你沒念過的詞，都值得記下來。',
   },
   {
     id: 'balance',
-    title: '簡易平衡測試',
-    how: '依序做三種站姿，每種雙手插腰、閉眼 20 秒：雙腳站 → 單腳站（非慣用腳）→ 前後腳站（tandem stance，一腳跟貼另一腳尖）。',
-    watch: '手離開腰、睜開眼睛、身體晃到需要跨步、或跌倒，都值得記下來。注意安全，旁邊要有人扶。',
+    title: '平衡：站姿與走直線',
+    how: '換成一般的鞋子，在室內平坦的地方做，穿著雪靴測不準。',
+    steps: [
+      '三種站姿，每種雙手插腰、閉眼 20 秒：雙腳併攏站 → 前後腳站（一腳的腳跟貼著另一腳的腳尖）→ 單腳站（用非慣用腳）。',
+      '找一條大約 3 公尺的直線（地磚縫、膠帶都可以），腳跟接腳尖走到底，轉身再走回來。',
+    ],
+    watch: '手離開腰、睜開眼睛、身體晃到要跨步、踩出線外或跌倒，都值得記下來。旁邊一定要有人扶；人已經站不穩就不要測，直接就醫。',
+  },
+  {
+    id: 'self-rating',
+    title: '問他自己的感覺，也看他跟平常像不像',
+    how: '',
+    steps: [
+      '「如果 100 分是完全正常，你現在覺得自己幾分？」不是 100 分的話，問他哪裡不對勁。',
+      '「走動的時候會不會更不舒服？」「看手機、想事情的時候會不會更不舒服？」',
+      '同行的人自己判斷：他跟平常比起來有沒有不一樣？例如話變少、反應變慢、情緒不對。',
+    ],
+    watch: '不到 100 分、活動或用腦會加重，或你覺得他「怪怪的」，都是重要的訊息，看診時直接告訴醫師。',
+  },
+];
+
+// 撞到頭之後、醫師評估之前先不要做的事（前四項是 SCAT6 列出的原則）
+const dontDo = [
+  {
+    title: '當天不要再滑',
+    body: '被診斷為腦震盪的人，受傷當天一律不回場。還沒看醫師、只是懷疑的時候，也一樣先停下來。',
+  },
+  {
+    title: '不要自己吃藥',
+    body: '阿斯匹靈和其他消炎止痛藥、安眠鎮靜藥、鴉片類止痛藥，都先不要吃。要吃任何藥之前先問醫師。',
+  },
+  {
+    title: '不要喝酒',
+    body: '滑完雪的那一杯先省下來。酒精會讓症狀的變化更難判斷。',
+  },
+  {
+    title: '不要開車',
+    body: '在醫療人員說可以之前，不要自己開車。',
+  },
+  {
+    title: '不要一個人待著',
+    body: '接下來 24 小時盡量有人陪，請同行的人留意你的意識、說話和行為有沒有變化。',
   },
 ];
 
@@ -68,7 +155,11 @@ const FAQ = [
   },
   {
     q: '滑雪腦震盪有哪些症狀？',
-    a: '常見的是頭痛、頭暈、噁心、嘔吐、記不得事發經過。出現以下任何一項要立刻就醫：頸部疼痛、癲癇或抽搐、意識喪失、愈來愈難叫醒、劇烈或愈來愈嚴重的頭痛、反覆嘔吐、躁動或攻擊性、複視、手腳無力或麻木。',
+    a: '常見的是頭痛、頭暈、噁心、嘔吐、記不得事發經過。出現以下任何一項要立刻就醫：頸部疼痛、癲癇或抽搐、意識喪失、愈來愈難叫醒、劇烈或愈來愈嚴重的頭痛、反覆嘔吐、躁動或攻擊性、複視、手腳無力或麻木、頭骨有明顯的凹陷或變形。',
+  },
+  {
+    q: '可以自己做腦震盪測試嗎？',
+    a: '可以做「觀察」，但不能自己下診斷。這一頁列了六項沒有醫療人員在場時能做的觀察，例如問剛剛發生的事、倒著念數字與月份、記五個詞、平衡與走直線。任何一項做不好，或跟平常明顯不同，就當成疑似腦震盪：當天不再滑並就醫。全部做得很好也不能排除腦震盪。',
   },
   {
     q: '戴了安全帽還會腦震盪嗎？',
@@ -93,9 +184,9 @@ const FAQ = [
   title="腦震盪：看不見的傷"
   seoTitle="滑雪腦震盪：症狀、危險徵兆與撞到頭之後該怎麼觀察"
   emoji="🧠"
-  time="約 5 分鐘 · 說明頁"
+  time="約 8 分鐘 · 說明頁"
   summary="腦震盪是滑雪最容易被忽略、卻最不能輕忽的傷害。這一頁說明它怎麼發生、有哪些症狀、嚴重度怎麼分，以及為什麼「短時間內再撞一次」是最危險的事。"
-  description="滑雪腦震盪衛教說明：症狀、嚴重度分級、現場可以做的觀察、為什麼影像檢查常看不出來，以及二次撞擊的危險。附 SCAT6 官方連結。"
+  description="滑雪腦震盪衛教說明：危險徵兆、旁人看得到的徵兆、沒有醫療人員在場時可以做的六項觀察（依 SCAT6 的評估面向簡化）、撞到頭之後先不要做的事，以及二次撞擊的危險。附 SCAT6 官方連結。"
 >
   <!-- 最重要的先講 -->
   <div class="rounded-2xl border-2 border-red-500 bg-red-500/15 p-5 sm:p-6">
@@ -124,6 +215,30 @@ const FAQ = [
       不確定算不算嚴重？<a href="#symptom-check" class="font-black text-accent underline underline-offset-2">往下勾選症狀</a>，會依照你勾的結果給建議。
     </p>
   </div>
+
+  <!-- 旁人看得到的徵兆 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">旁邊的人看得到的徵兆</h2>
+    <p class="mt-2 text-sm leading-relaxed break-words text-muted">
+      腦震盪的人常常自己說「我沒事」。同行的人只要看到下面任何一種情況，就當成疑似腦震盪：
+      <strong class="text-head">讓他停下來、當天不要再滑，並找醫療人員評估。</strong>
+    </p>
+    <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+      {
+        visibleSigns.map((s) => (
+          <li class="flex min-w-0 items-start gap-2.5 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm leading-relaxed break-words text-body">
+            <span class="shrink-0 text-accent" aria-hidden="true">
+              👀
+            </span>
+            <span class="min-w-0">{s}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-3 text-sm leading-relaxed break-words text-muted">
+      撞擊當下如果有抽搐或昏過去，屬於上面紅框的狀況，請直接就醫。
+    </p>
+  </section>
 
   <!-- 症狀人形圖 -->
   <section id="symptom-check" class="mt-10 scroll-mt-20">
@@ -220,7 +335,19 @@ const FAQ = [
               </span>
               <div class="min-w-0">
                 <h3 class="font-bold break-words text-head">{c.title}</h3>
-                <p class="mt-1.5 text-sm leading-relaxed break-words text-body">{c.how}</p>
+                {c.how && (
+                  <p class="mt-1.5 text-sm leading-relaxed break-words text-body">{c.how}</p>
+                )}
+                <ul class="mt-2 space-y-1.5">
+                  {c.steps.map((step) => (
+                    <li class="flex min-w-0 items-start gap-2 text-sm leading-relaxed break-words text-body">
+                      <span class="shrink-0 text-muted" aria-hidden="true">
+                        ·
+                      </span>
+                      <span class="min-w-0">{step}</span>
+                    </li>
+                  ))}
+                </ul>
                 <p class="mt-2 text-sm leading-relaxed break-words text-muted">
                   <span class="font-bold text-accent">要注意：</span>
                   {c.watch}
@@ -231,6 +358,48 @@ const FAQ = [
         ))
       }
     </div>
+  </section>
+
+  <!-- 觀察結果怎麼看 -->
+  <section class="mt-6">
+    <div class="rounded-2xl border border-line bg-surface p-5">
+      <h3 class="font-black break-words text-head">做完之後怎麼看</h3>
+      <ul class="mt-3 space-y-2 text-sm leading-relaxed break-words text-body">
+        <li>
+          <strong class="text-head">任何一項做不好，或跟他平常明顯不同：</strong
+          >當成疑似腦震盪。當天不再滑，找醫療人員評估，並把你觀察到的內容告訴醫師。
+        </li>
+        <li>
+          <strong class="text-head">全部都做得很好：</strong
+          >也不能排除腦震盪。SCAT6 本身就寫明，評估結果正常的人仍然可能有腦震盪。
+        </li>
+        <li>
+          <strong class="text-head">症狀會隨時間變化：</strong
+          >過一兩個小時可以再觀察一次。比上一次差，或出現紅框裡的任何一項，立刻就醫。
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 先不要做的事 -->
+  <section class="mt-10">
+    <h2 class="text-xl font-black break-words text-head sm:text-2xl">
+      撞到頭之後，醫師評估之前先不要做的事
+    </h2>
+    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+      {
+        dontDo.map((d) => (
+          <div class="min-w-0 rounded-2xl border border-line bg-surface p-5">
+            <h3 class="font-bold break-words text-head">🚫 {d.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed break-words text-muted">{d.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-4 text-sm leading-relaxed break-words text-muted">
+      現場沒有醫療人員時，請把人送到醫療院所評估。正式的評估最好在受傷後 72 小時（3
+      天）內完成，所以不要拖。
+    </p>
   </section>
 
   <!-- 確診之後 -->
@@ -255,8 +424,20 @@ const FAQ = [
       SCAT6（Sport Concussion Assessment Tool 6）是國際運動腦震盪共識會議發布的標準化評估工具，
       <strong class="text-head">設計上由醫療人員操作</strong
       >。放在這裡是為了讓你知道正式的評估長什麼樣子，以及方便醫療人員取用 —— 不是讓你自己照著打分數。
+      同一個共識會議也發布了給一般民眾用的 CRT6（Concussion Recognition Tool 6），用途是「認出來、先停下來」。
     </p>
     <div class="mt-5 grid gap-3 sm:grid-cols-2">
+      <a
+        href="https://www.concussioninsportgroup.com/scat-tools/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="min-w-0 rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-linestrong sm:col-span-2"
+      >
+        <p class="font-bold break-words text-head">CRT6 與全系列官方工具 ↗</p>
+        <p class="mt-1.5 text-xs leading-relaxed break-words text-muted">
+          Concussion in Sport Group 官方頁面：給一般民眾的 CRT6、SCAT6、兒童版與使用說明
+        </p>
+      </a>
       <a
         href="https://sma.org.au/wp-content/uploads/2023/07/SCAT6.pdf"
         target="_blank"
@@ -307,11 +488,20 @@ const FAQ = [
       這一頁的內容整理自 {SITE.doctor}（臺北榮總復健醫學部）的教學投影片，涵蓋腦震盪的成因、症狀時序、嚴重度分級、影像檢查的限制，以及二次撞擊的風險。
     </p>
     <p>
-      現場觀察的三個項目（人事時地物、數字倒念、平衡測試），對應的是標準化腦震盪評估工具裡的三個面向：<strong
-        >定向感</strong
-      >、<strong>專注力與工作記憶</strong>、<strong>姿勢穩定度</strong>。這裡把它們簡化成「沒有醫療人員在場時可以怎麼觀察」，<strong
+      紅框的危險徵兆、「旁邊的人看得到的徵兆」與症狀勾選，分別對應 SCAT6 的紅旗（Red
+      Flags）、可觀察徵兆（Observable Signs）與症狀量表。
+    </p>
+    <p>
+      現場觀察的六個項目，對應 SCAT6 的評估面向：<strong>事發前後的記憶</strong>（Maddocks
+      問題）、<strong>定向感</strong>、<strong>專注力</strong>（數字倒念、月份倒念）、<strong
+        >即時與延遲記憶</strong
+      >、<strong>平衡與走直線</strong>，以及症狀量表後面的幾個自評問題。這裡把它們簡化成「沒有醫療人員在場時可以怎麼觀察」，<strong
         >刻意不給分數、也不給結論</strong
       >，因為判讀需要專業訓練與受傷前的基準值。
+    </p>
+    <p>
+      這一頁的題目與詞彙是本站自己編寫的，不是 SCAT6
+      表單的翻譯。SCAT6 表單依出版單位規定不得改寫或翻譯，正式評估請使用官方原版。
     </p>
     <p>
       正式的評估工具請見上方的 SCAT6 官方連結。SCAT6 出自 2022

@@ -4,6 +4,8 @@
  * 紅旗症狀（RED_FLAGS）同時給頁面上方的紅框清單與人形圖使用 ——
  * 兩邊讀同一份資料，改一個字兩邊一起變，不會出現「紅框寫一套、圖上寫另一套」。
  * 分類依據 SCAT6 的紅旗症狀（BJSM 2023;57(11), doi:10.1136/bjsports-2023-107036）。
+ * 黃點（other）取自 SCAT6 症狀量表的項目，改寫成白話、合併相近的幾項；
+ * 這裡只拿來勾選，不做 0–6 分的評分 —— 評分與判讀是醫療人員的工作。
  *
  * ⚠️ BODY_REGIONS 必須涵蓋每一個紅旗症狀，漏掉任何一個 build 會直接失敗。
  */
@@ -18,6 +20,7 @@ export const RED_FLAGS = [
   '躁動、易怒、明顯的攻擊性',
   '複視（看東西有兩個影子）',
   '手腳無力、麻木或刺痛',
+  '頭骨有明顯的凹陷或變形',
 ] as const;
 
 export type RedFlag = (typeof RED_FLAGS)[number];
@@ -29,7 +32,7 @@ export interface BodyRegion {
   side: 'left' | 'right';
   /** 紅旗症狀：立刻停止活動並就醫 */
   red: RedFlag[];
-  /** 頁面內文提到的其他症狀（非 SCAT6 紅旗） */
+  /** 其他症狀（非紅旗）：對應 SCAT6 症狀量表的項目，用白話寫 */
   other: string[];
   /**
    * 連線要指到的身體位置，人形本身的座標（x 以身體中線為 0）。
@@ -48,8 +51,19 @@ export const BODY_REGIONS: BodyRegion[] = [
       '意識狀態持續變差，或愈來愈難叫醒',
       '劇烈或愈來愈嚴重的頭痛',
       '躁動、易怒、明顯的攻擊性',
+      '頭骨有明顯的凹陷或變形',
     ],
-    other: ['頭痛', '頭暈', '暫時性失憶'],
+    other: [
+      '頭痛',
+      '頭部脹脹的、有壓迫感',
+      '頭暈',
+      '暫時性失憶',
+      '反應變慢，或覺得像在霧裡',
+      '很難專心，或記不住事情',
+      '特別想睡、沒精神',
+      '比平常情緒化、易怒或焦慮',
+      '怕吵',
+    ],
     targets: [[20, 66]],
   },
   {
@@ -57,7 +71,7 @@ export const BODY_REGIONS: BodyRegion[] = [
     title: '眼睛',
     side: 'right',
     red: ['複視（看東西有兩個影子）'],
-    other: [],
+    other: ['視力模糊', '怕光'],
     targets: [[14, 101]],
   },
   {
@@ -73,7 +87,7 @@ export const BODY_REGIONS: BodyRegion[] = [
     title: '全身',
     side: 'right',
     red: ['出現癲癇或抽搐'],
-    other: [],
+    other: ['平衡變差、走路不穩'],
     targets: [[34, 214]],
   },
   {
