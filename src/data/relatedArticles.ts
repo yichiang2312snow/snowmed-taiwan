@@ -99,7 +99,7 @@ export const RELATED_ARTICLES: Record<string, RelatedArticle[]> = {
     },
     {
       slug: 'snowboard-preseason-training-anti-rotation',
-      title: '單板滑雪體能訓練：出發前 6 週課表，在家五個動作練出穩定換刃',
+      title: '單板滑雪體能訓練：出發前 6 週課表，在家六個動作練出穩定換刃',
       why: '選「單板」時多出來的那幾個動作出自這篇，裡面有每個動作的做法與最常見的錯誤。',
     },
     {
