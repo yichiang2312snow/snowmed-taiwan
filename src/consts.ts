@@ -34,6 +34,8 @@ export const SITE_A = {
   eventsUrl: 'https://dr.snowmed-taiwan.com/#upcoming-events',
   /** 近期活動的公開清單，給選單第二列那顆按鈕即時顯示最近一場 */
   eventsApi: 'https://dr.snowmed-taiwan.com/api/upcoming-events.json',
+  /** 已發布文章的公開清單（可加 ?category=分類代號），工具頁用來自動補上新的相關文章 */
+  articlesApi: 'https://dr.snowmed-taiwan.com/api/articles.json',
   label: '楊怡強醫師衛教專文',
   /** 選單第二列那顆按鈕：連到個人網站首頁 */
   introLabel: '認識楊醫師（滑雪及板類運動醫學）',
@@ -322,13 +324,14 @@ export const TOOLS = [
   {
     href: '/tools/training-plan',
     id: 'SMT-T-03',
-    version: TOOLS_VERSION,
-    updated: '2026-09-15',
+    version: 'v2026.3',
+    updated: '2026-11-27',
     category: 'prep',
     name: '行前肌力＆體能訓練計畫產生器',
     emoji: '📅',
     time: '約 1 分鐘',
-    summary: '輸入出發日期，自動排出到出發前的分期訓練行程，可以直接列印或存下來。',
+    summary:
+      '輸入出發日期與板種，自動排出到出發前的分期訓練行程，雙板、單板各有專項動作，可以直接列印或存下來。',
     who: '已經決定行程、想知道每週該練什麼的人',
   },
   {

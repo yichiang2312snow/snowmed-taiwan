@@ -8,6 +8,9 @@
  *
  * 新增文章後請一併更新這裡。slug 要跟個人網站上的一致，
  * 連錯會變成 404 —— 改完請實際點一次。
+ *
+ * 有設定 AUTO_RELATED_CATEGORIES 的工具不用手動加：個人網站該分類一發布新文章，
+ * 頁面載入時就會自動補在這份清單後面（見最下面）。
  */
 
 export interface RelatedArticle {
@@ -90,6 +93,11 @@ export const RELATED_ARTICLES: Record<string, RelatedArticle[]> = {
       why: '這個工具的四個階段與動作就是照這篇排的，想知道每個動作為什麼要做、常見錯誤是什麼，讀這篇。',
     },
     {
+      slug: 'ski-preseason-training-lateral',
+      title: '雙板滑雪體能訓練：出發前 6 週課表，在家五個動作顧好膝蓋',
+      why: '選「雙板」時多出來的那幾個動作出自這篇，裡面有每個動作的做法與最常見的錯誤。',
+    },
+    {
       slug: 'snowboard-preseason-training-anti-rotation',
       title: '單板滑雪體能訓練：出發前 6 週課表，在家五個動作練出穩定換刃',
       why: '選「單板」時多出來的那幾個動作出自這篇，裡面有每個動作的做法與最常見的錯誤。',
@@ -129,4 +137,16 @@ export const RELATED_ARTICLES: Record<string, RelatedArticle[]> = {
       why: '第一次滑雪該先在台灣練什麼、出發前還要準備什麼。',
     },
   ],
+};
+
+/**
+ * 自動補上的相關文章
+ *
+ * key 是工具路徑，值是個人網站的文章分類代號（跟個人網站的分類頁網址一致，例如 training）。
+ * 頁面載入時會去讀個人網站的公開文章清單（SITE_A.articlesApi），
+ * 把這些分類裡、上面清單還沒列到的已發布文章補在後面，說明文字用文章自己的摘要。
+ * 所以楊醫師發了新文章，這個工具頁不用改任何東西就會出現；讀不到清單時就只顯示上面寫死的那幾篇。
+ */
+export const AUTO_RELATED_CATEGORIES: Record<string, string[]> = {
+  '/tools/training-plan': ['training'],
 };

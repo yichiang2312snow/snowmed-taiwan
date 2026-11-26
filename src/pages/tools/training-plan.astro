@@ -1,5 +1,11 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
+import { SITE_A } from '../../consts';
+import { TRAINING_ARTICLE_LOG, TRAINING_LAST_CHECKED } from '../../data/trainingPlan';
+
+// 這一頁依據的文章，直接從對照紀錄產生，新增依據文章時「根據什麼做的」那段會自動跟著變
+const sources = TRAINING_ARTICLE_LOG.filter((a) => a.use !== 'none');
+const USE_LABEL: Record<string, string> = { common: '通用課表', ski: '雙板專項', snowboard: '單板專項' };
 ---
 
 <ToolLayout
@@ -7,7 +13,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
   emoji="📅"
   time="約 1 分鐘"
   summary="輸入出發日期、滑的是單板還是雙板，以及目前的運動習慣，自動排出從今天到出發前的分期訓練行程。可以直接列印或截圖存起來。"
-  description="輸入滑雪出發日期與板種，自動產生分期的行前訓練計畫：肌力打底、離心轉化、平衡專項到賽前減量，單板另外加上抗旋轉的專項動作。"
+  description="輸入滑雪出發日期與板種，自動產生分期的行前訓練計畫：肌力打底、離心轉化、平衡專項到出發前減量。雙板加上單腿控制與重心轉移的專項動作，單板加上抗旋轉的專項動作。"
 >
   <form id="plan-form" class="space-y-6">
     <div class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -25,8 +31,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
     <fieldset class="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
       <legend class="px-2 text-sm font-bold text-head">你滑的是</legend>
       <p class="mt-1 text-xs text-muted">
-        單板會多排幾個抗旋轉的動作 ——
-        單板雙腳固定在同一塊板上，需要「骨盆穩住、上半身獨立轉動」的能力，這是雙板課表練不到的。兩種都滑就選單板。
+        選了之後，會在通用課表上多排幾個專項動作。雙板練的是單腿控制、左右腳之間的重心轉移，以及「上身不動、下身轉」；單板練的是抗旋轉，也就是「骨盆穩住、上半身獨立轉動」。兩種都滑的人，選這一趟主要會滑的那一種。
       </p>
       <div class="mt-4 grid gap-2 sm:grid-cols-2">
         {
@@ -140,20 +145,37 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
       <strong>減量恢復</strong>（讓身體在出發時是新鮮的）。
     </p>
     <p>
-      時間長度設定為 8 週，是因為肌力訓練通常需要 6–8
-      週才會產生可測量的改變。如果你剩下的時間比較短，計畫會自動壓縮，並把重點移到進步最快的項目（平衡與落地控制）。
+      完整的準備期是三個月的週期化訓練，但多數人沒有這麼多時間，所以這裡以 8 週為基準 —— 肌力訓練通常需要 6–8
+      週才會產生可測量的改變。如果你剩下的時間比較短，計畫會自動壓縮，並把重點移到進步最快的項目（平衡與落地控制）；只剩一兩週時，會改成不排肌力與跳躍的短期方案。
     </p>
     <p>
       「目前運動習慣」只影響<strong>起始強度與每週次數</strong>，不改變階段順序 ——
       順序本身對每個人都一樣。
     </p>
     <p>
-      選<strong>單板</strong>時多出來的動作，練的是<strong>抗旋轉與上下半身分離</strong>：單板雙腳固定在同一塊板上、身體側向站立，換刃時由上半身帶出方向，骨盆以下要穩住；雪包和壓雪車的痕跡又會突然給板子一個扭力，軀幹得擋得住。這是雙板課表練不到的能力，所以是<strong>疊在通用課表之上的補強，不是另一份課表</strong>，兩份不需要全做。
+      選<strong>雙板</strong>時多出來的動作，練的是四件事：<strong>保護十字韌帶、單腿控制、下半身主動旋轉、左右腳交互的重心轉移</strong>。雙板的每一個轉彎，體重都從一隻腳移到另一隻腳、由外側腳單獨扛住；做小轉時則是上身不動、雙腿在身體下方轉動，這個轉動應該來自髖關節而不是膝蓋。
     </p>
     <p>
-      動作內容與分期都出自楊醫師的兩篇文章：〈滑雪體能訓練：出發前 8
-      週課表〉與〈單板滑雪體能訓練：出發前 6
-      週課表〉。想知道每個動作的做法、最常見的錯誤，以及什麼情況下不要自己練，請讀原文（下面有連結）。
+      選<strong>單板</strong>時多出來的動作，練的是<strong>抗旋轉與上下半身分離</strong>：單板雙腳固定在同一塊板上、身體側向站立，換刃時由上半身帶出方向，骨盆以下要穩住；雪包和壓雪車的痕跡又會突然給板子一個扭力，軀幹得擋得住。
+    </p>
+    <p>
+      兩種專項都是<strong>疊在通用課表之上的補強，不是另一份課表</strong>，照頁面排好的這一份做就可以，不需要把幾篇文章的課表全部加起來做。
+    </p>
+    <p>動作內容與分期都出自楊醫師的文章：</p>
+    <ul>
+      {
+        sources.map((a) => (
+          <li>
+            <a href={`${SITE_A.url}articles/${a.slug}`} target="_blank" rel="noopener">
+              〈{a.title}〉
+            </a>
+            —— {USE_LABEL[a.use]}的依據
+          </li>
+        ))
+      }
+    </ul>
+    <p>
+      想知道每個動作的做法、最常見的錯誤，以及什麼情況下不要自己練，請讀原文。這一頁會定期對照楊醫師新發表或修訂過的訓練文章，內容有出入時以文章為準並修訂這裡；上次對照：{TRAINING_LAST_CHECKED}。
     </p>
   </Fragment>
 
@@ -183,6 +205,9 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 </ToolLayout>
 
 <script>
+  import { BOARD_LABEL, CHECKS, PHASES, SHORT_PHASE } from '../../data/trainingPlan';
+  import type { Board, Phase } from '../../data/trainingPlan';
+
   const form = document.getElementById('plan-form') as HTMLFormElement | null;
   const result = document.getElementById('plan-result');
   const errorBox = document.getElementById('plan-error');
@@ -196,117 +221,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
   }
 
   if (form && result) {
-    type Phase = {
-      key: string;
-      name: string;
-      goal: string;
-      items: string[];
-      /**
-       * 選「單板」才會加上去的動作，出自楊醫師〈單板滑雪體能訓練：出發前 6 週課表〉。
-       * 那篇的定位是「在 8 週通用課表之上的專項補強」，不是另一份課表，
-       * 所以這裡是疊在 items 後面，而不是把 items 換掉。
-       * 強度的進程也照那篇走：打底徒手 → 加量加重 → 專項放到不穩定的面上 → 減量。
-       */
-      snowboard?: string[];
-    };
-
-    const PHASES: Phase[] = [
-      {
-        key: 'base',
-        name: '打底期',
-        goal: '建立基礎肌力，讓關節習慣負荷',
-        items: [
-          '深蹲（徒手或負重）3 組 × 8–12 下',
-          '分腿蹲 / 弓箭步 3 組 × 每邊 8–10 下',
-          '羅馬尼亞硬舉 3 組 × 8–12 下',
-          '臀橋 3 組 × 12–15 下',
-          '側臥髖外展（蚌式）3 組 × 每邊 15 下',
-          '單腳平衡：每邊 30–60 秒，每天累積 5 分鐘（刷牙、等水滾的時候就可以做）',
-          '有氧：每次 30 分鐘以上，會喘但還能講話的強度',
-        ],
-        snowboard: [
-          '靠牆蹲加旋轉（徒手或拿寶特瓶）3 組 × 30 秒 —— 骨盆與下背全程貼牆，只轉胸口和肩膀',
-          '站姿抗旋轉推（彈力帶固定在側邊、與胸口同高）3 組 × 每邊 10 下',
-          '側棒式 3 組 × 每邊 30 秒',
-          '單腳硬舉（徒手）3 組 × 每邊 8 下 —— 楊醫師最推薦單板玩家的動作',
-          '提踵與翹腳板 各 2–3 組 × 15–20 下',
-        ],
-      },
-      {
-        key: 'convert',
-        name: '轉化期',
-        goal: '把肌力轉成滑雪真正會用到的形式：離心與單側',
-        items: [
-          '慢速離心深蹲（下蹲數 4 秒、站起 1 秒）3 組 × 8 下',
-          '單腳蹲（從高箱子開始）3 組 × 每邊 5–10 下',
-          '單腳羅馬尼亞硬舉 3 組 × 每邊 8 下',
-          '側平板 3 組 × 每邊 30–45 秒',
-          '靠牆靜蹲 3 組，撐到有點發抖；進階：手拿寶特瓶或藥球加上半身轉體',
-          '下坡走或負坡度跑步機，每週 1–2 次、每次 20 分鐘',
-        ],
-        snowboard: [
-          '靠牆蹲加旋轉加上重量，拉長到 45 秒，3 組',
-          '站姿抗旋轉推 3 組 × 每邊 12 下 —— 推出去時肚臍和胸口要一直朝向正前方',
-          '分腿蹲加旋轉（最低點手拿重物轉向前腳那側）3 組 × 每邊 8–10 下',
-          '單腳硬舉手拿寶特瓶 3 組 × 每邊 8–10 下',
-        ],
-      },
-      {
-        key: 'specific',
-        name: '專項期',
-        goal: '平衡、反應與落地控制',
-        items: [
-          '平衡板或軟墊上的深蹲與轉體 3 組 × 45 秒',
-          '雙腳跳 → 落地靜止 3 秒，3 組 × 8 下（重點是安靜、膝蓋不內塌）',
-          '側向跳（skater jump）3 組 × 每邊 10 下',
-          '單腳落地控制 3 組 × 每邊 8 下',
-          '閉眼單腳站，每天累積 5 分鐘',
-          '有氧維持，不再增加量',
-        ],
-        snowboard: [
-          '靠牆蹲加旋轉連續做 60 秒，中間不站起來',
-          '站姿抗旋轉推改成站在枕頭或軟墊上做',
-          '側棒式把上方的腳抬起來',
-          '在床墊上練跌倒：握拳前撲、圓背後倒，各 10 次',
-        ],
-      },
-      {
-        key: 'taper',
-        name: '減量期',
-        goal: '讓身體在出發時是新鮮的',
-        items: [
-          '停止大重量訓練',
-          '保留輕量的平衡與活動度練習，每次 15–20 分鐘',
-          '伸展與放鬆：髖屈肌、股四頭肌、小腿',
-          '睡飽。睡眠不足會直接影響反應速度與判斷力',
-          '把裝備檢查完（護具、固定器、安全帽）',
-        ],
-        snowboard: ['抗旋轉的動作訓練量減半，只留靠牆蹲加旋轉與側棒式各 1 組輕量維持'],
-      },
-    ];
-
-    /**
-     * 「練到什麼程度算夠」的自我檢查標準。
-     * 雙板的出自〈出發前 8 週課表〉，單板的出自〈出發前 6 週課表〉——
-     * 單板是補強，所以兩組標準都要達到。
-     */
-    const CHECKS = {
-      ski: [
-        '靠牆靜蹲（大腿與地面平行）撐得過 60 秒，而且不會抖得太厲害',
-        '閉眼單腳站撐得過 20 秒',
-        '單腳落地可以停住 3 秒，膝蓋不往內塌、手不會亂甩',
-        '連續走五樓樓梯或慢跑 30 分鐘，不會喘到講不出話',
-        '左右兩邊的表現差距在 10% 以內 —— 不對稱本身就是風險',
-      ],
-      snowboard: [
-        '靠牆蹲加旋轉連續 60 秒，骨盆全程不離開牆面',
-        '抗旋轉推每邊 12 下，身體沒有被彈力帶拉動',
-        '側棒式每邊撐得過 45 秒',
-        '單腳硬舉每邊 10 下，中間不需要用另一隻腳點地',
-        '單腳提踵連續 20 下',
-        '兩個方向的表現接近 —— 某一邊明顯比較差就多做一組',
-      ],
-    };
+    // 動作、組數與自我檢查標準都在 src/data/trainingPlan.ts（依楊醫師的文章整理，文章更新時只改那裡）
 
     const FREQ: Record<string, { label: string; note: string; perWeek: string }> = {
       none: {
@@ -339,9 +254,11 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
       const data = new FormData(form);
       const dep = String(data.get('departure') ?? '');
       const level = String(data.get('level') ?? '');
-      const board = String(data.get('board') ?? '');
-      if (!dep || !level || !board) return;
-      const isSnowboard = board === 'snowboard';
+      const boardRaw = String(data.get('board') ?? '');
+      if (!dep || !level || !boardRaw) return;
+      const board: Board = boardRaw === 'snowboard' ? 'snowboard' : 'ski';
+      const boardLabel = BOARD_LABEL[board];
+      const tagText = `${boardLabel}專項`;
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -371,9 +288,14 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 
       const totalWeeks = Math.min(Math.floor(days / 7), 12);
 
+      // 只剩一兩週：三篇文章的說法一致 —— 肌力來不及長，不排肌力與跳躍，改成每天做的輕量控制練習
+      const isShort = totalWeeks <= 2;
+
       // 依剩餘週數分配四個階段的長度（減量期固定 1 週）
       let alloc: number[];
-      if (totalWeeks >= 8) {
+      if (isShort) {
+        alloc = [0, 0, 0, 0];
+      } else if (totalWeeks >= 8) {
         const taper = 1;
         const rest = totalWeeks - taper;
         const base = Math.round(rest * 0.375);
@@ -385,28 +307,34 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         const base = Math.floor(rest / 3);
         const convert = Math.floor(rest / 3);
         alloc = [base, convert, rest - base - convert, taper];
-      } else if (totalWeeks >= 3) {
+      } else {
         // 時間很短：跳過打底，直接轉化 + 專項
         alloc = [0, totalWeeks - 2, 1, 1];
-      } else {
-        alloc = [0, 0, totalWeeks - 1, 1];
       }
+      const plan: Array<{ phase: Phase; len: number }> = isShort
+        ? [{ phase: SHORT_PHASE, len: totalWeeks }]
+        : PHASES.map((phase, i) => ({ phase, len: alloc[i] }));
 
       const freq = FREQ[level];
 
       const title = document.getElementById('plan-title');
       if (title) {
-        title.textContent = `${isSnowboard ? '單板' : '雙板'} · 距離出發還有 ${days} 天 · 共 ${totalWeeks} 週的計畫`;
+        title.textContent = isShort
+          ? `${boardLabel} · 距離出發還有 ${days} 天 · 短期方案`
+          : `${boardLabel} · 距離出發還有 ${days} 天 · 共 ${totalWeeks} 週的計畫`;
       }
 
       const note = document.getElementById('plan-note');
       if (note) {
-        let text = `以「${freq.label}」為起點，建議頻率 ${freq.perWeek}。${freq.note}`;
-        if (isSnowboard) {
-          text +=
-            ' 標著「單板專項」的是加在通用課表之上的抗旋轉動作，練的是「骨盆穩住、上半身獨立轉動」—— 兩份不用全做，照這一份排好的順序做就可以。';
-        }
-        if (totalWeeks < 6) {
+        // 短期方案不分程度：每個人都是每天做輕量的控制練習，所以不套用「依運動習慣加重」的說明
+        let text = isShort
+          ? `距離出發只剩 ${days} 天，肌力來不及長，所以這份計畫不排肌力與跳躍，只留每天做的平衡與動作控制練習，強度放輕。`
+          : `以「${freq.label}」為起點，建議頻率 ${freq.perWeek}。${freq.note}`;
+        text +=
+          board === 'snowboard'
+            ? ' 標著「單板專項」的是加在通用課表之上的抗旋轉動作，練的是「骨盆穩住、上半身獨立轉動」。照這一份排好的做就可以，不用把幾篇文章的課表全部加起來。'
+            : ' 標著「雙板專項」的是加在通用課表之上的動作，練的是單腿控制、左右腳之間的重心轉移，以及「上身不動、下身轉」，目的是保護十字韌帶。照這一份排好的做就可以，不用把幾篇文章的課表全部加起來。';
+        if (!isShort && totalWeeks < 6) {
           text +=
             ' 因為時間較短，這份計畫已經跳過或壓縮了肌力打底階段，把重點放在進步最快的平衡與落地控制。';
         }
@@ -418,8 +346,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
       wrap.textContent = '';
 
       let weekCursor = 0;
-      PHASES.forEach((phase, pi) => {
-        const len = alloc[pi];
+      plan.forEach(({ phase, len }) => {
         if (len <= 0) return;
 
         const start = new Date(today);
@@ -427,6 +354,8 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         const end = new Date(today);
         end.setDate(end.getDate() + (weekCursor + len) * 7 - 1);
         weekCursor += len;
+        // 短期方案一路做到出發前一天，不是只排整數週
+        if (isShort) end.setTime(departure.valueOf() - 86400000);
 
         const card = document.createElement('div');
         card.className = 'min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6';
@@ -436,11 +365,11 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 
         const h3 = document.createElement('h3');
         h3.className = 'text-lg font-black text-head';
-        h3.textContent = `${phase.name}（${len} 週）`;
+        h3.textContent = isShort ? `${phase.name}（${days} 天）` : `${phase.name}（${len} 週）`;
 
         const range = document.createElement('p');
         range.className = 'text-xs text-muted';
-        range.textContent = `${fmt(start)} – ${fmt(end)} · ${freq.perWeek}`;
+        range.textContent = `${fmt(start)} – ${fmt(end)} · ${isShort ? '每天' : freq.perWeek}`;
 
         head.append(h3, range);
 
@@ -451,8 +380,8 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         const ul = document.createElement('ul');
         ul.className = 'mt-4 space-y-2';
 
-        // 單板的動作標出來，印出來之後還是看得出哪幾項是單板專項、為什麼會在這裡
-        const addItem = (item: string, snow = false) => {
+        // 專項動作標出來，印出來之後還是看得出哪幾項是板種專項、為什麼會在這裡
+        const addItem = (item: string, special = false) => {
           const li = document.createElement('li');
           li.className =
             'flex min-w-0 gap-2.5 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm leading-relaxed break-words text-muted';
@@ -461,11 +390,11 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
           dot.textContent = '·';
           const span = document.createElement('span');
           span.className = 'min-w-0';
-          if (snow) {
+          if (special) {
             const tag = document.createElement('span');
             tag.className =
               'mr-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-head';
-            tag.textContent = '單板專項';
+            tag.textContent = tagText;
             span.append(tag);
           }
           span.append(document.createTextNode(item));
@@ -474,19 +403,19 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
         };
 
         for (const item of phase.items) addItem(item);
-        if (isSnowboard) for (const item of phase.snowboard ?? []) addItem(item, true);
+        for (const item of phase[board] ?? []) addItem(item, true);
 
         card.append(head, goal, ul);
         wrap.append(card);
       });
 
-      // 練夠了的標準。單板是補強，所以兩組標準都要達到
+      // 練夠了的標準。專項是補強，所以通用標準加上自己板種的標準都要達到
       const checksWrap = document.getElementById('plan-checks');
       if (checksWrap) {
         checksWrap.textContent = '';
-        const rows: Array<[string, boolean]> = CHECKS.ski.map((c) => [c, false] as [string, boolean]);
-        if (isSnowboard) for (const c of CHECKS.snowboard) rows.push([c, true]);
-        for (const [text, snow] of rows) {
+        const rows: Array<[string, boolean]> = CHECKS.common.map((c) => [c, false] as [string, boolean]);
+        for (const c of CHECKS[board]) rows.push([c, true]);
+        for (const [text, special] of rows) {
           const li = document.createElement('li');
           li.className =
             'flex min-w-0 gap-2.5 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm leading-relaxed break-words text-muted';
@@ -495,11 +424,11 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
           mark.textContent = '✓';
           const span = document.createElement('span');
           span.className = 'min-w-0';
-          if (snow) {
+          if (special) {
             const tag = document.createElement('span');
             tag.className =
               'mr-1.5 rounded bg-tint2 px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-head';
-            tag.textContent = '單板專項';
+            tag.textContent = tagText;
             span.append(tag);
           }
           span.append(document.createTextNode(text));

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { SITE, SITE_A, TOOLS } from '../consts';
-import { RELATED_ARTICLES } from '../data/relatedArticles';
+import { AUTO_RELATED_CATEGORIES, RELATED_ARTICLES } from '../data/relatedArticles';
 
 interface Props {
   title: string;
@@ -20,6 +20,8 @@ const tool = TOOLS.find((t) => t.href === path);
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 // 這個工具對應到個人網站的哪幾篇文章（沒有對應就不顯示整塊）
 const related = RELATED_ARTICLES[path] ?? [];
+// 這個工具要自動補上個人網站哪些分類的新文章（沒設定就是空的，不會去讀）
+const autoCategories = (AUTO_RELATED_CATEGORIES[path] ?? []).join(',');
 const siteUrl = Astro.site?.toString() ?? 'https://snowmed-taiwan.com/';
 
 // 引用格式：仿學術引用，讓「標明出處」有一個現成的、可以直接貼的樣子
@@ -117,9 +119,15 @@ const toolLd = tool
           <p class="mt-1.5 text-sm leading-relaxed break-words text-muted">
             工具給你答案，文章給你理由。以下是楊醫師在個人網站上寫的相關文章。
           </p>
-          <ul class="mt-4 space-y-3">
+          <ul
+            class="mt-4 space-y-3"
+            id="related-list"
+            data-auto-categories={autoCategories}
+            data-api={SITE_A.articlesApi}
+            data-base={SITE_A.url}
+          >
             {related.map((a) => (
-              <li class="min-w-0">
+              <li class="min-w-0" data-slug={a.slug}>
                 <a
                   href={`${SITE_A.url}articles/${a.slug}`}
                   target="_blank"
@@ -201,6 +209,60 @@ const toolLd = tool
         btn.textContent = '請手動選取複製';
       }
       setTimeout(() => (btn.textContent = '複製'), 2000);
+    });
+  }
+
+  // 相關文章自動補充：個人網站指定分類裡、清單上還沒有的已發布文章，接在後面。
+  // 讀不到（離線、個人網站暫時出錯）就什麼都不做，寫死的清單照常顯示。
+  const list = document.getElementById('related-list');
+  const categories = (list?.dataset.autoCategories ?? '').split(',').filter(Boolean);
+  if (list && categories.length > 0 && list.dataset.api && list.dataset.base) {
+    const api = list.dataset.api;
+    const base = list.dataset.base;
+    const have = new Set(
+      Array.from(list.querySelectorAll<HTMLElement>('li[data-slug]')).map((li) => li.dataset.slug)
+    );
+    const cut = (s: string, max: number) => (s.length > max ? s.slice(0, max - 1) + '…' : s);
+    Promise.all(
+      categories.map((c) =>
+        fetch(`${api}?category=${encodeURIComponent(c)}`)
+          .then((r) => (r.ok ? r.json() : { articles: [] }))
+          .catch(() => ({ articles: [] }))
+      )
+    ).then((results) => {
+      const fresh: Array<{ slug: string; title: string; description?: string; published_at?: string }> = [];
+      for (const r of results) {
+        for (const a of r.articles ?? []) {
+          if (!a?.slug || !a?.title || have.has(a.slug)) continue;
+          if (!/^[a-z0-9-]+$/i.test(a.slug)) continue;
+          have.add(a.slug);
+          fresh.push(a);
+        }
+      }
+      fresh.sort((a, b) => String(b.published_at ?? '').localeCompare(String(a.published_at ?? '')));
+      for (const a of fresh.slice(0, 8)) {
+        const li = document.createElement('li');
+        li.className = 'min-w-0';
+        li.dataset.slug = a.slug;
+        const link = document.createElement('a');
+        link.href = `${base}articles/${a.slug}`;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.className =
+          'block min-w-0 rounded-xl border border-line bg-surface px-4 py-3 transition-colors hover:border-accent hover:bg-tint1';
+        const title = document.createElement('p');
+        title.className = 'text-sm leading-snug font-bold break-words text-head';
+        title.textContent = `📄 ${a.title} ↗`;
+        link.append(title);
+        if (a.description) {
+          const why = document.createElement('p');
+          why.className = 'mt-1 text-xs leading-relaxed break-words text-muted';
+          why.textContent = cut(String(a.description).replace(/\s+/g, ' ').trim(), 70);
+          link.append(why);
+        }
+        li.append(link);
+        list.append(li);
+      }
     });
   }
 </script>
