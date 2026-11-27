@@ -220,7 +220,7 @@ export const TRAINING_ARTICLE_LOG: TrainingArticleLog[] = [
     slug: 'snowboard-preseason-training-anti-rotation',
     title: '單板滑雪體能訓練：出發前 6 週課表，在家六個動作練出穩定換刃',
     use: 'snowboard',
-    updatedAt: '2026-11-26T19:21:40.070968+00:00',
+    updatedAt: '2026-11-27T00:03:04.440325+00:00',
   },
   {
     slug: 'ski-intro-20260930',
